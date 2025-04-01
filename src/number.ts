@@ -9,8 +9,8 @@
  * @returns 四舍五入后的数字
  */
 export function round(num: number, precision = 0): number {
-  const factor = Math.pow(10, precision);
-  return Math.round(num * factor) / factor;
+  const factor = 10 ** precision
+  return Math.round(num * factor) / factor
 }
 
 /**
@@ -20,37 +20,41 @@ export function round(num: number, precision = 0): number {
  * @returns 格式化后的字符串
  */
 export function formatThousands(num: number, locale?: string): string {
-  return num.toLocaleString(locale);
+  return num.toLocaleString(locale)
 }
 
 /**
- * 将数字格式化为货币形式
- * @param num 金额数字
+ * 将数字格式化为货币字符串
+ * @param value 要格式化的数字
  * @param options 格式化选项
+ * @param options.currency 货币代码（如 'CNY', 'USD'）
+ * @param options.locale 地区设置（如 'zh-CN', 'en-US'）
+ * @param options.minimumFractionDigits 最小小数位数
+ * @param options.maximumFractionDigits 最大小数位数
  * @returns 格式化后的货币字符串
  */
 export function formatCurrency(
-  num: number, 
+  value: number,
   options: {
-    currency?: string;
-    locale?: string;
-    minimumFractionDigits?: number;
-    maximumFractionDigits?: number;
-  } = {}
+    currency?: string
+    locale?: string
+    minimumFractionDigits?: number
+    maximumFractionDigits?: number
+  } = {},
 ): string {
-  const { 
-    currency = 'CNY', 
+  const {
+    currency = 'CNY',
     locale = 'zh-CN',
     minimumFractionDigits = 2,
-    maximumFractionDigits = 2
-  } = options;
-  
+    maximumFractionDigits = 2,
+  } = options
+
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,
     minimumFractionDigits,
-    maximumFractionDigits
-  }).format(num);
+    maximumFractionDigits,
+  }).format(value)
 }
 
 /**
@@ -61,7 +65,7 @@ export function formatCurrency(
  * @returns 在范围内的数字
  */
 export function clamp(num: number, min: number, max: number): number {
-  return Math.min(Math.max(num, min), max);
+  return Math.min(Math.max(num, min), max)
 }
 
 /**
@@ -71,9 +75,9 @@ export function clamp(num: number, min: number, max: number): number {
  * @returns 随机整数
  */
 export function randomInt(min: number, max: number): number {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  min = Math.ceil(min)
+  max = Math.floor(max)
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 /**
@@ -82,7 +86,7 @@ export function randomInt(min: number, max: number): number {
  * @returns 是否为偶数
  */
 export function isEven(num: number): boolean {
-  return num % 2 === 0;
+  return num % 2 === 0
 }
 
 /**
@@ -91,7 +95,7 @@ export function isEven(num: number): boolean {
  * @returns 是否为奇数
  */
 export function isOdd(num: number): boolean {
-  return !isEven(num);
+  return !isEven(num)
 }
 
 /**
@@ -102,6 +106,7 @@ export function isOdd(num: number): boolean {
  * @returns 百分比值
  */
 export function percentage(value: number, total: number, precision = 2): number {
-  if (total === 0) return 0;
-  return round((value / total) * 100, precision);
-} 
+  if (total === 0)
+    return 0
+  return round((value / total) * 100, precision)
+}

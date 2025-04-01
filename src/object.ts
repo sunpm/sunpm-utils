@@ -9,27 +9,27 @@
  */
 export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== 'object') {
-    return obj;
+    return obj
   }
 
   if (obj instanceof Date) {
-    return new Date(obj.getTime()) as unknown as T;
+    return new Date(obj.getTime()) as unknown as T
   }
 
   if (obj instanceof RegExp) {
-    return new RegExp(obj.source, obj.flags) as unknown as T;
+    return new RegExp(obj.source, obj.flags) as unknown as T
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((item) => deepClone(item)) as unknown as T;
+    return obj.map(item => deepClone(item)) as unknown as T
   }
 
-  const cloned: Record<string, any> = {};
+  const cloned: Record<string, any> = {}
   Object.keys(obj as Record<string, any>).forEach((key) => {
-    cloned[key] = deepClone((obj as Record<string, any>)[key]);
-  });
+    cloned[key] = deepClone((obj as Record<string, any>)[key])
+  })
 
-  return cloned as T;
+  return cloned as T
 }
 
 /**
@@ -40,17 +40,17 @@ export function deepClone<T>(obj: T): T {
  * @returns 路径对应的值或默认值
  */
 export function get<T = any>(obj: Record<string, any>, path: string, defaultValue?: T): T | undefined {
-  const keys = path.split('.');
-  let result = obj;
+  const keys = path.split('.')
+  let result = obj
 
   for (const key of keys) {
     if (result === undefined || result === null) {
-      return defaultValue;
+      return defaultValue
     }
-    result = result[key];
+    result = result[key]
   }
 
-  return (result === undefined) ? defaultValue : result as T;
+  return (result === undefined) ? defaultValue : result as T
 }
 
 /**
@@ -62,10 +62,10 @@ export function get<T = any>(obj: Record<string, any>, path: string, defaultValu
 export function pick<T extends Record<string, any>, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   return keys.reduce((result, key) => {
     if (key in obj) {
-      result[key] = obj[key];
+      result[key] = obj[key]
     }
-    return result;
-  }, {} as Pick<T, K>);
+    return result
+  }, {} as Pick<T, K>)
 }
 
 /**
@@ -75,11 +75,11 @@ export function pick<T extends Record<string, any>, K extends keyof T>(obj: T, k
  * @returns 不包含指定键的新对象
  */
 export function omit<T extends Record<string, any>, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
-  const result = { ...obj };
-  keys.forEach(key => {
-    delete result[key];
-  });
-  return result;
+  const result = { ...obj }
+  keys.forEach((key) => {
+    delete result[key]
+  })
+  return result
 }
 
 /**
@@ -92,11 +92,11 @@ export function objectToQueryString(obj: Record<string, any>): string {
     .filter(([_, value]) => value !== undefined && value !== null)
     .map(([key, value]) => {
       if (Array.isArray(value)) {
-        return value.map(item => `${encodeURIComponent(key)}=${encodeURIComponent(String(item))}`).join('&');
+        return value.map(item => `${encodeURIComponent(key)}=${encodeURIComponent(String(item))}`).join('&')
       }
-      return `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`;
+      return `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`
     })
-    .join('&');
+    .join('&')
 }
 
 /**
@@ -105,7 +105,7 @@ export function objectToQueryString(obj: Record<string, any>): string {
  * @returns 是否为空对象
  */
 export function isEmptyObject(obj: Record<string, any>): boolean {
-  return Object.keys(obj).length === 0;
+  return Object.keys(obj).length === 0
 }
 
 /**
@@ -114,5 +114,5 @@ export function isEmptyObject(obj: Record<string, any>): boolean {
  * @returns 合并后的新对象
  */
 export function merge<T extends Record<string, any>>(...objects: T[]): T {
-  return Object.assign({}, ...objects);
-} 
+  return Object.assign({}, ...objects)
+}

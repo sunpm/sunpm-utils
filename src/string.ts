@@ -8,8 +8,9 @@
  * @returns 首字母大写后的字符串
  */
 export function capitalize(str: string): string {
-  if (!str || str.length === 0) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  if (str.length === 0)
+    return str
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 /**
@@ -19,7 +20,11 @@ export function capitalize(str: string): string {
  * @example camelToKebab('helloWorld') => 'hello-world'
  */
 export function camelToKebab(str: string): string {
-  return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+  // 处理首字母大写的情况，如 APIVersion -> api-version
+  return str
+    .replace(/([A-Z])([A-Z]+)([A-Z])/g, '$1$2-$3') // 处理连续大写字母
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .toLowerCase()
 }
 
 /**
@@ -29,7 +34,7 @@ export function camelToKebab(str: string): string {
  * @example kebabToCamel('hello-world') => 'helloWorld'
  */
 export function kebabToCamel(str: string): string {
-  return str.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+  return str.replace(/-([a-z])/g, (_, char) => char.toUpperCase())
 }
 
 /**
@@ -39,10 +44,13 @@ export function kebabToCamel(str: string): string {
  * @param ellipsis 省略号字符，默认为'...'
  * @returns 截取后的字符串
  */
-export function truncate(str: string, length: number, ellipsis = '...'): string {
-  if (!str) return '';
-  if (str.length <= length) return str;
-  return str.substring(0, length) + ellipsis;
+export function truncate(str: string, length: number = 50, ellipsis: string = '...'): string {
+  if (str.length <= length)
+    return str
+
+  // 计算需要保留的字符数 = 总长度 - 省略号长度
+  const truncatedLength = length - ellipsis.length
+  return str.substring(0, truncatedLength) + ellipsis
 }
 
 /**
@@ -52,14 +60,14 @@ export function truncate(str: string, length: number, ellipsis = '...'): string 
  * @returns 随机字符串
  */
 export function randomString(length: number, chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'): string {
-  let result = '';
-  const charsLength = chars.length;
-  
+  let result = ''
+  const charsLength = chars.length
+
   for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * charsLength));
+    result += chars.charAt(Math.floor(Math.random() * charsLength))
   }
-  
-  return result;
+
+  return result
 }
 
 /**
@@ -73,13 +81,13 @@ export function escapeHtml(html: string): string {
     '<': '&lt;',
     '>': '&gt;',
     '"': '&quot;',
-    "'": '&#39;',
+    '\'': '&#39;',
     '/': '&#x2F;',
     '`': '&#x60;',
-    '=': '&#x3D;'
-  };
-  
-  return html.replace(/[&<>"'`=\/]/g, (s) => entityMap[s] || s);
+    '=': '&#x3D;',
+  }
+
+  return html.replace(/[&<>"'`=/]/g, s => entityMap[s] || s)
 }
 
 /**
@@ -89,10 +97,10 @@ export function escapeHtml(html: string): string {
  */
 export function isValidUrl(url: string): boolean {
   try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
+    return Boolean(new URL(url))
+  }
+  catch {
+    return false
   }
 }
 
@@ -102,6 +110,15 @@ export function isValidUrl(url: string): boolean {
  * @returns 是否为有效电子邮件
  */
 export function isValidEmail(email: string): boolean {
-  const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  return re.test(email);
-} 
+  const re = /^[\w.%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i
+  return re.test(email)
+}
+
+/**
+ * 检查字符串是否为空
+ * @param str - 要检查的字符串
+ * @returns 如果字符串为空或只包含空白字符，则返回 true
+ */
+export function isEmptyString(str: string): boolean {
+  return str.trim().length === 0
+}

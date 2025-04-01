@@ -9,7 +9,7 @@
  * @returns 移除指定项后的新数组
  */
 export function remove<T>(array: T[], item: T): T[] {
-  return array.filter(i => i !== item);
+  return array.filter(i => i !== item)
 }
 
 /**
@@ -18,7 +18,7 @@ export function remove<T>(array: T[], item: T): T[] {
  * @returns 去重后的新数组
  */
 export function unique<T>(array: T[]): T[] {
-  return Array.from(new Set(array));
+  return Array.from(new Set(array))
 }
 
 /**
@@ -28,14 +28,15 @@ export function unique<T>(array: T[]): T[] {
  * @returns 二维数组，每个子数组最多包含 size 个元素
  */
 export function chunk<T>(array: T[], size: number): T[][] {
-  if (size <= 0) return [array];
-  
-  const result: T[][] = [];
+  if (size <= 0)
+    return [array]
+
+  const result: T[][] = []
   for (let i = 0; i < array.length; i += size) {
-    result.push(array.slice(i, i + size));
+    result.push(array.slice(i, i + size))
   }
-  
-  return result;
+
+  return result
 }
 
 /**
@@ -44,7 +45,7 @@ export function chunk<T>(array: T[], size: number): T[][] {
  * @returns 最后一个元素，如果数组为空则返回 undefined
  */
 export function last<T>(array: T[]): T | undefined {
-  return array.length > 0 ? array[array.length - 1] : undefined;
+  return array.length > 0 ? array[array.length - 1] : undefined
 }
 
 /**
@@ -53,7 +54,7 @@ export function last<T>(array: T[]): T | undefined {
  * @returns 第一个元素，如果数组为空则返回 undefined
  */
 export function first<T>(array: T[]): T | undefined {
-  return array.length > 0 ? array[0] : undefined;
+  return array.length > 0 ? array[0] : undefined
 }
 
 /**
@@ -62,14 +63,14 @@ export function first<T>(array: T[]): T | undefined {
  * @returns 打乱后的新数组
  */
 export function shuffle<T>(array: T[]): T[] {
-  const result = [...array];
-  
+  const result = [...array]
+
   for (let i = result.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j] as T, result[i] as T];
+    [result[i], result[j]] = [result[j] as T, result[i] as T]
   }
-  
-  return result;
+
+  return result
 }
 
 /**
@@ -78,9 +79,10 @@ export function shuffle<T>(array: T[]): T[] {
  * @returns 随机选择的元素，如果数组为空则返回 undefined
  */
 export function sample<T>(array: T[]): T | undefined {
-  if (array.length === 0) return undefined;
-  const index = Math.floor(Math.random() * array.length);
-  return array[index];
+  if (array.length === 0)
+    return undefined
+  const index = Math.floor(Math.random() * array.length)
+  return array[index]
 }
 
 /**
@@ -90,8 +92,9 @@ export function sample<T>(array: T[]): T | undefined {
  * @returns 是否相等
  */
 export function isEqual<T>(a: T[], b: T[]): boolean {
-  if (a.length !== b.length) return false;
-  return a.every((item, index) => item === b[index]);
+  if (a.length !== b.length)
+    return false
+  return a.every((item, index) => item === b[index])
 }
 
 /**
@@ -103,7 +106,7 @@ export function isEqual<T>(a: T[], b: T[]): boolean {
 export function groupBy<T, K extends string | number | symbol>(array: T[], keyFn: (item: T) => K): Record<K, T[]> {
   return array.reduce((result, item) => {
     const key = keyFn(item);
-    (result[key] = result[key] || []).push(item);
-    return result;
-  }, {} as Record<K, T[]>);
-} 
+    (result[key] = result[key] || []).push(item)
+    return result
+  }, {} as Record<K, T[]>)
+}

@@ -8,7 +8,7 @@
  * @returns 如果是字符串则返回 true，否则返回 false
  */
 export function isString(val: unknown): val is string {
-  return typeof val === 'string';
+  return typeof val === 'string'
 }
 
 /**
@@ -17,7 +17,7 @@ export function isString(val: unknown): val is string {
  * @returns 如果是数字则返回 true，否则返回 false
  */
 export function isNumber(val: unknown): val is number {
-  return typeof val === 'number' && !isNaN(val);
+  return typeof val === 'number' && !isNaN(val)
 }
 
 /**
@@ -26,7 +26,7 @@ export function isNumber(val: unknown): val is number {
  * @returns 如果是布尔值则返回 true，否则返回 false
  */
 export function isBoolean(val: unknown): val is boolean {
-  return typeof val === 'boolean';
+  return typeof val === 'boolean'
 }
 
 /**
@@ -34,8 +34,8 @@ export function isBoolean(val: unknown): val is boolean {
  * @param val 要检查的值
  * @returns 如果是函数则返回 true，否则返回 false
  */
-export function isFunction(val: unknown): val is Function {
-  return typeof val === 'function';
+export function isFunction(val: unknown): val is ((...args: any[]) => any) {
+  return typeof val === 'function'
 }
 
 /**
@@ -44,7 +44,7 @@ export function isFunction(val: unknown): val is Function {
  * @returns 如果是对象则返回 true，否则返回 false
  */
 export function isObject(val: unknown): val is Record<any, any> {
-  return val !== null && typeof val === 'object';
+  return val !== null && typeof val === 'object'
 }
 
 /**
@@ -53,7 +53,7 @@ export function isObject(val: unknown): val is Record<any, any> {
  * @returns 如果是数组则返回 true，否则返回 false
  */
 export function isArray(val: unknown): val is any[] {
-  return Array.isArray(val);
+  return Array.isArray(val)
 }
 
 /**
@@ -62,7 +62,7 @@ export function isArray(val: unknown): val is any[] {
  * @returns 如果是日期则返回 true，否则返回 false
  */
 export function isDate(val: unknown): val is Date {
-  return val instanceof Date;
+  return val instanceof Date
 }
 
 /**
@@ -71,7 +71,7 @@ export function isDate(val: unknown): val is Date {
  * @returns 如果是 undefined 则返回 true，否则返回 false
  */
 export function isUndefined(val: unknown): val is undefined {
-  return typeof val === 'undefined';
+  return typeof val === 'undefined'
 }
 
 /**
@@ -80,7 +80,7 @@ export function isUndefined(val: unknown): val is undefined {
  * @returns 如果是 null 则返回 true，否则返回 false
  */
 export function isNull(val: unknown): val is null {
-  return val === null;
+  return val === null
 }
 
 /**
@@ -89,7 +89,7 @@ export function isNull(val: unknown): val is null {
  * @returns 如果是 null 或 undefined 则返回 true，否则返回 false
  */
 export function isNullOrUndefined(val: unknown): val is null | undefined {
-  return isNull(val) || isUndefined(val);
+  return isNull(val) || isUndefined(val)
 }
 
 /**
@@ -98,9 +98,22 @@ export function isNullOrUndefined(val: unknown): val is null | undefined {
  * @returns 如果是空值则返回 true，否则返回 false
  */
 export function isEmpty(val: unknown): boolean {
-  if (isNullOrUndefined(val)) return true;
-  if (isString(val)) return val.trim().length === 0;
-  if (isArray(val)) return val.length === 0;
-  if (isObject(val)) return Object.keys(val).length === 0;
-  return false;
-} 
+  if (isNullOrUndefined(val))
+    return true
+  if (isString(val))
+    return val.trim().length === 0
+  if (isArray(val))
+    return val.length === 0
+  if (isObject(val))
+    return Object.keys(val).length === 0
+  return false
+}
+
+/**
+ * 检查值是否为 NaN
+ * @param value 要检查的值
+ * @returns 值是否为 NaN
+ */
+export function isNaN(value: unknown): boolean {
+  return Number.isNaN(value)
+}

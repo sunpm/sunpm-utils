@@ -17,22 +17,22 @@
  * @example formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss') // "2023-05-16 14:30:45"
  */
 export function formatDate(date: Date | number, format = 'YYYY-MM-DD'): string {
-  const d = new Date(date);
-  
+  const d = new Date(date)
+
   const replacements: Record<string, () => string> = {
-    'YYYY': () => String(d.getFullYear()),
-    'MM': () => String(d.getMonth() + 1).padStart(2, '0'),
-    'DD': () => String(d.getDate()).padStart(2, '0'),
-    'HH': () => String(d.getHours()).padStart(2, '0'),
-    'mm': () => String(d.getMinutes()).padStart(2, '0'),
-    'ss': () => String(d.getSeconds()).padStart(2, '0'),
-    'SSS': () => String(d.getMilliseconds()).padStart(3, '0')
-  };
-  
+    YYYY: () => String(d.getFullYear()),
+    MM: () => String(d.getMonth() + 1).padStart(2, '0'),
+    DD: () => String(d.getDate()).padStart(2, '0'),
+    HH: () => String(d.getHours()).padStart(2, '0'),
+    mm: () => String(d.getMinutes()).padStart(2, '0'),
+    ss: () => String(d.getSeconds()).padStart(2, '0'),
+    SSS: () => String(d.getMilliseconds()).padStart(3, '0'),
+  }
+
   return format.replace(/YYYY|MM|DD|HH|mm|ss|SSS/g, (match) => {
-    const replaceFn = replacements[match];
-    return replaceFn ? replaceFn() : match;
-  });
+    const replaceFn = replacements[match]
+    return replaceFn ? replaceFn() : match
+  })
 }
 
 /**
@@ -40,24 +40,28 @@ export function formatDate(date: Date | number, format = 'YYYY-MM-DD'): string {
  * @returns 当前时间戳（毫秒）
  */
 export function now(): number {
-  return Date.now();
+  return Date.now()
 }
 
 /**
- * 将日期字符串解析为日期对象
- * @param dateString 日期字符串
- * @param format 日期格式
+ * 解析日期字符串为日期对象
+ * @param dateStr 日期字符串
  * @returns 日期对象
  */
-export function parseDate(dateString: string, format = 'YYYY-MM-DD'): Date {
-  const normalized = dateString.replace(/[^0-9]/g, '/');
-  const parsed = new Date(normalized);
-  
-  if (isNaN(parsed.getTime())) {
-    throw new Error(`无法解析日期字符串: ${dateString}`);
+export function parseDate(dateStr: string): Date {
+  if (!dateStr) {
+    throw new TypeError('日期字符串不能为空')
   }
-  
-  return parsed;
+
+  // 尝试自动解析
+  const date = new Date(dateStr)
+
+  // 检查日期是否有效
+  if (Number.isNaN(date.getTime())) {
+    throw new TypeError('无效的日期格式')
+  }
+
+  return date
 }
 
 /**
@@ -67,15 +71,15 @@ export function parseDate(dateString: string, format = 'YYYY-MM-DD'): Date {
  * @returns 两个日期之间的天数差
  */
 export function daysBetween(date1: Date, date2: Date): number {
-  const oneDay = 24 * 60 * 60 * 1000; // 一天的毫秒数
-  const d1 = new Date(date1);
-  const d2 = new Date(date2);
-  
+  const oneDay = 24 * 60 * 60 * 1000 // 一天的毫秒数
+  const d1 = new Date(date1)
+  const d2 = new Date(date2)
+
   // 重置时间部分，只比较日期部分
-  d1.setHours(0, 0, 0, 0);
-  d2.setHours(0, 0, 0, 0);
-  
-  return Math.round(Math.abs((d1.getTime() - d2.getTime()) / oneDay));
+  d1.setHours(0, 0, 0, 0)
+  d2.setHours(0, 0, 0, 0)
+
+  return Math.round(Math.abs((d1.getTime() - d2.getTime()) / oneDay))
 }
 
 /**
@@ -85,9 +89,9 @@ export function daysBetween(date1: Date, date2: Date): number {
  * @returns 添加天数后的新日期
  */
 export function addDays(date: Date, days: number): Date {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
+  const result = new Date(date)
+  result.setDate(result.getDate() + days)
+  return result
 }
 
 /**
@@ -97,9 +101,9 @@ export function addDays(date: Date, days: number): Date {
  * @returns 添加月数后的新日期
  */
 export function addMonths(date: Date, months: number): Date {
-  const result = new Date(date);
-  result.setMonth(result.getMonth() + months);
-  return result;
+  const result = new Date(date)
+  result.setMonth(result.getMonth() + months)
+  return result
 }
 
 /**
@@ -109,9 +113,9 @@ export function addMonths(date: Date, months: number): Date {
  * @returns 添加年数后的新日期
  */
 export function addYears(date: Date, years: number): Date {
-  const result = new Date(date);
-  result.setFullYear(result.getFullYear() + years);
-  return result;
+  const result = new Date(date)
+  result.setFullYear(result.getFullYear() + years)
+  return result
 }
 
 /**
@@ -121,11 +125,11 @@ export function addYears(date: Date, years: number): Date {
  * @returns 一周中的第几天（0-6）
  */
 export function getDayOfWeek(date: Date, startOnMonday = false): number {
-  let day = date.getDay();
+  let day = date.getDay()
   if (startOnMonday) {
-    day = day === 0 ? 6 : day - 1;
+    day = day === 0 ? 6 : day - 1
   }
-  return day;
+  return day
 }
 
 /**
@@ -136,8 +140,8 @@ export function getDayOfWeek(date: Date, startOnMonday = false): number {
  * @returns 日期是否在范围内
  */
 export function isDateInRange(date: Date, startDate: Date, endDate: Date): boolean {
-  const d = date.getTime();
-  return d >= startDate.getTime() && d <= endDate.getTime();
+  const d = date.getTime()
+  return d >= startDate.getTime() && d <= endDate.getTime()
 }
 
 /**
@@ -147,5 +151,5 @@ export function isDateInRange(date: Date, startDate: Date, endDate: Date): boole
  * @returns 天数
  */
 export function getDaysInMonth(year: number, month: number): number {
-  return new Date(year, month + 1, 0).getDate();
-} 
+  return new Date(year, month + 1, 0).getDate()
+}
