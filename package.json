@@ -1,17 +1,31 @@
 {
   "name": "sunpm-utils",
+  "type": "module",
   "version": "0.1.0",
   "description": "Sunpm 的个人工具函数库",
-  "type": "module",
+  "author": "sunpm",
+  "license": "ISC",
+  "homepage": "https://github.com/sunpm/sunpm-utils#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunpm/sunpm-utils.git"
+  },
+  "keywords": [
+    "utils",
+    "typescript",
+    "helpers",
+    "javascript",
+    "utility-functions"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "files": [
     "dist"
   ],
@@ -27,20 +41,9 @@
     "prepublishOnly": "pnpm build",
     "postinstall": "npx simple-git-hooks"
   },
-  "keywords": [
-    "utils",
-    "typescript",
-    "helpers",
-    "javascript",
-    "utility-functions"
-  ],
-  "author": "sunpm",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sunpm/sunpm-utils.git"
+  "dependencies": {
+    "dayjs": "^1.11.13"
   },
-  "homepage": "https://github.com/sunpm/sunpm-utils#readme",
-  "license": "ISC",
   "devDependencies": {
     "@antfu/eslint-config": "^4.11.0",
     "@types/node": "^22.13.15",
