@@ -1,7 +1,7 @@
 {
   "name": "sunpm-utils",
   "version": "0.1.0",
-  "description": "个人 TypeScript 工具函数库",
+  "description": "Sunpm 的个人工具函数库",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -25,7 +25,7 @@
     "lint:fix": "eslint . --fix",
     "format": "eslint . --fix",
     "prepublishOnly": "pnpm build",
-    "postinstall": "simple-git-hooks"
+    "postinstall": "npx simple-git-hooks"
   },
   "keywords": [
     "utils",
@@ -53,10 +53,6 @@
     "vitest": "^3.1.1"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged",
-    "pre-push": "pnpm test"
-  },
-  "lint-staged": {
-    "*.{js,ts,jsx,tsx,vue,md,json}": "eslint --fix"
+    "pre-commit": "pnpm lint-staged"
   }
 }
