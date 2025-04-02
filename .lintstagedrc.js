@@ -1,5 +1,5 @@
 export default {
-  '*.{js,ts,jsx,tsx,vue,md,json}': [
+  '*.{js,ts,jsx,tsx,vue,json}': [
     'eslint --fix',
   ],
 }
