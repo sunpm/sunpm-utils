@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { camelToKebab, capitalize, isEmptyString, kebabToCamel, truncate } from '../string'
+import { camelToKebab, capitalize, isEmptyString, kebabToCamel, truncate } from './index'
 
 describe('isEmptyString', () => {
   it('应该检测空字符串', () => {

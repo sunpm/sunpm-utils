@@ -1,6 +1,6 @@
 # sunpm-utils
 
-个人 TypeScript 工具函数库，提供常用的实用工具函数。
+个人 TypeScript 工具函数库，比较主观🥹。
 
 ## 安装
 
@@ -11,11 +11,11 @@ pnpm add sunpm-utils
 ## 使用
 
 ```typescript
-import { isString, formatDate } from 'sunpm-utils';
+import { formatDate, isString } from 'sunpm-utils'
 
 // 使用工具函数
-isString('hello'); // true
-formatDate(new Date(), 'YYYY-MM-DD'); // "2023-11-10"
+isString('hello') // true
+formatDate(new Date(), 'YYYY-MM-DD') // "2023-11-10"
 ```
 
 ## 功能模块
@@ -30,22 +30,6 @@ formatDate(new Date(), 'YYYY-MM-DD'); // "2023-11-10"
 - **DOM操作**：常用DOM操作封装
 - **URL处理**：URL参数提取、拼接等
 
-## 开发
-
-```bash
-# 安装依赖
-pnpm install
-
-# 开发模式
-pnpm dev
-
-# 运行测试
-pnpm test
-
-# 构建
-pnpm build
-```
-
 ## 许可证
 
-ISC 
+ISC

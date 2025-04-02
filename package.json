@@ -1,8 +1,8 @@
 {
   "name": "sunpm-utils",
   "type": "module",
-  "version": "0.1.0",
-  "description": "Sunpm 的个人工具函数库",
+  "version": "0.1.1",
+  "description": "Sunpm 的主观个人工具函数库",
   "author": "sunpm",
   "license": "ISC",
   "homepage": "https://github.com/sunpm/sunpm-utils#readme",

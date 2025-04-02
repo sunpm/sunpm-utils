@@ -7,7 +7,7 @@ import {
   getDayOfWeek,
   isDateInRange,
   parseDate,
-} from '../date'
+} from './index'
 
 describe('formatDate', () => {
   it('应该以指定格式格式化日期', () => {

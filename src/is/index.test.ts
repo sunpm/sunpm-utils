@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isEmpty } from '../index'
+import { isEmpty } from './index'
 
 describe('isEmpty', () => {
   it('应该识别 null 和 undefined 为空', () => {
