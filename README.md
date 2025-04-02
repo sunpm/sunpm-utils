@@ -28,13 +28,11 @@ pnpm add sunpm-utils
 
 ## 使用
 
-可以按需导入特定模块的函数：
+从主入口导入需要的函数：
 
 ```typescript
-// 导入特定模块的函数
-import { chunk, unique } from 'sunpm-utils/array'
-import { formatDate } from 'sunpm-utils/date'
-import { isString } from 'sunpm-utils/is'
+// 导入需要的函数
+import { chunk, formatDate, isString, unique } from 'sunpm-utils'
 
 // 使用数组工具函数
 const arr = [1, 2, 2, 3, 3, 4]
@@ -50,6 +48,8 @@ console.log(isString('hello')) // true
 
 ## 功能模块
 
+库中包含以下功能模块的工具函数：
+
 - **数组操作 (array)**：数组去重、分块、查找、过滤、转换等处理函数
 - **日期时间 (date)**：日期格式化、计算、比较等函数
 - **字符串处理 (string)**：字符串转换、格式化、验证等
@@ -61,12 +61,12 @@ console.log(isString('hello')) // true
 
 每个模块都有详细的文档说明和使用示例：
 
-- [数组工具函数](./src/array/index.md)
-- [日期工具函数](./src/date/index.md)
-- [字符串工具函数](./src/string/index.md)
-- [对象工具函数](./src/object/index.md)
-- [数字工具函数](./src/number/index.md)
-- [类型检查函数](./src/is/index.md)
+- [数组工具函数](./packages/array/index.md)
+- [日期工具函数](./packages/date/index.md)
+- [字符串工具函数](./packages/string/index.md)
+- [对象工具函数](./packages/object/index.md)
+- [数字工具函数](./packages/number/index.md)
+- [类型检查函数](./packages/is/index.md)
 
 ## 许可证
 

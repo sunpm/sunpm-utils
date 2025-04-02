@@ -17,14 +17,10 @@ export default antfu({
     '**/dist/**',
     '**/.git/**',
     '**/coverage/**',
-    '**/coverage/**',
   ],
 
   // 添加自定义规则
   rules: {
-    // 除了在 Markdown 文件中允许使用 console，其它地方仍然警告
     'no-console': ['warn', { allow: ['warn', 'error'] }],
-    // 如果您想要用分号，可以取消下面这行的注释
-    // 'style/semi': ['error', 'always'],
   },
 })

@@ -1,5 +1,5 @@
 # 源代码
-src/
+packages/
 
 # 测试
 **/__tests__/
