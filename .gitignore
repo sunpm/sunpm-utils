@@ -2,6 +2,7 @@
 dist/
 build/
 out/
+docs/
 
 # 依赖目录
 node_modules/

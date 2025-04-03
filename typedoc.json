@@ -1,0 +1,21 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./packages/index.ts"],
+  "entryPointStrategy": "resolve",
+  "out": "docs",
+  "name": "sunpm-utils",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "categorizeByGroup": true,
+  "navigationLinks": {
+    "GitHub": "https://github.com/sunpm/sunpm-utils",
+    "NPM": "https://www.npmjs.com/package/sunpm-utils"
+  },
+  "theme": "default",
+  "readme": "README.md",
+  "sort": ["static-first", "visibility", "alphabetical"],
+  "disableSources": true,
+  "cleanOutputDir": true
+}

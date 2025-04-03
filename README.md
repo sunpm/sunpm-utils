@@ -59,14 +59,27 @@ console.log(isString('hello')) // true
 
 ## 文档
 
-每个模块都有详细的文档说明和使用示例：
+本项目使用 TypeDoc 自动生成文档，可通过以下方式查看：
 
-- [数组工具函数](./packages/array/index.md)
-- [日期工具函数](./packages/date/index.md)
-- [字符串工具函数](./packages/string/index.md)
-- [对象工具函数](./packages/object/index.md)
-- [数字工具函数](./packages/number/index.md)
-- [类型检查函数](./packages/is/index.md)
+1. **在线文档**：访问 [https://sunpm.github.io/sunpm-utils/](https://sunpm.github.io/sunpm-utils/)（需要部署后访问）
+
+2. **本地查看**：
+
+   ```bash
+   # 生成文档
+   pnpm docs
+
+   # 在浏览器中打开
+   open docs/index.html
+   ```
+
+3. **部署文档**：
+   ```bash
+   # 生成并部署到 GitHub Pages
+   pnpm docs:deploy
+   ```
+
+详细的 API 文档中包含每个函数的说明、参数、返回值和使用示例。
 
 ## 许可证
 
