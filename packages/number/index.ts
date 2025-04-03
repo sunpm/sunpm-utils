@@ -110,3 +110,21 @@ export function percentage(value: number, total: number, precision = 2): number 
     return 0
   return round((value / total) * 100, precision)
 }
+
+/**
+ * 数值转万单位字符串
+ * @param num - 值
+ * @param fractionDigits 小数位
+ */
+export function formatNumberWithTenThousand(num: number, fractionDigits = 2): string {
+  if (!num) {
+    return '0'
+  }
+  if (num >= 10000) {
+    // 保留两位小数
+    return `${(num / 10000).toFixed(fractionDigits)}万`
+  }
+  else {
+    return num.toString()
+  }
+}
