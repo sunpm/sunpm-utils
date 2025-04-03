@@ -1,0 +1,27 @@
+# 源代码
+packages/
+
+# 测试
+**/__tests__/
+**/*.test.ts
+**/*.spec.ts
+
+# 配置文件
+tsconfig.json
+tsup.config.ts
+.gitignore
+.github/
+
+# 开发工具配置
+.vscode/
+.idea/
+.editorconfig
+
+# 杂项
+node_modules/
+.DS_Store
+.env*
+*.log
+temp/
+tmp/
+coverage/ 
