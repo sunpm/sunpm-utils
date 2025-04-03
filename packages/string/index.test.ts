@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { camelToKebab, capitalize, isEmptyString, kebabToCamel, truncate } from './index'
+import { camelToKebab, capitalize, ensureRpxUnit, isEmptyString, kebabToCamel, truncate } from './index'
 
 describe('isEmptyString', () => {
   it('应该检测空字符串', () => {
@@ -58,5 +58,15 @@ describe('kebabToCamel', () => {
     expect(kebabToCamel('hello-world')).toBe('helloWorld')
     expect(kebabToCamel('user-id')).toBe('userId')
     expect(kebabToCamel('api-version')).toBe('apiVersion')
+  })
+})
+
+describe('ensureRpxUnit', () => {
+  it('应该转为兼容 rpx 格式样式值', () => {
+    expect(ensureRpxUnit('4rpx')).toBe('4rpx')
+    expect(ensureRpxUnit('4')).toBe('4rpx')
+    expect(ensureRpxUnit('4px')).toBe('4px')
+    expect(ensureRpxUnit(4)).toBe('4rpx')
+    expect(ensureRpxUnit('auto')).toBe('auto')
   })
 })

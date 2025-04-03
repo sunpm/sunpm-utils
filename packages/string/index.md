@@ -234,7 +234,17 @@ console.log(isEmptyString('  \n\t')) // true
 console.log(isEmptyString('hello')) // false
 ```
 
-## 注意事项
+### ensureRpxUnit
 
-- 所有函数都是纯函数，不会修改原始字符串。
-- 对于处理 URL 和电子邮件的函数，验证逻辑可能不会覆盖所有边缘情况，应根据实际需求调整。
+转为兼容 rpx 格式样式值
+
+
+```js
+import { ensureRpxUnit } from 'sunpm-utils'
+
+console.log(ensureRpxUnit('4')) // 4rpx
+console.log(ensureRpxUnit('4rpx')) // 4rpx
+console.log(ensureRpxUnit('4px')) // 4px
+console.log(ensureRpxUnit(4)) // 4rpx
+console.log(ensureRpxUnit('auto')) // auto
+```

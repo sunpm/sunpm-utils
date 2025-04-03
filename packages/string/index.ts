@@ -2,6 +2,8 @@
  * 字符串操作相关的工具函数
  */
 
+import { isNaN } from '../is'
+
 /**
  * 将字符串首字母转为大写
  * @param str 输入字符串
@@ -121,4 +123,17 @@ export function isValidEmail(email: string): boolean {
  */
 export function isEmptyString(str: string): boolean {
   return str.trim().length === 0
+}
+
+/**
+ * 转为兼容 rpx 格式样式值
+ * @param val - 需要转化的值
+ * @returns 转化后 rpx 值
+ */
+export function ensureRpxUnit(val: string | number): string {
+  const str = Number(val)
+  if (isNaN(str)) {
+    return val as string
+  }
+  return `${val}rpx`
 }
