@@ -5,7 +5,7 @@
   "description": "Sunpm 的主观个人工具函数库",
   "author": "sunpm",
   "license": "MIT",
-  "homepage": "https://github.com/sunpm/sunpm-utils#readme",
+  "homepage": "https://github.com/sunpm/sunpm-utils",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sunpm/sunpm-utils.git"
@@ -42,7 +42,6 @@
     "postinstall": "npx simple-git-hooks",
     "docs": "typedoc",
     "docs:watch": "typedoc --watch",
-    "docs:deploy": "typedoc && gh-pages -d docs",
     "publish": "npm version patch && npm publish"
   },
   "dependencies": {
