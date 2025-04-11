@@ -40,8 +40,8 @@
     "format": "eslint . --fix",
     "prepublishOnly": "pnpm build",
     "postinstall": "npx simple-git-hooks",
-    "docs": "typedoc",
-    "docs:watch": "typedoc --watch",
+    "docs": "typedoc --skipOpenBrowser",
+    "docs:watch": "typedoc --watch --skipOpenBrowser",
     "publish": "npm version patch && npm publish"
   },
   "dependencies": {
