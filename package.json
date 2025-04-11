@@ -42,7 +42,8 @@
     "postinstall": "npx simple-git-hooks",
     "docs": "typedoc",
     "docs:watch": "typedoc --watch",
-    "docs:deploy": "typedoc && gh-pages -d docs"
+    "docs:deploy": "typedoc && gh-pages -d docs",
+    "publish": "npm version patch && npm publish"
   },
   "dependencies": {
     "dayjs": "^1.11.13"
