@@ -12,6 +12,7 @@ import {
   isNullOrUndefined,
   isNumber,
   isObject,
+  isPlainObject,
   isPrimitive,
   isPromise,
   isRegExp,
@@ -346,5 +347,24 @@ describe('isNaN', () => {
     expect(isNaN(undefined)).toBe(false)
     expect(isNaN({})).toBe(false)
     expect(isNaN('')).toBe(false)
+  })
+})
+
+describe('isPlainObject', () => {
+  it('应该识别普通对象', () => {
+    expect(isPlainObject({})).toBe(true)
+    expect(isPlainObject({ a: 1 })).toBe(true)
+    expect(isPlainObject(Object.create(null))).toBe(true)
+  })
+
+  it('应该拒绝非普通对象', () => {
+    expect(isPlainObject([])).toBe(false)
+    expect(isPlainObject(new Date())).toBe(false)
+    expect(isPlainObject(null)).toBe(false)
+    expect(isPlainObject(undefined)).toBe(false)
+    expect(isPlainObject(123)).toBe(false)
+    expect(isPlainObject('string')).toBe(false)
+    expect(isPlainObject(true)).toBe(false)
+    expect(isPlainObject(() => {})).toBe(false)
   })
 })

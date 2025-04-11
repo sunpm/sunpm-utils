@@ -331,3 +331,27 @@ export function isEmpty(val: unknown): boolean {
 export function isNaN(value: unknown): boolean {
   return Number.isNaN(value)
 }
+
+/**
+ * 检查值是否为普通对象（由 Object 构造函数创建或对象字面量）
+ *
+ * @param {unknown} value - 要检查的值
+ * @returns {boolean} 如果值是普通对象则返回 true，否则返回 false
+ *
+ * @example
+ * ```ts
+ * isPlainObject({}) // true
+ * isPlainObject({ a: 1 }) // true
+ * isPlainObject(new Date()) // false
+ * isPlainObject([]) // false
+ * isPlainObject(null) // false
+ * ```
+ */
+export function isPlainObject(value: unknown): value is Record<string, any> {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  const proto = Object.getPrototypeOf(value)
+  return proto === Object.prototype || proto === null
+}
