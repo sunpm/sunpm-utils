@@ -1,6 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["./packages/index.ts"],
+  "entryPoints": ["./packages/core/index.ts"],
   "entryPointStrategy": "resolve",
   "out": "docs",
   "name": "sunpm-utils",
