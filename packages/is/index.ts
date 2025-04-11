@@ -120,6 +120,106 @@ export function isDate(val: unknown): val is Date {
 }
 
 /**
+ * 检查值是否为正则表达式
+ * @param val 要检查的值
+ * @returns 如果是正则表达式则返回 true，否则返回 false
+ * @example
+ * ```ts
+ * isRegExp(/abc/) // true
+ * isRegExp(new RegExp('abc')) // true
+ * isRegExp('/abc/') // false（字符串不是正则表达式）
+ * isRegExp({}) // false
+ * ```
+ */
+export function isRegExp(val: unknown): val is RegExp {
+  return val instanceof RegExp
+}
+
+/**
+ * 检查值是否为 Promise
+ * @param val 要检查的值
+ * @returns 如果是 Promise 则返回 true，否则返回 false
+ * @example
+ * ```ts
+ * isPromise(Promise.resolve()) // true
+ * isPromise(new Promise(() => {})) // true
+ * isPromise({ then: () => {}, catch: () => {} }) // true（类 Promise 对象也会返回 true）
+ * isPromise({}) // false
+ * isPromise(null) // false
+ * ```
+ */
+export function isPromise<T = any>(val: unknown): val is Promise<T> {
+  return isObject(val) && isFunction((val as any).then) && isFunction((val as any).catch)
+}
+
+/**
+ * 检查值是否为 Map
+ * @param val 要检查的值
+ * @returns 如果是 Map 则返回 true，否则返回 false
+ * @example
+ * ```ts
+ * isMap(new Map()) // true
+ * isMap(new WeakMap()) // false
+ * isMap({}) // false
+ * ```
+ */
+export function isMap<K = any, V = any>(val: unknown): val is Map<K, V> {
+  return val instanceof Map
+}
+
+/**
+ * 检查值是否为 Set
+ * @param val 要检查的值
+ * @returns 如果是 Set 则返回 true，否则返回 false
+ * @example
+ * ```ts
+ * isSet(new Set()) // true
+ * isSet(new WeakSet()) // false
+ * isSet([]) // false
+ * ```
+ */
+export function isSet<T = any>(val: unknown): val is Set<T> {
+  return val instanceof Set
+}
+
+/**
+ * 检查值是否为 Symbol
+ * @param val 要检查的值
+ * @returns 如果是 Symbol 则返回 true，否则返回 false
+ * @example
+ * ```ts
+ * isSymbol(Symbol('foo')) // true
+ * isSymbol(Symbol.for('bar')) // true
+ * isSymbol('symbol') // false
+ * ```
+ */
+export function isSymbol(val: unknown): val is symbol {
+  return typeof val === 'symbol'
+}
+
+/**
+ * 检查值是否为原始类型（string、number、boolean、symbol、bigint、null、undefined）
+ * @param val 要检查的值
+ * @returns 如果是原始类型则返回 true，否则返回 false
+ * @example
+ * ```ts
+ * isPrimitive('hello') // true
+ * isPrimitive(123) // true
+ * isPrimitive(true) // true
+ * isPrimitive(Symbol()) // true
+ * isPrimitive(null) // true
+ * isPrimitive(undefined) // true
+ * isPrimitive(BigInt(123)) // true
+ * isPrimitive({}) // false
+ * isPrimitive([]) // false
+ * isPrimitive(() => {}) // false
+ * ```
+ */
+export function isPrimitive(val: unknown): boolean {
+  return val === null || (typeof val !== 'object' && typeof val !== 'function')
+}
+
+/**
  * 检查值是否为 undefined
  * @param val 要检查的值
  * @returns 如果是 undefined 则返回 true，否则返回 false
@@ -169,6 +269,24 @@ export function isNullOrUndefined(val: unknown): val is null | undefined {
 }
 
 /**
+ * 检查对象是否为空对象（没有自身可枚举属性）
+ * @param val 要检查的值
+ * @returns 如果是空对象则返回 true，否则返回 false；如果不是对象类型则返回 false
+ * @example
+ * ```ts
+ * isEmptyObject({}) // true
+ * isEmptyObject({ a: 1 }) // false
+ * isEmptyObject([]) // true（空数组也会返回 true）
+ * isEmptyObject(null) // false（不是对象）
+ * isEmptyObject(Object.create(null)) // true
+ * isEmptyObject(Object.create({ toString: () => '' })) // true（不包括继承的属性）
+ * ```
+ */
+export function isEmptyObject(val: unknown): boolean {
+  return isObject(val) && Object.keys(val).length === 0
+}
+
+/**
  * 检查值是否为空（null、undefined、空字符串、空数组或空对象）
  * @param val 要检查的值
  * @returns 如果是空值则返回 true，否则返回 false
@@ -193,7 +311,7 @@ export function isEmpty(val: unknown): boolean {
   if (isArray(val))
     return val.length === 0
   if (isObject(val))
-    return Object.keys(val).length === 0
+    return isEmptyObject(val)
   return false
 }
 
