@@ -1,7 +1,7 @@
 {
   "name": "sunpm-utils",
   "type": "module",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Sunpm 的主观个人工具函数库",
   "author": "sunpm",
   "license": "MIT",
