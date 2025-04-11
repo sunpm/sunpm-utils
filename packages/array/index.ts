@@ -208,3 +208,65 @@ export function groupBy<T, K extends string | number | symbol>(array: T[], keyFn
     return result
   }, {} as Record<K, T[]>)
 }
+
+/**
+ * 在选项数组前添加一个"全部"选项
+ *
+ * @param options - 原始选项数组
+ * @param config - 配置选项
+ * @param config.name - 选项标签的字段名 (默认为 'label')
+ * @param config.value - "全部"选项的值 (默认为 '')
+ * @param config.valueKey - 选项值的字段名 (默认为 'value')
+ * @returns 添加了"全部"选项的新数组
+ *
+ * @example
+ * ```ts
+ * // 基本用法
+ * const options = [
+ * { label: '选项1', value: 1 },
+ * { label: '选项2', value: 2 }
+ * ]
+ * const result = appendUniversalOption(options)
+ * // 结果: [
+ * //    { label: '全部', value: '' },
+ * //    { label: '选项1', value: 1 },
+ * //    { label: '选项2', value: 2 }
+ * // ]
+ *
+ * // 自定义字段名和值
+ * const customOptions = [
+ * { text: '选项1', id: 1 },
+ * { text: '选项2', id: 2 }
+ * ]
+ * const customResult = appendUniversalOption(customOptions, {
+ * name: 'text',
+ * valueKey: 'id',
+ * value: 0
+ * })
+ * // 结果: [
+ * //    { text: '全部', id: 0 },
+ * //    { text: '选项1', id: 1 },
+ * //    { text: '选项2', id: 2 }
+ * // ]
+ * ```
+ */
+export function appendUniversalOption<T extends Record<string, any>, V = any>(
+  options: T[],
+  {
+    name = 'label',
+    value = '' as V,
+    valueKey = 'value',
+  }: {
+    name?: string
+    value?: V
+    valueKey?: string
+  } = {},
+): T[] {
+  return [
+    {
+      [name]: '全部',
+      [valueKey]: value,
+    } as unknown as T,
+    ...options,
+  ]
+}

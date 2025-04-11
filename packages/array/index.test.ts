@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  appendUniversalOption,
   chunk,
   first,
   groupBy,
@@ -146,5 +147,48 @@ describe('groupBy', () => {
 
   it('应该处理空数组', () => {
     expect(groupBy([], item => item)).toEqual({})
+  })
+})
+
+describe('appendUniversalOption', () => {
+  it('应该在数组前添加默认的全部选项', () => {
+    const options = [
+      { label: '选项1', value: 1 },
+      { label: '选项2', value: 2 },
+    ]
+
+    const result = appendUniversalOption(options)
+
+    expect(result).toHaveLength(3)
+    expect(result[0]).toEqual({ label: '全部', value: '' })
+    expect(result[1]).toBe(options[0])
+    expect(result[2]).toBe(options[1])
+  })
+
+  it('应该使用自定义的字段名和值', () => {
+    const options = [
+      { text: '选项1', id: 1 },
+      { text: '选项2', id: 2 },
+    ]
+
+    const result = appendUniversalOption(options, {
+      name: 'text',
+      valueKey: 'id',
+      value: 0,
+    })
+
+    expect(result).toHaveLength(3)
+    expect(result[0]).toEqual({ text: '全部', id: 0 })
+    expect(result[1]).toBe(options[0])
+    expect(result[2]).toBe(options[1])
+  })
+
+  it('应该处理空数组', () => {
+    const options: Array<Record<string, any>> = []
+
+    const result = appendUniversalOption(options)
+
+    expect(result).toHaveLength(1)
+    expect(result[0]).toEqual({ label: '全部', value: '' })
   })
 })
