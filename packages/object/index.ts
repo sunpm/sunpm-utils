@@ -146,22 +146,6 @@ export function objectToQueryString(obj: Record<string, any>): string {
 }
 
 /**
- * 检查对象是否为空（没有自身的可枚举属性）
- * @param obj 要检查的对象
- * @returns 如果对象没有自身的可枚举属性则返回 true，否则返回 false
- * @example
- * ```ts
- * isEmptyObject({}) // true
- * isEmptyObject({ name: 'Tom' }) // false
- * isEmptyObject(Object.create(null)) // true
- * isEmptyObject(Object.create({ toString: () => '' })) // true（不包括继承的属性）
- * ```
- */
-export function isEmptyObject(obj: Record<string, any>): boolean {
-  return Object.keys(obj).length === 0
-}
-
-/**
  * 合并多个对象，后面的对象的属性会覆盖前面的
  * @param objects 要合并的对象数组
  * @returns 合并后的新对象
