@@ -34,13 +34,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
-          cache: "npm"
+          node-version: 18
+          cache: "pnpm"
 
       - name: TSDoc Action
         uses: erikyo/tsdoc-action@v1
         with:
-          source_dir: ./src/*
+          source_dir: ./packages/*
           output_dir: ./docs
           front_page: README.md
 
