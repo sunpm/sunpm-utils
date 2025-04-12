@@ -1,9 +1,11 @@
-# sunpm-utils
+# @pmun/utils
 
-[![npm version](https://img.shields.io/npm/v/sunpm-utils.svg)](https://www.npmjs.com/package/sunpm-utils)
-[![license](https://img.shields.io/npm/l/sunpm-utils.svg)](https://github.com/sunpm/sunpm-utils/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/@pmun/utils.svg)](https://www.npmjs.com/package/@pmun/utils)
+[![license](https://img.shields.io/npm/l/@pmun/utils.svg)](https://github.com/sunpm/@pmun/utils/blob/main/LICENSE)
 
 一个轻量级、模块化的 TypeScript 工具函数库，为日常开发提供便捷实用的工具集合。
+
+[访问文档](https://sunpm.github.io/sunpm-utils/) 查看详细的 API 文档中包含每个函数的说明、参数、返回值和使用示例。
 
 ## 特点
 
@@ -17,13 +19,13 @@
 
 ```bash
 # npm
-npm install sunpm-utils
+npm install @pmun/utils
 
 # yarn
-yarn add sunpm-utils
+yarn add @pmun/utils
 
 # pnpm
-pnpm add sunpm-utils
+pnpm add @pmun/utils
 ```
 
 ## 使用
@@ -32,7 +34,7 @@ pnpm add sunpm-utils
 
 ```typescript
 // 导入需要的函数
-import { chunk, formatDate, isString, unique } from 'sunpm-utils'
+import { chunk, formatDate, isString, unique } from '@pmun/utils'
 
 // 使用数组工具函数
 const arr = [1, 2, 2, 3, 3, 4]
@@ -57,29 +59,6 @@ console.log(isString('hello')) // true
 - **数字处理 (number)**：数字格式化、四舍五入、范围控制等
 - **类型检查 (is)**：各种数据类型的判断函数
 
-## 文档
-
-本项目使用 TypeDoc 自动生成文档，可通过以下方式查看：
-
-1. **在线文档**：访问 [https://sunpm.github.io/sunpm-utils/](https://sunpm.github.io/sunpm-utils/)（需要部署后访问）
-
-2. **本地查看**：
-
-   ```bash
-   # 生成文档
-   pnpm docs
-
-   # 在浏览器中打开
-   open docs/index.html
-   ```
-
-3. **部署文档**：
-   ```bash
-   # 生成并部署到 GitHub Pages
-   pnpm docs:deploy
-   ```
-
-详细的 API 文档中包含每个函数的说明、参数、返回值和使用示例。
 
 ## 许可证
 
