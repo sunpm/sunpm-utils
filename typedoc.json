@@ -3,7 +3,7 @@
   "entryPoints": ["./packages/core/index.ts"],
   "entryPointStrategy": "resolve",
   "out": "docs",
-  "name": "sunpm-utils",
+  "name": "@pmun/utils",
   "includeVersion": true,
   "excludePrivate": true,
   "excludeProtected": true,
@@ -11,7 +11,7 @@
   "categorizeByGroup": true,
   "navigationLinks": {
     "GitHub": "https://github.com/sunpm/sunpm-utils",
-    "NPM": "https://www.npmjs.com/package/sunpm-utils"
+    "NPM": "https://www.npmjs.com/package/@pmun/utils"
   },
   "theme": "default",
   "readme": "README.md",
