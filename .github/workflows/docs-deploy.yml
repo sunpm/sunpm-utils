@@ -3,7 +3,7 @@ name: 文档自动部署
 on:
   push:
     branches:
-      - main  # 或者是您的主分支名称，如 master
+      - main # 或者是您的主分支名称，如 master
 
 # 设置权限
 permissions:
@@ -16,7 +16,7 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 需要完整历史记录以便 gh-pages 正常工作
+          fetch-depth: 0 # 需要完整历史记录以便 gh-pages 正常工作
 
       - name: 安装 pnpm
         uses: pnpm/action-setup@v3
@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'pnpm'
+          cache: pnpm
 
       - name: 获取 pnpm 缓存目录
         shell: bash

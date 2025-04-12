@@ -17,6 +17,7 @@ export default antfu({
     '**/dist/**',
     '**/.git/**',
     '**/coverage/**',
+    '**/**.md',
   ],
 
   // 添加自定义规则

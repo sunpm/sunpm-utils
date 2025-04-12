@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   appendUniversalOption,
+  arrayToObject,
   chunk,
   first,
   groupBy,
@@ -190,5 +191,37 @@ describe('appendUniversalOption', () => {
 
     expect(result).toHaveLength(1)
     expect(result[0]).toEqual({ label: '全部', value: '' })
+  })
+})
+describe('arrayToObject', () => {
+  it('应该根据传入数组返回对象', () => {
+    const arr = [
+      { key: 'tom', name: '汤姆' },
+      { key: 'jack', name: '杰克' },
+    ]
+    expect(arrayToObject(arr, 'key')).toEqual(
+      {
+        tom: { key: 'tom', name: '汤姆' },
+        jack: { key: 'jack', name: '杰克' },
+      },
+    )
+  })
+  it('如果 key 的值是空，应该跳过这个 key', () => {
+    const arr = [
+      {
+        key: 'tom',
+        name: '汤姆',
+      },
+      {
+        key: '',
+        name: '杰克',
+      },
+    ]
+    expect(arrayToObject(arr, 'key')).toEqual({
+      tom: {
+        key: 'tom',
+        name: '汤姆',
+      },
+    })
   })
 })

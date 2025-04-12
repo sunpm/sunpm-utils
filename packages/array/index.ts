@@ -270,3 +270,36 @@ export function appendUniversalOption<T extends Record<string, any>, V = any>(
     ...options,
   ]
 }
+
+type KeysMatching<T, V> = {
+  [K in keyof T]-?: T[K] extends V ? K : never
+}[keyof T]
+/**
+ * 数组转为对象
+ * @param arr - 原始数组
+ * @param key - 数组对象键
+ * @returns 对应键的对象
+ *
+ * @example
+ * ```ts
+ * const arr = [{ key: 'tom', name: '汤姆' }, { key: 'jack', name: '杰克' }]
+ * arrayToObject(arr) // { tom: { key: 'tom', name: '汤姆' }, jack: { key: 'jack', name: '杰克' } }
+ *
+ * // key 值为空
+ * const arr = [{ key: 'tom', name: '汤姆' }, { key: '', name: '杰克' }]
+ * arrayToObject(arr) // { tom: { key: 'tom', name: '汤姆' } }
+ * ```
+ */
+export function arrayToObject<T>(
+  arr: T[],
+  key: KeysMatching<T, string | number>,
+): Record<string, T> {
+  const result: Record<string, T> = {}
+  for (const item of arr) {
+    const K = item[key] // K 在这里被 TS 推断为 string | number
+    if (!K)
+      continue
+    result[K as string] = item
+  }
+  return result
+}
