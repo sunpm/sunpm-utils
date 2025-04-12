@@ -59,7 +59,6 @@ console.log(isString('hello')) // true
 - **数字处理 (number)**：数字格式化、四舍五入、范围控制等
 - **类型检查 (is)**：各种数据类型的判断函数
 
-
 ## 许可证
 
 [MIT](LICENSE)
