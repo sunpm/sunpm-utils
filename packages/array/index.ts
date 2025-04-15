@@ -3,6 +3,8 @@
  * @description 提供各种数组处理函数，包括数组转换、查询、过滤等实用功能。这些函数都不会修改原始数组，而是返回新的数组或值。
  */
 
+import { hasOwnProp } from '../object'
+
 /**
  * 从数组中移除指定的项
  * @param array 原始数组
@@ -269,6 +271,83 @@ export function appendUniversalOption<T extends Record<string, any>, V = any>(
     } as unknown as T,
     ...options,
   ]
+}
+
+/**
+ * 递归重命名树形结构节点的属性。
+ *
+ * @param tree - 需要处理的树形数据（根节点数组）
+ * @param renameMap - 属性重命名映射对象，格式为 `{ oldKey: newKey }`
+ * @param childKey - 子节点的键名（默认为 `'children'`）
+ * @param deleteOldKeys - 是否删除旧属性（默认 `true`）
+ * @returns 处理后的树形结构数组
+ *
+ * @example
+ * const tree = [
+ *   { id: 1, name: 'Node 1', children: [...] }
+ * ];
+ * const renamedTree = renameTreeNodes(tree, { name: 'label' });
+ * // 输出：节点中的 `name` 被替换为 `label`，且旧属性被删除
+ */
+export function renameTreeNodes(
+  tree: any[],
+  renameMap: Record<string, string>,
+  childKey: string = 'children',
+  deleteOldKeys: boolean = true,
+): any[] {
+  return tree.map((node) => {
+    const newNode = { ...node }
+
+    // 重命名属性
+    Object.entries(renameMap).forEach(([oldKey, newKey]) => {
+      if (hasOwnProp(newNode, oldKey)) {
+        newNode[newKey] = newNode[oldKey]
+        if (deleteOldKeys) {
+          delete newNode[oldKey]
+        }
+      }
+    })
+
+    // 递归处理子节点
+    if (Array.isArray(newNode[childKey])) {
+      newNode[childKey] = renameTreeNodes(
+        newNode[childKey],
+        renameMap,
+        childKey,
+        deleteOldKeys,
+      )
+    }
+
+    return newNode
+  })
+}
+
+/**
+ * 递归转换树形结构的节点，支持重命名、新增、过滤属性。
+ *
+ * @param tree - 需要处理的树形数据（根节点数组）
+ * @param transformer - 转换函数，接收当前节点和子节点，返回处理后的节点
+ * @param childKey - 子节点的键名（默认为 `'children'`）
+ * @returns 转换后的树形结构数组
+ *
+ * @example
+ * // 重命名 `name` 为 `label`，并添加 `isLeaf` 属性
+ * const transformedTree = transformTree(tree, (node, children) => ({
+ *   id: node.id,
+ *   label: node.name,
+ *   isLeaf: children.length === 0,
+ *   children,
+ * }));
+ */
+export function transformTree(
+  tree: any[],
+  transformer: (node: any, children: any[]) => any,
+  childKey: string = 'children',
+): any[] {
+  return tree.map((node) => {
+    const children = node[childKey] ? transformTree(node[childKey], transformer, childKey) : []
+    return transformer(node, children)
+  })
 }
 
 type KeysMatching<T, V> = {

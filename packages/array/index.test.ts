@@ -8,8 +8,10 @@ import {
   isEqual,
   last,
   remove,
+  renameTreeNodes,
   sample,
   shuffle,
+  transformTree,
   unique,
 } from './index'
 
@@ -191,6 +193,149 @@ describe('appendUniversalOption', () => {
 
     expect(result).toHaveLength(1)
     expect(result[0]).toEqual({ label: '全部', value: '' })
+  })
+})
+
+describe('renameTreeNodes', () => {
+  const testTree = [
+    {
+      id: 1,
+      name: 'Root',
+      children: [
+        { id: 2, name: 'Child 1', children: [] },
+        {
+          id: 3,
+          name: 'Child 2',
+          children: [{ id: 4, name: 'Grandchild' }],
+        },
+      ],
+    },
+  ]
+
+  it('基本重命名：将 "name" 改为 "label"', () => {
+    const renameMap = { name: 'label' }
+    const result = renameTreeNodes(testTree, renameMap)
+
+    expect(result[0].label).toBe('Root')
+    expect(result[0].children[0].label).toBe('Child 1')
+    expect(result[0].children[1].children[0].label).toBe('Grandchild')
+    expect('name' in result[0]).toBeFalsy() // 旧属性被删除
+  })
+
+  it('多属性重命名：同时修改 "id" 和 "name"', () => {
+    const renameMap = { id: 'nodeId', name: 'title' }
+    const result = renameTreeNodes(testTree, renameMap)
+
+    expect(result[0].nodeId).toBe(1)
+    expect(result[0].title).toBe('Root')
+    expect(result[0].children[0].nodeId).toBe(2)
+    expect('id' in result[0]).toBeFalsy() // 旧属性被删除
+  })
+
+  it('保留旧属性：不删除旧属性', () => {
+    const renameMap = { name: 'label' }
+    const result = renameTreeNodes(testTree, renameMap, 'children', false)
+
+    expect(result[0].label).toBe('Root')
+    expect(result[0].name).toBe('Root') // 旧属性仍然存在
+  })
+
+  it('处理嵌套结构：三层节点', () => {
+    const renameMap = { name: 'label' }
+    const result = renameTreeNodes(testTree, renameMap)
+
+    expect(result[0].children[1].children[0].label).toBe('Grandchild')
+  })
+
+  it('无效的重命名映射：忽略不存在的属性', () => {
+    const renameMap = { nonExistentKey: 'newKey' }
+    const result = renameTreeNodes(testTree, renameMap)
+
+    expect(result[0].nonExistentKey).toBeUndefined()
+  })
+
+  it('自定义子节点键名：使用 "subNodes" 代替 "children"', () => {
+    const customTree = [
+      {
+        id: 1,
+        subNodes: [{ id: 2, name: 'Child' }],
+      },
+    ]
+    const result = renameTreeNodes(customTree, { name: 'label' }, 'subNodes')
+
+    expect(result[0].subNodes[0].label).toBe('Child')
+  })
+})
+
+describe('transformTree', () => {
+  const testTree = [
+    {
+      id: 1,
+      name: 'Root',
+      children: [
+        { id: 2, name: 'Child 1', children: [] },
+        {
+          id: 3,
+          name: 'Child 2',
+          children: [{ id: 4, name: 'Grandchild' }],
+        },
+      ],
+    },
+  ]
+
+  it('重命名属性并新增 `isLeaf` 属性', () => {
+    const transformed = transformTree(testTree, (node, children) => ({
+      label: node.name,
+      isLeaf: children.length === 0,
+      children,
+    }))
+
+    expect(transformed[0].label).toBe('Root')
+    expect(transformed[0].children[0].isLeaf).toBe(true)
+    expect(transformed[0].children[1].children[0].isLeaf).toBe(true)
+  })
+
+  it('仅保留 `name` 和 `id` 属性', () => {
+    const filtered = transformTree(testTree, node => ({
+      id: node.id,
+      name: node.name,
+    }))
+
+    expect(filtered[0].name).toBe('Root')
+    expect('children' in filtered[0]).toBeFalsy()
+  })
+
+  it('排除 `id` 属性', () => {
+    const excluded = transformTree(testTree, node => ({
+      name: node.name,
+    }))
+
+    expect(excluded[0].name).toBe('Root')
+    expect('id' in excluded[0]).toBeFalsy()
+  })
+
+  it('处理嵌套结构：三层节点', () => {
+    const transformed = transformTree(testTree, (node, children) => ({
+      label: node.name,
+      children,
+    }))
+
+    expect(transformed[0].children[1].children[0].label).toBe('Grandchild')
+  })
+
+  it('自定义子节点键名：使用 `subNodes`', () => {
+    const customTree = [
+      {
+        id: 1,
+        subNodes: [{ id: 2, name: 'Child' }],
+      },
+    ]
+    const transformed = transformTree(customTree, (node, children) => ({
+      name: node.name,
+      subNodes: children,
+    }), 'subNodes')
+
+    expect(transformed[0].subNodes[0].name).toBe('Child')
   })
 })
 describe('arrayToObject', () => {
