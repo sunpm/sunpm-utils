@@ -1,5 +1,5 @@
 {
-  "$schema": "https://typedoc.org/schema.json",
+  "$schema": "https://typedoc-plugin-markdown.org/schema.json",
   "entryPoints": ["./packages/core/index.ts"],
   "entryPointStrategy": "resolve",
   "out": "docs",
@@ -17,5 +17,15 @@
   "readme": "README.md",
   "sort": ["static-first", "visibility", "alphabetical"],
   "disableSources": true,
-  "cleanOutputDir": true
+  "cleanOutputDir": true,
+  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
+  "indexFormat": "table",
+  "useCodeBlocks": true,
+  "docsRoot": "./docs",
+  "sidebar": {
+    "autoConfiguration": true,
+    "format": "vitepress",
+    "pretty": false,
+    "collapsed": false
+  }
 }

@@ -41,6 +41,9 @@
     "prepublishOnly": "pnpm build",
     "docs:deploy": "typedoc && gh-pages -d docs",
     "docs:watch": "typedoc --watch",
+    "predocs": "typedoc",
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
     "release": "npm version patch && npm publish --access public && git push && git push --tags"
   },
   "dependencies": {
@@ -55,9 +58,11 @@
     "lint-staged": "^15.5.0",
     "simple-git-hooks": "^2.12.1",
     "tsup": "^8.4.0",
-    "typedoc": "^0.25.12",
+    "typedoc": "^0.28.3",
     "typedoc-plugin-markdown": "^4.6.1",
+    "typedoc-vitepress-theme": "^1.1.2",
     "typescript": "^5.8.2",
+    "vitepress": "^1.6.3",
     "vitest": "^3.1.1"
   },
   "simple-git-hooks": {
