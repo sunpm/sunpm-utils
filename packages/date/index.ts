@@ -27,6 +27,7 @@ dayjs.extend(isBetween)
  * 创建 dayjs 对象
  * @param date 日期参数，可以是日期对象、时间戳或日期字符串
  * @returns dayjs 对象
+ * @group Date
  * @example
  * ```ts
  * createDate() // 当前日期时间
@@ -43,6 +44,7 @@ export function createDate(date?: string | number | Date | Dayjs): Dayjs {
  * @param date 日期对象、时间戳或日期字符串
  * @param format 格式字符串，支持的占位符请参考 dayjs 文档
  * @returns 格式化后的日期字符串
+ * @group Date
  * @example
  * ```ts
  * formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss') // "2023-05-16 14:30:45"
@@ -57,6 +59,7 @@ export function formatDate(date: Date | string | number, format = 'YYYY-MM-DD'):
 /**
  * 获取当前日期时间的时间戳
  * @returns 当前时间戳（毫秒）
+ * @group Date
  * @example
  * ```ts
  * now() // 例如: 1684123456789
@@ -91,6 +94,7 @@ export function parseDate(dateStr: string): Date {
  * @param date2 第二个日期
  * @param unit 计量单位，默认为 'day'，可以是 'year', 'month', 'week', 'day', 'hour', 'minute', 'second', 'millisecond'
  * @returns 两个日期之间的差值，正数表示 date1 晚于 date2，负数表示 date1 早于 date2
+ * @group Date
  * @example
  * ```ts
  * diff('2023-05-15', '2023-05-10') // 5（相差5天）
@@ -108,6 +112,7 @@ export function diff(date1: Date | string | number, date2: Date | string | numbe
  * @param amount 要添加的数量，可以为负数
  * @param unit 时间单位，默认为 'day'，可以是 'year', 'month', 'week', 'day', 'hour', 'minute', 'second', 'millisecond'
  * @returns 添加后的新日期对象
+ * @group Date
  * @example
  * ```ts
  * add(new Date('2023-05-15'), 2, 'day') // Date 对象: Wed May 17 2023
@@ -124,6 +129,7 @@ export function add(date: Date | string | number, amount: number, unit: Manipula
  * @param date 原始日期
  * @param days 要添加的天数（可以为负数）
  * @returns 添加天数后的新日期对象
+ * @group Date
  * @example
  * ```ts
  * addDays(new Date('2023-05-15'), 5) // Date 对象: Sat May 20 2023
@@ -139,6 +145,7 @@ export function addDays(date: Date | string | number, days: number): Date {
  * @param date 原始日期
  * @param months 要添加的月数（可以为负数）
  * @returns 添加月数后的新日期对象
+ * @group Date
  * @example
  * ```ts
  * addMonths(new Date('2023-05-15'), 2) // Date 对象: Sat Jul 15 2023
@@ -155,6 +162,7 @@ export function addMonths(date: Date | string | number, months: number): Date {
  * @param date 原始日期
  * @param years 要添加的年数（可以为负数）
  * @returns 添加年数后的新日期对象
+ * @group Date
  * @example
  * ```ts
  * addYears(new Date('2023-05-15'), 1) // Date 对象: Wed May 15 2024
@@ -171,6 +179,7 @@ export function addYears(date: Date | string | number, years: number): Date {
  * @param date 日期
  * @param startOnMonday 是否从周一开始计算（默认为 false，即从周日开始）
  * @returns 一周中的第几天（0-6），周日为 0，周六为 6；如果 startOnMonday 为 true，则周一为 0，周日为 6
+ * @group Date
  * @example
  * ```ts
  * getDayOfWeek(new Date('2023-05-15')) // 1（周一，从周日开始算是第1天）
@@ -194,6 +203,7 @@ export function getDayOfWeek(date: Date | string | number, startOnMonday = false
  * @param startDate 范围起始日期
  * @param endDate 范围结束日期
  * @returns 如果日期在指定范围内（不包括边界）则返回 true，否则返回 false
+ * @group Date
  * @example
  * ```ts
  * isDateInRange('2023-05-15', '2023-05-10', '2023-05-20') // true
@@ -211,6 +221,7 @@ export function isDateInRange(date: Date | string | number, startDate: Date | st
  * @param year 年份
  * @param month 月份（0-11），0 表示一月，11 表示十二月
  * @returns 该月的天数
+ * @group Date
  * @example
  * ```ts
  * getDaysInMonth(2023, 1) // 28（2023年2月有28天）
@@ -227,6 +238,7 @@ export function getDaysInMonth(year: number, month: number): number {
  * @param date 日期
  * @param baseDate 基准日期，默认为当前时间
  * @returns 相对时间描述，如"几分钟前"、"几天后"等
+ * @group Date
  * @example
  * ```ts
  * fromNow(new Date(Date.now() - 5 * 60 * 1000)) // "5分钟前"
@@ -245,6 +257,7 @@ export function fromNow(date: Date | string | number, baseDate?: Date | string |
  * @param date 日期
  * @param unit 单位，可以是 'year', 'month', 'week', 'day', 'hour', 'minute', 'second'
  * @returns 单位开始时间的日期对象
+ * @group Date
  * @example
  * ```ts
  * startOf(new Date('2023-05-15 15:30:45'), 'day') // Date 对象: Mon May 15 2023 00:00:00
@@ -261,6 +274,7 @@ export function startOf(date: Date | string | number, unit: OpUnitType): Date {
  * @param date 日期
  * @param unit 单位，可以是 'year', 'month', 'week', 'day', 'hour', 'minute', 'second'
  * @returns 单位结束时间的日期对象
+ * @group Date
  * @example
  * ```ts
  * endOf(new Date('2023-05-15 15:30:45'), 'day') // Date 对象: Mon May 15 2023 23:59:59.999
@@ -276,6 +290,7 @@ export function endOf(date: Date | string | number, unit: OpUnitType): Date {
  * 格式化日期为人类友好的格式
  * @param date 日期
  * @returns 人类友好的日期描述，如"今天 HH:mm"、"昨天 HH:mm"、"明天 HH:mm"或"YYYY-MM-DD HH:mm"
+ * @group Date
  * @example
  * ```ts
  * formatHumanReadable(new Date()) // "今天 15:30"

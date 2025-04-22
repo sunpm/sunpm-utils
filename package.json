@@ -42,7 +42,7 @@
     "docs:deploy": "typedoc && gh-pages -d docs",
     "docs:watch": "typedoc --watch",
     "predocs": "typedoc",
-    "docs:dev": "vitepress dev",
+    "docs:dev": "typedoc && vitepress dev",
     "docs:vitepress": "vitepress build",
     "docs:build": "typedoc && pnpm docs:vitepress",
     "release": "npm version patch && npm publish --access public && git push && git push --tags"
