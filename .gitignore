@@ -36,6 +36,7 @@ temp/
 
 # 缓存目录
 .cache/
+cache/
 .npm/
 .eslintcache
 .stylelintcache
@@ -44,4 +45,4 @@ temp/
 # 包管理器锁定文件（根据需要保留）
 # package-lock.json
 # yarn.lock
-# pnpm-lock.yaml 
+# pnpm-lock.yaml
