@@ -6,6 +6,7 @@ export default defineConfig({
   title: '@pmun/utils',
   description: '一个轻量级、模块化的 TypeScript 工具函数库，为日常开发提供便捷实用的工具集合。',
   lang: 'zh-CN',
+  base: '/sunpm-utils',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [{ text: 'Home', link: '/' }, { text: 'Globals', link: '/globals' }],
@@ -21,7 +22,6 @@ export default defineConfig({
       { icon: 'github', link: 'https://github.com/sunpm/sunpm-utils' },
       { icon: 'npm', link: 'https://www.npmjs.com/package/@pmun/utils' },
     ],
-    base: '/sunpm-utils',
     search: {
       provider: 'local',
       options: {
