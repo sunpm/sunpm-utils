@@ -21,6 +21,7 @@ export default defineConfig({
       { icon: 'github', link: 'https://github.com/sunpm/sunpm-utils' },
       { icon: 'npm', link: 'https://www.npmjs.com/package/@pmun/utils' },
     ],
+    base: '/sunpm-utils',
     search: {
       provider: 'local',
       options: {
