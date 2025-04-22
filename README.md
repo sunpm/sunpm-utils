@@ -5,7 +5,7 @@
 
 一个轻量级、模块化的 TypeScript 工具函数库，为日常开发提供便捷实用的工具集合。
 
-[访问文档](https://sunpm.github.io/sunpm-utils/) 查看详细的 API 文档中包含每个函数的说明、参数、返回值和使用示例。
+[访问全部 API](https://sunpm.github.io/sunpm-utils/globals/) 查看全部的 API，包含每个函数的说明、参数、返回值和使用示例。
 
 ## 特点
 
