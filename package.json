@@ -43,7 +43,8 @@
     "docs:watch": "typedoc --watch",
     "predocs": "typedoc",
     "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build",
+    "docs:vitepress": "vitepress build",
+    "docs:build": "pnpm build && typedoc && pnpm docs:vitepress",
     "release": "npm version patch && npm publish --access public && git push && git push --tags"
   },
   "dependencies": {
