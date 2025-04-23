@@ -74,6 +74,7 @@ export function now(): number {
  * @param dateStr 日期字符串
  * @returns 日期对象
  * @throws 如果日期格式无效，抛出 TypeError
+ * @group Date
  * @example
  * ```ts
  * parseDate('2023-05-15') // Date 对象: Mon May 15 2023 00:00:00

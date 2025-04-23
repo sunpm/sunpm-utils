@@ -9,6 +9,7 @@
   "excludeProtected": true,
   "excludeExternals": true,
   "categorizeByGroup": true,
+  "categoryOrder": ["创建", "格式化", "计算", "查询"],
   "navigationLinks": {
     "GitHub": "https://github.com/sunpm/sunpm-utils",
     "NPM": "https://www.npmjs.com/package/@pmun/utils"

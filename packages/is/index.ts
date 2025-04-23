@@ -7,6 +7,7 @@
  * 检查值是否为字符串类型
  * @param val 要检查的值
  * @returns 如果是字符串则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isString('hello') // true
@@ -22,6 +23,7 @@ export function isString(val: unknown): val is string {
  * 检查值是否为数字类型
  * @param val 要检查的值
  * @returns 如果是数字则返回 true，否则返回 false（NaN 会返回 false）
+ * @group Is
  * @example
  * ```ts
  * isNumber(123) // true
@@ -39,6 +41,7 @@ export function isNumber(val: unknown): val is number {
  * 检查值是否为布尔类型
  * @param val 要检查的值
  * @returns 如果是布尔值则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isBoolean(true) // true
@@ -56,6 +59,7 @@ export function isBoolean(val: unknown): val is boolean {
  * 检查值是否为函数类型
  * @param val 要检查的值
  * @returns 如果是函数则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isFunction(() => {}) // true
@@ -73,6 +77,7 @@ export function isFunction(val: unknown): val is ((...args: any[]) => any) {
  * 检查值是否为对象类型（不包括 null）
  * @param val 要检查的值
  * @returns 如果是对象则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isObject({}) // true
@@ -91,6 +96,7 @@ export function isObject(val: unknown): val is Record<any, any> {
  * 检查值是否为数组类型
  * @param val 要检查的值
  * @returns 如果是数组则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isArray([]) // true
@@ -108,6 +114,7 @@ export function isArray(val: unknown): val is any[] {
  * 检查值是否为日期类型
  * @param val 要检查的值
  * @returns 如果是日期对象则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isDate(new Date()) // true
@@ -123,6 +130,7 @@ export function isDate(val: unknown): val is Date {
  * 检查值是否为正则表达式
  * @param val 要检查的值
  * @returns 如果是正则表达式则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isRegExp(/abc/) // true
@@ -139,6 +147,7 @@ export function isRegExp(val: unknown): val is RegExp {
  * 检查值是否为 Promise
  * @param val 要检查的值
  * @returns 如果是 Promise 则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isPromise(Promise.resolve()) // true
@@ -156,6 +165,7 @@ export function isPromise<T = any>(val: unknown): val is Promise<T> {
  * 检查值是否为 Map
  * @param val 要检查的值
  * @returns 如果是 Map 则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isMap(new Map()) // true
@@ -171,6 +181,7 @@ export function isMap<K = any, V = any>(val: unknown): val is Map<K, V> {
  * 检查值是否为 Set
  * @param val 要检查的值
  * @returns 如果是 Set 则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isSet(new Set()) // true
@@ -186,6 +197,7 @@ export function isSet<T = any>(val: unknown): val is Set<T> {
  * 检查值是否为 Symbol
  * @param val 要检查的值
  * @returns 如果是 Symbol 则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isSymbol(Symbol('foo')) // true
@@ -201,6 +213,7 @@ export function isSymbol(val: unknown): val is symbol {
  * 检查值是否为原始类型（string、number、boolean、symbol、bigint、null、undefined）
  * @param val 要检查的值
  * @returns 如果是原始类型则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isPrimitive('hello') // true
@@ -223,6 +236,7 @@ export function isPrimitive(val: unknown): boolean {
  * 检查值是否为 undefined
  * @param val 要检查的值
  * @returns 如果是 undefined 则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isUndefined(undefined) // true
@@ -239,6 +253,7 @@ export function isUndefined(val: unknown): val is undefined {
  * 检查值是否为 null
  * @param val 要检查的值
  * @returns 如果是 null 则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isNull(null) // true
@@ -255,6 +270,7 @@ export function isNull(val: unknown): val is null {
  * 检查值是否为 null 或 undefined
  * @param val 要检查的值
  * @returns 如果是 null 或 undefined 则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isNullOrUndefined(null) // true
@@ -272,6 +288,7 @@ export function isNullOrUndefined(val: unknown): val is null | undefined {
  * 检查对象是否为空对象（没有自身可枚举属性）
  * @param val 要检查的值
  * @returns 如果是空对象则返回 true，否则返回 false；如果不是对象类型则返回 false
+ * @group Is
  * @example
  * ```ts
  * isEmptyObject({}) // true
@@ -290,6 +307,7 @@ export function isEmptyObject(val: unknown): boolean {
  * 检查值是否为空（null、undefined、空字符串、空数组或空对象）
  * @param val 要检查的值
  * @returns 如果是空值则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isEmpty(null) // true
@@ -319,6 +337,7 @@ export function isEmpty(val: unknown): boolean {
  * 检查值是否为 NaN
  * @param value 要检查的值
  * @returns 如果值是 NaN 则返回 true，否则返回 false
+ * @group Is
  * @example
  * ```ts
  * isNaN(NaN) // true
@@ -338,6 +357,7 @@ export function isNaN(value: unknown): boolean {
  * @param {unknown} value - 要检查的值
  * @returns {boolean} 如果值是普通对象则返回 true，否则返回 false
  *
+ * @group Is
  * @example
  * ```ts
  * isPlainObject({}) // true

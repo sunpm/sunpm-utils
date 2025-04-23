@@ -9,6 +9,7 @@ import { isNaN } from '../is'
  * 将字符串首字母转为大写
  * @param str 输入字符串
  * @returns 首字母大写后的字符串
+ * @group String
  * @example
  * ```ts
  * capitalize('hello') // 'Hello'
@@ -26,6 +27,7 @@ export function capitalize(str: string): string {
  * 将驼峰命名转换为短横线命名（kebab-case）
  * @param str 驼峰命名的字符串
  * @returns 短横线命名的字符串
+ * @group String
  * @example
  * ```ts
  * camelToKebab('helloWorld') // 'hello-world'
@@ -46,6 +48,7 @@ export function camelToKebab(str: string): string {
  * 将短横线命名（kebab-case）转换为驼峰命名（camelCase）
  * @param str 短横线命名的字符串
  * @returns 驼峰命名的字符串
+ * @group String
  * @example
  * ```ts
  * kebabToCamel('hello-world') // 'helloWorld'
@@ -64,6 +67,7 @@ export function kebabToCamel(str: string): string {
  * @param length 截取的最大长度，默认为 50
  * @param ellipsis 省略号字符，默认为'...'
  * @returns 截取后的字符串，如果原字符串长度小于等于截取长度，则返回原字符串
+ * @group String
  * @example
  * ```ts
  * truncate('这是一个很长的字符串', 5) // '这是...'
@@ -85,6 +89,7 @@ export function truncate(str: string, length: number = 50, ellipsis: string = '.
  * @param length 字符串长度
  * @param chars 可选的字符集，默认包含大小写字母和数字
  * @returns 生成的随机字符串
+ * @group String
  * @example
  * ```ts
  * randomString(5) // 例如: 'aB9cD'
@@ -107,6 +112,7 @@ export function randomString(length: number, chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ
  * 将字符串中的 HTML 特殊字符转义，防止 XSS 攻击
  * @param html 包含 HTML 的字符串
  * @returns 转义后的安全字符串
+ * @group String
  * @example
  * ```ts
  * escapeHtml('<div>Hello & World</div>') // '&lt;div&gt;Hello &amp; World&lt;/div&gt;'
@@ -132,6 +138,7 @@ export function escapeHtml(html: string): string {
  * 检查字符串是否为有效的 URL
  * @param url 要检查的 URL 字符串
  * @returns 如果是有效的 URL 则返回 true，否则返回 false
+ * @group String
  * @example
  * ```ts
  * isValidUrl('https://example.com') // true
@@ -153,9 +160,12 @@ export function isValidUrl(url: string): boolean {
  * 检查字符串是否为有效的电子邮件地址
  * @param email 要检查的电子邮件地址
  * @returns 如果是有效的电子邮件地址则返回 true，否则返回 false
+ * @group String
  * @example
  * ```ts
+ * @group String
  * isValidEmail('user@example.com') // true
+ * @group String
  * isValidEmail('user.name+tag@example.co.uk') // true
  * isValidEmail('invalid@email') // false，缺少顶级域名
  * isValidEmail('not an email') // false
@@ -170,6 +180,7 @@ export function isValidEmail(email: string): boolean {
  * 检查字符串是否为空或只包含空白字符
  * @param str 要检查的字符串
  * @returns 如果字符串为空或只包含空白字符，则返回 true
+ * @group String
  * @example
  * ```ts
  * isEmptyString('') // true
@@ -186,6 +197,7 @@ export function isEmptyString(str: string): boolean {
  * 确保值具有 rpx 单位，主要用于小程序/uni-app 样式处理
  * @param val 需要转化的值，可以是数字或字符串
  * @returns 转化后带有 rpx 单位的字符串，如果输入不是数字则原样返回
+ * @group String
  * @example
  * ```ts
  * ensureRpxUnit(100) // '100rpx'
@@ -209,6 +221,7 @@ export function ensureRpxUnit(val: string | number): string {
  * @param {string} key - 需要处理的字段名
  * @returns {Array<Record<string, any>>} 处理后的表格数据数组
  *
+ * @group String
  * @example
  * ```ts
  * // 基本用法

@@ -11,7 +11,7 @@ import { isPlainObject } from '../is'
  * @param {object} obj - 需要检查的对象
  * @param {string | symbol} prop - 需要检查的属性键
  * @returns {boolean} 如果对象具有该自有属性，则返回 true，否则返回 false
- *
+ * @group Object
  * @example
  * ```ts
  * const obj = { name: 'Tom', age: 25 }
@@ -27,6 +27,7 @@ export function hasOwnProp(obj: object, prop: string | symbol): boolean {
  * 深拷贝对象，支持基本类型、数组、对象、日期和正则表达式
  * @param obj 要拷贝的对象
  * @returns 深拷贝后的对象，与原对象完全独立
+ * @group Object
  * @example
  * ```ts
  * const original = { a: 1, b: { c: 2 }, d: [1, 2, 3], e: new Date() }
@@ -71,6 +72,7 @@ export function deepClone<T>(obj: T): T {
  * @param path 属性路径，如 'user.address.street'
  * @param defaultValue 默认值，当路径不存在时返回
  * @returns 路径对应的值，如果路径不存在则返回默认值
+ * @group Object
  * @example
  * ```ts
  * const obj = { user: { profile: { name: 'Tom', age: 25 }, roles: ['admin'] } }
@@ -101,10 +103,13 @@ export function get<T = any>(obj: Record<string, any>, path: string, defaultValu
  * @param obj 原始对象
  * @param keys 要选择的键数组
  * @returns 包含指定键的新对象
+ * @group Object
  * @example
  * ```ts
+ * @group Object
  * const user = { id: 1, name: 'Tom', age: 25, email: 'tom@example.com' }
  *
+ * @group Object
  * pick(user, ['name', 'email']) // { name: 'Tom', email: 'tom@example.com' }
  * pick(user, ['name', 'gender']) // { name: 'Tom' }（不存在的键会被忽略）
  * pick(user, []) // {}（空数组返回空对象）
@@ -124,6 +129,7 @@ export function pick<T extends Record<string, any>, K extends keyof T>(obj: T, k
  * @param obj 原始对象
  * @param keys 要排除的键数组
  * @returns 不包含指定键的新对象
+ * @group Object
  * @example
  * ```ts
  * const user = { id: 1, name: 'Tom', age: 25, password: '123456' }
@@ -145,6 +151,7 @@ export function omit<T extends Record<string, any>, K extends keyof T>(obj: T, k
  * 将对象转换为 URL 查询字符串
  * @param obj 要转换的对象
  * @returns 格式化后的查询字符串（不包含前导?）
+ * @group Object
  * @example
  * ```ts
  * objectToQueryString({ name: 'Tom', age: 25 }) // 'name=Tom&age=25'
@@ -169,6 +176,7 @@ export function objectToQueryString(obj: Record<string, any>): string {
  * 合并多个对象，后面的对象的属性会覆盖前面的
  * @param objects 要合并的对象数组
  * @returns 合并后的新对象
+ * @group Object
  * @example
  * ```ts
  * merge({ a: 1 }, { b: 2 }) // { a: 1, b: 2 }
@@ -185,6 +193,7 @@ export function merge<T extends Record<string, any>>(...objects: T[]): T {
  * 深度合并多个对象，会递归合并嵌套对象
  * @param objects 要合并的对象数组
  * @returns 深度合并后的新对象
+ * @group Object
  * @example
  * ```ts
  * deepMerge({ a: { x: 1 } }, { a: { y: 2 } }) // { a: { x: 1, y: 2 } }
@@ -224,6 +233,7 @@ export function deepMerge(...objects: Record<string, any>[]): Record<string, any
  * @param keysArray 要保留的键名数组
  * @param keyMapping 可选的键名映射对象，格式为 { 原键名: 新键名 }
  * @returns 返回一个新对象，其中只包含原对象中匹配的键值对，并根据映射重命名键
+ * @group Object
  * @example
  * ```ts
  * const originalObject = { name: "John", age: 30, gender: "male", country: "USA" }

@@ -8,6 +8,7 @@
  * @param num 要处理的数字
  * @param precision 小数位数，默认为0（整数）
  * @returns 四舍五入后的数字
+ * @group Number
  * @example
  * ```ts
  * round(3.1415) // 3
@@ -26,6 +27,7 @@ export function round(num: number, precision = 0): number {
  * @param num 要格式化的数字
  * @param locale 区域设置，默认为浏览器默认区域
  * @returns 格式化后的字符串
+ * @group Number
  * @example
  * ```ts
  * formatThousands(1234567) // '1,234,567'（根据浏览器默认区域可能有所不同）
@@ -46,6 +48,7 @@ export function formatThousands(num: number, locale?: string): string {
  * @param options.minimumFractionDigits 最小小数位数，默认为 2
  * @param options.maximumFractionDigits 最大小数位数，默认为 2
  * @returns 格式化后的货币字符串
+ * @group Number
  * @example
  * ```ts
  * formatCurrency(1234.56) // '¥1,234.56'
@@ -84,6 +87,7 @@ export function formatCurrency(
  * @param min 最小值
  * @param max 最大值
  * @returns 在指定范围内的数字：如果小于最小值返回最小值，如果大于最大值返回最大值
+ * @group Number
  * @example
  * ```ts
  * clamp(5, 0, 10) // 5 - 在范围内，保持不变
@@ -100,6 +104,7 @@ export function clamp(num: number, min: number, max: number): number {
  * @param min 最小值（包含）
  * @param max 最大值（包含）
  * @returns 指定范围内的随机整数
+ * @group Number
  * @example
  * ```ts
  * randomInt(1, 10) // 返回 1 到 10 之间的随机整数，包括 1 和 10
@@ -117,6 +122,7 @@ export function randomInt(min: number, max: number): number {
  * 检查一个数字是否为偶数
  * @param num 要检查的数字
  * @returns 如果是偶数则返回 true，否则返回 false
+ * @group Number
  * @example
  * ```ts
  * isEven(2) // true
@@ -133,6 +139,7 @@ export function isEven(num: number): boolean {
  * 检查一个数字是否为奇数
  * @param num 要检查的数字
  * @returns 如果是奇数则返回 true，否则返回 false
+ * @group Number
  * @example
  * ```ts
  * isOdd(3) // true
@@ -151,6 +158,7 @@ export function isOdd(num: number): boolean {
  * @param total 总值
  * @param precision 结果保留的小数位数，默认为2
  * @returns 百分比值，如果总值为零则返回 0
+ * @group Number
  * @example
  * ```ts
  * percentage(25, 100) // 25
@@ -170,6 +178,7 @@ export function percentage(value: number, total: number, precision = 2): number 
  * @param num 要转换的数值
  * @param fractionDigits 小数位数，默认为2
  * @returns 转换后的字符串，如果值大于等于10000则转为"万"单位
+ * @group Number
  * @example
  * ```ts
  * formatNumberWithTenThousand(1234) // '1234'

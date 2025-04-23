@@ -10,6 +10,7 @@ import { hasOwnProp } from '../object'
  * @param array 原始数组
  * @param item 要移除的项
  * @returns 移除指定项后的新数组，不会修改原始数组
+ * @group Array
  * @example
  * ```ts
  * const numbers = [1, 2, 3, 4, 5]
@@ -29,6 +30,7 @@ export function remove<T>(array: T[], item: T): T[] {
  * 数组去重，移除数组中的重复元素
  * @param array 原始数组
  * @returns 去重后的新数组，保持原始顺序
+ * @group Array
  * @example
  * ```ts
  * const numbers = [1, 2, 2, 3, 3, 4, 5, 5]
@@ -48,6 +50,7 @@ export function unique<T>(array: T[]): T[] {
  * @param array 原始数组
  * @param size 每个块的大小，必须为正整数
  * @returns 二维数组，每个子数组最多包含 size 个元素
+ * @group Array
  * @example
  * ```ts
  * const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -74,6 +77,7 @@ export function chunk<T>(array: T[], size: number): T[][] {
  * 获取数组中的最后一个元素
  * @param array 数组
  * @returns 最后一个元素，如果数组为空则返回 undefined
+ * @group Array
  * @example
  * ```ts
  * const numbers = [1, 2, 3, 4, 5]
@@ -91,6 +95,7 @@ export function last<T>(array: T[]): T | undefined {
  * 获取数组中的第一个元素
  * @param array 数组
  * @returns 第一个元素，如果数组为空则返回 undefined
+ * @group Array
  * @example
  * ```ts
  * const numbers = [1, 2, 3, 4, 5]
@@ -108,6 +113,7 @@ export function first<T>(array: T[]): T | undefined {
  * 随机打乱数组元素顺序
  * @param array 原始数组
  * @returns 打乱后的新数组，不会修改原始数组
+ * @group Array
  * @example
  * ```ts
  * const numbers = [1, 2, 3, 4, 5]
@@ -131,6 +137,7 @@ export function shuffle<T>(array: T[]): T[] {
  * 从数组中随机选择一个元素
  * @param array 数组
  * @returns 随机选择的元素，如果数组为空则返回 undefined
+ * @group Array
  * @example
  * ```ts
  * const fruits = ['苹果', '香蕉', '橙子', '梨', '葡萄']
@@ -153,6 +160,7 @@ export function sample<T>(array: T[]): T | undefined {
  * @param a 第一个数组
  * @param b 第二个数组
  * @returns 如果两个数组长度相同且对应位置的元素全部相等则返回 true，否则返回 false
+ * @group Array
  * @example
  * ```ts
  * isEqual([1, 2, 3], [1, 2, 3]) // true
@@ -176,6 +184,7 @@ export function isEqual<T>(a: T[], b: T[]): boolean {
  * @param array 原始数组
  * @param keyFn 用于生成分组键的函数，接收数组元素并返回用作分组键的值
  * @returns 分组后的对象，键为分组键，值为对应的元素数组
+ * @group Array
  * @example
  * ```ts
  * const people = [
@@ -221,6 +230,7 @@ export function groupBy<T, K extends string | number | symbol>(array: T[], keyFn
  * @param config.valueKey - 选项值的字段名 (默认为 'value')
  * @returns 添加了"全部"选项的新数组
  *
+ * @group Array
  * @example
  * ```ts
  * // 基本用法
@@ -282,6 +292,7 @@ export function appendUniversalOption<T extends Record<string, any>, V = any>(
  * @param deleteOldKeys - 是否删除旧属性（默认 `true`）
  * @returns 处理后的树形结构数组
  *
+ * @group Array
  * @example
  * const tree = [
  *   { id: 1, name: 'Node 1', children: [...] }
@@ -330,6 +341,7 @@ export function renameTreeNodes(
  * @param childKey - 子节点的键名（默认为 `'children'`）
  * @returns 转换后的树形结构数组
  *
+ * @group Array
  * @example
  * // 重命名 `name` 为 `label`，并添加 `isLeaf` 属性
  * const transformedTree = transformTree(tree, (node, children) => ({
@@ -358,7 +370,7 @@ type KeysMatching<T, V> = {
  * @param arr - 原始数组
  * @param key - 数组对象键
  * @returns 对应键的对象
- *
+ * @group Array
  * @example
  * ```ts
  * const arr = [{ key: 'tom', name: '汤姆' }, { key: 'jack', name: '杰克' }]

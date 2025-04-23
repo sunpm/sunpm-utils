@@ -3,7 +3,7 @@
  *
  * @param {number} ms - 需要延迟的毫秒数
  * @returns {Promise<void>} 返回一个在指定时间后resolve的Promise
- *
+ * @group Promise
  * @example
  * ```ts
  * // 延迟2秒

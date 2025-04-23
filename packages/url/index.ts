@@ -6,7 +6,7 @@ import { objectToQueryString } from '../object'
  * @deprecated 请使用 objectToQueryString 函数代替，它在 object 模块中。该函数将在下一个主要版本中移除。
  * @param {Record<string, any>} params - 需要转换的对象
  * @returns {string} 转换后的查询字符串，如果有参数则以?开头
- *
+ * @group Url
  * @example
  * ```ts
  * // 基本用法
