@@ -4,6 +4,7 @@
  */
 
 import { hasOwnProp } from '../object'
+import { replaceNBSP } from '../string'
 
 /**
  * 从数组中移除指定的项
@@ -393,4 +394,51 @@ export function arrayToObject<T>(
     result[K as string] = item
   }
   return result
+}
+
+/**
+ * 替换数组数据中指定字段的 `&nbsp;` 为不换行空格
+ *
+ * @param {Array<Record<string, any>>} arr - 数组
+ * @param {string} key - 需要处理的字段名
+ * @returns {Array<Record<string, any>>} 处理后的数据数组
+ *
+ * @group String
+ * @example
+ * ```ts
+ * // 基本用法
+ * const data = [
+ *   { name: 'John&nbsp;Doe', age: 30 },
+ *   { name: 'Jane&nbsp;&nbsp;Smith', age: 25 }
+ * ]
+ * const result = arrayReplaceNBSP(data, 'name')
+ * // 结果: [
+ * //   { name: 'John Doe', age: 30 },
+ * //   { name: 'Jane  Smith', age: 25 }
+ * // ]
+ *
+ * // 空数组情况
+ * const emptyData = []
+ * const result = arrayReplaceNBSP(emptyData, 'name')
+ * // 结果: []
+ * ```
+ */
+export function arrayReplaceNBSP<T extends Record<string, string | number | boolean | object>>(
+  arr: T[],
+  key: string,
+): T[] {
+  if (arr.length) {
+    return arr.map((item) => {
+      if (typeof item[key] === 'string') {
+        // 创建一个新对象，不修改原对象
+        return {
+          ...item,
+          [key]: replaceNBSP(item[key] as string),
+        }
+      }
+      return item
+    })
+  }
+
+  return []
 }

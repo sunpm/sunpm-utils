@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   appendUniversalOption,
+  arrayReplaceNBSP,
   arrayToObject,
   chunk,
   first,
@@ -368,5 +369,43 @@ describe('arrayToObject', () => {
         name: '汤姆',
       },
     })
+  })
+})
+
+describe('arrayReplaceNBSP', () => {
+  it('应该替换字符串中的&nbsp;为不换行空格', () => {
+    const data = [
+      { name: 'John&nbsp;Doe', age: 30 },
+      { name: 'Jane&nbsp;&nbsp;Smith', age: 25 },
+    ]
+
+    const result = arrayReplaceNBSP(data, 'name')
+
+    expect((result[0] as any).name).toBe('John Doe')
+    expect((result[1] as any).name).toBe('Jane  Smith')
+    // 原始数据应该保持不变
+    expect((data[0] as any).name).toBe('John&nbsp;Doe')
+  })
+
+  it('应该忽略非字符串字段', () => {
+    const data = [
+      { name: 'John', count: 10 },
+      { name: 'Jane', count: 20 },
+    ]
+
+    const result = arrayReplaceNBSP(data, 'count')
+
+    // 因为count是数字，所以不应该被修改
+    expect(result).toEqual(data)
+    // 但结果应该是一个新的数组
+    expect(result).not.toBe(data)
+  })
+
+  it('应该在空数组情况下返回空数组', () => {
+    const emptyData: Array<Record<string, any>> = []
+
+    const result = arrayReplaceNBSP(emptyData, 'name')
+
+    expect(result).toEqual([])
   })
 })
