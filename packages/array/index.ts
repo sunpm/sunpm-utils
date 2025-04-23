@@ -403,7 +403,7 @@ export function arrayToObject<T>(
  * @param {string} key - 需要处理的字段名
  * @returns {Array<Record<string, any>>} 处理后的数据数组
  *
- * @group String
+ * @group Array
  * @example
  * ```ts
  * // 基本用法
