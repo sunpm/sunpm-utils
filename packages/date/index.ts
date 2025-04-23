@@ -8,6 +8,18 @@ import isBetween from 'dayjs/plugin/isBetween'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { isNaN, isNumber } from '../is'
+
+// 导入本地化语言
+import 'dayjs/locale/zh-cn'
+
+// 设置全局语言为中文
+dayjs.locale('zh-cn')
+
+/**
+ * 表示日期的各种类型，可以是日期对象、日期字符串或时间戳
+ */
+export type DateLike = Date | string | number
 
 // 注册插件
 dayjs.extend(relativeTime)
@@ -35,14 +47,56 @@ dayjs.extend(isBetween)
  * createDate(1684123456000) // 时间戳
  * ```
  */
-export function createDate(date?: string | number | Date | Dayjs): Dayjs {
+export function createDate(date?: DateLike | Dayjs): Dayjs {
   return dayjs(date)
+}
+
+/**
+ * 判断时间戳是否为毫秒级时间戳
+ * @param value 要检查的值
+ * @returns 如果是毫秒级时间戳则返回 true，否则返回 false
+ * @group Date
+ * @example
+ * ```ts
+ * isMillisecondTimestamp(1673740800000) // true，13位数字
+ * isMillisecondTimestamp(1673740800) // false，10位数字，秒级时间戳
+ * isMillisecondTimestamp('1673740800000') // false, 字符串不是时间戳
+ * isMillisecondTimestamp(new Date()) // false，日期对象不是时间戳
+ * ```
+ */
+export function isMillisecondTimestamp(value: unknown): boolean {
+  if (!isNumber(value) || value.toString().length !== 13)
+    return false
+
+  const date = new Date(value)
+  return !isNaN(date.getTime())
+}
+
+/**
+ * 转换为 dayjs 可接收的参数格式
+ * @param value 日期参数，可以是日期对象、时间戳（秒或毫秒）或日期字符串
+ * @returns 转换后的参数，如果是秒级时间戳则转为毫秒级，其他类型保持不变
+ * @group Date
+ * @example
+ * ```ts
+ * convertToDayjsParam(1673740800) // 1673740800000，秒转为毫秒
+ * convertToDayjsParam(1673740800000) // 1673740800000，毫秒保持不变
+ * convertToDayjsParam(new Date()) // Date对象，保持不变
+ * convertToDayjsParam('2023-01-15') // '2023-01-15'，字符串保持不变
+ * ```
+ */
+export function convertToDayjsParam(value: DateLike) {
+  // 如果是数字，且是10位数字，则可能是秒级时间戳，需要转为毫秒
+  if (isNumber(value) && String(value).length === 10) {
+    return value * 1000
+  }
+  return value
 }
 
 /**
  * 格式化日期为指定格式的字符串
  * @param date 日期对象、时间戳或日期字符串
- * @param format 格式字符串，支持的占位符请参考 dayjs 文档
+ * @param format 格式字符串，支持的占位符请参考 [dayjs 文档](https://day.js.org/docs/zh-CN/durations/format#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8D%A0%E4%BD%8D%E7%AC%A6%E5%88%97%E8%A1%A8)
  * @returns 格式化后的日期字符串
  * @group Date
  * @example
@@ -52,8 +106,24 @@ export function createDate(date?: string | number | Date | Dayjs): Dayjs {
  * formatDate(1684123456000, 'MM/DD/YYYY') // "05/15/2023"
  * ```
  */
-export function formatDate(date: Date | string | number, format = 'YYYY-MM-DD'): string {
-  return dayjs(date).format(format)
+export function formatDate(date: DateLike, format = 'YYYY-MM-DD'): string {
+  return dayjs(convertToDayjsParam(date)).format(format)
+}
+
+/**
+ * 将日期格式化为完整的时间字符串（YYYY-MM-DD HH:mm:ss）
+ * @param date 日期对象、时间戳或日期字符串
+ * @returns 格式为 YYYY-MM-DD HH:mm:ss 的日期时间字符串
+ * @group Date
+ * @example
+ * ```ts
+ * formatFullTime(new Date()) // "2023-05-16 14:30:45"
+ * formatFullTime('2023-05-15') // "2023-05-15 00:00:00"
+ * formatFullTime(1684123456) // "2023-05-15 10:30:56"（秒级时间戳会被自动转换）
+ * ```
+ */
+export function formatFullTime(date: DateLike) {
+  return formatDate(date, 'YYYY-MM-DD HH:mm:ss')
 }
 
 /**
@@ -103,8 +173,8 @@ export function parseDate(dateStr: string): Date {
  * diff('2023-05-15 08:00', '2023-05-15 06:00', 'hour') // 2（相差2小时）
  * ```
  */
-export function diff(date1: Date | string | number, date2: Date | string | number, unit: QUnitType | OpUnitType = 'day'): number {
-  return dayjs(date1).diff(dayjs(date2), unit)
+export function diff(date1: DateLike, date2: DateLike, unit: QUnitType | OpUnitType = 'day'): number {
+  return dayjs(convertToDayjsParam(date1)).diff(dayjs(convertToDayjsParam(date2)), unit)
 }
 
 /**
@@ -121,8 +191,8 @@ export function diff(date1: Date | string | number, date2: Date | string | numbe
  * add('2023-05-15 12:00', 30, 'minute') // Date 对象: Mon May 15 2023 12:30:00
  * ```
  */
-export function add(date: Date | string | number, amount: number, unit: ManipulateType = 'day'): Date {
-  return dayjs(date).add(amount, unit).toDate()
+export function add(date: DateLike, amount: number, unit: ManipulateType = 'day'): Date {
+  return dayjs(convertToDayjsParam(date)).add(amount, unit).toDate()
 }
 
 /**
@@ -137,8 +207,8 @@ export function add(date: Date | string | number, amount: number, unit: Manipula
  * addDays('2023-05-15', -3) // Date 对象: Fri May 12 2023
  * ```
  */
-export function addDays(date: Date | string | number, days: number): Date {
-  return add(date, days, 'day')
+export function addDays(date: DateLike, days: number): Date {
+  return add(convertToDayjsParam(date), days, 'day')
 }
 
 /**
@@ -154,8 +224,8 @@ export function addDays(date: Date | string | number, days: number): Date {
  * addMonths('2023-01-15', -3) // Date 对象: Wed Oct 15 2022
  * ```
  */
-export function addMonths(date: Date | string | number, months: number): Date {
-  return add(date, months, 'month')
+export function addMonths(date: DateLike, months: number): Date {
+  return add(convertToDayjsParam(date), months, 'month')
 }
 
 /**
@@ -171,8 +241,8 @@ export function addMonths(date: Date | string | number, months: number): Date {
  * addYears('2024-02-29', 1) // Date 对象: Fri Feb 28 2025（注意闰年自动调整）
  * ```
  */
-export function addYears(date: Date | string | number, years: number): Date {
-  return add(date, years, 'year')
+export function addYears(date: DateLike, years: number): Date {
+  return add(convertToDayjsParam(date), years, 'year')
 }
 
 /**
@@ -189,8 +259,8 @@ export function addYears(date: Date | string | number, years: number): Date {
  * getDayOfWeek('2023-05-14', true) // 6（周日，从周一开始算是第6天）
  * ```
  */
-export function getDayOfWeek(date: Date | string | number, startOnMonday = false): number {
-  const d = dayjs(date)
+export function getDayOfWeek(date: DateLike, startOnMonday = false): number {
+  const d = dayjs(convertToDayjsParam(date))
   const day = d.day()
   if (startOnMonday) {
     return day === 0 ? 6 : day - 1
@@ -212,9 +282,9 @@ export function getDayOfWeek(date: Date | string | number, startOnMonday = false
  * isDateInRange('2023-05-15', '2023-05-10', '2023-05-15') // false（不包括结束日期）
  * ```
  */
-export function isDateInRange(date: Date | string | number, startDate: Date | string | number, endDate: Date | string | number): boolean {
-  const d = dayjs(date)
-  return d.isAfter(dayjs(startDate)) && d.isBefore(dayjs(endDate))
+export function isDateInRange(date: DateLike, startDate: DateLike, endDate: DateLike): boolean {
+  const d = dayjs(convertToDayjsParam(date))
+  return d.isAfter(dayjs(convertToDayjsParam(startDate))) && d.isBefore(dayjs(convertToDayjsParam(endDate)))
 }
 
 /**
@@ -243,11 +313,13 @@ export function getDaysInMonth(year: number, month: number): number {
  * @example
  * ```ts
  * fromNow(new Date(Date.now() - 5 * 60 * 1000)) // "5分钟前"
- * fromNow(new Date(Date.now() + 24 * 60 * 60 * 1000)) // "1天后"
+ * fromNow(new Date(Date.now() + 24 * 60 * 60 * 1000)) // "1天内"
  * fromNow('2023-01-01', '2023-01-05') // "4天前"
  * ```
  */
-export function fromNow(date: Date | string | number, baseDate?: Date | string | number): string {
+export function fromNow(date: DateLike, baseDate?: DateLike): string {
+  date = convertToDayjsParam(date)
+  baseDate = baseDate && convertToDayjsParam(baseDate)
   if (baseDate)
     return dayjs(date).from(dayjs(baseDate))
   return dayjs(date).fromNow()
@@ -266,8 +338,8 @@ export function fromNow(date: Date | string | number, baseDate?: Date | string |
  * startOf('2023-05-15 15:30:45', 'hour') // Date 对象: Mon May 15 2023 15:00:00
  * ```
  */
-export function startOf(date: Date | string | number, unit: OpUnitType): Date {
-  return dayjs(date).startOf(unit).toDate()
+export function startOf(date: DateLike, unit: OpUnitType): Date {
+  return dayjs(convertToDayjsParam(date)).startOf(unit).toDate()
 }
 
 /**
@@ -283,8 +355,8 @@ export function startOf(date: Date | string | number, unit: OpUnitType): Date {
  * endOf('2023-05-15 15:30:45', 'hour') // Date 对象: Mon May 15 2023 15:59:59.999
  * ```
  */
-export function endOf(date: Date | string | number, unit: OpUnitType): Date {
-  return dayjs(date).endOf(unit).toDate()
+export function endOf(date: DateLike, unit: OpUnitType): Date {
+  return dayjs(convertToDayjsParam(date)).endOf(unit).toDate()
 }
 
 /**
@@ -300,8 +372,8 @@ export function endOf(date: Date | string | number, unit: OpUnitType): Date {
  * formatHumanReadable('2023-01-01') // "2023-01-01 00:00"
  * ```
  */
-export function formatHumanReadable(date: Date | string | number): string {
-  const d = dayjs(date)
+export function formatHumanReadable(date: DateLike): string {
+  const d = dayjs(convertToDayjsParam(date))
   const now = dayjs()
 
   if (d.isSame(now, 'day'))
