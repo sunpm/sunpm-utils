@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   isArray,
   isBoolean,
+  isClass,
   isDate,
   isEmpty,
   isEmptyObject,
@@ -87,6 +88,35 @@ describe('isFunction', () => {
     expect(isFunction(123)).toBe(false)
     expect(isFunction(null)).toBe(false)
     expect(isFunction(undefined)).toBe(false)
+  })
+})
+
+describe('isClass', () => {
+  it('应该正确识别类构造函数', () => {
+    // ES6 类
+    expect(isClass(class {})).toBe(true)
+    expect(isClass(class User {})).toBe(true)
+    expect(isClass(class extends Array {})).toBe(true)
+
+    // 内置类构造函数
+    expect(isClass(Array)).toBe(true)
+    expect(isClass(Object)).toBe(true)
+    expect(isClass(Date)).toBe(true)
+    expect(isClass(RegExp)).toBe(true)
+    expect(isClass(Map)).toBe(true)
+    expect(isClass(Set)).toBe(true)
+
+    // 非类构造函数
+    expect(isClass(() => {})).toBe(false)
+    expect(isClass(() => {})).toBe(false)
+    expect(isClass(Math.sin)).toBe(false)
+    expect(isClass(console.log)).toBe(false)
+    expect(isClass({})).toBe(false)
+    expect(isClass([])).toBe(false)
+    expect(isClass('class')).toBe(false)
+    expect(isClass(123)).toBe(false)
+    expect(isClass(null)).toBe(false)
+    expect(isClass(undefined)).toBe(false)
   })
 })
 

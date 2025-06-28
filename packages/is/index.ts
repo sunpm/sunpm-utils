@@ -74,6 +74,56 @@ export function isFunction(val: unknown): val is ((...args: any[]) => any) {
 }
 
 /**
+ * 检查值是否为类构造函数
+ * @param val 要检查的值
+ * @returns 如果是类构造函数则返回 true，否则返回 false
+ * @group Is
+ * @example
+ * ```ts
+ * isClass(class User {}) // true
+ * isClass(class extends Array {}) // true
+ * isClass(Array) // true
+ * isClass(Date) // true
+ * isClass(function() {}) // false
+ * isClass(() => {}) // false
+ * isClass(Math.sin) // false
+ * isClass({}) // false
+ * ```
+ */
+export function isClass(val: unknown): val is new (...args: any[]) => any {
+  if (!isFunction(val)) {
+    return false
+  }
+
+  const func = val as (...args: any[]) => any
+
+  // 检查函数的字符串表示是否以 class 开头（ES6 类）
+  const funcStr = func.toString()
+  if (/^class\s/.test(funcStr)) {
+    return true
+  }
+
+  // 检查是否为内置构造函数或传统构造函数
+  // 构造函数通常有 prototype 属性，且 prototype.constructor 指向自己
+  const funcWithPrototype = func as any
+  if (funcWithPrototype.prototype && funcWithPrototype.prototype.constructor === funcWithPrototype) {
+    // 进一步检查：尝试检测是否为箭头函数（箭头函数没有 prototype）
+    // 或者是否为明显的工具函数（通过一些启发式规则）
+    if (!/^[a-z]/.test(funcWithPrototype.name || '')) {
+      // 如果函数名不是以小写字母开头，更可能是构造函数
+      return true
+    }
+
+    // 检查是否为内置构造函数
+    if (/\[native code\]/.test(funcStr)) {
+      return true
+    }
+  }
+
+  return false
+}
+
+/**
  * 检查值是否为对象类型（不包括 null）
  * @param val 要检查的值
  * @returns 如果是对象则返回 true，否则返回 false
