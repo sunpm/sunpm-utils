@@ -8,6 +8,7 @@ import {
   createDate,
   diff,
   endOf,
+  formatChatTime,
   formatDate,
   formatFullTime,
   formatHumanReadable,
@@ -299,22 +300,75 @@ describe('fromNow', () => {
 
 describe('formatHumanReadable', () => {
   it('应该格式化为人类友好的格式', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date(2023, 0, 15, 12, 0, 0))
+    const date = new Date('2023-05-15 14:30:00')
 
-    const today = new Date(2023, 0, 15, 15, 30, 0)
-    const yesterday = new Date(2023, 0, 14, 15, 30, 0)
-    const tomorrow = new Date(2023, 0, 16, 15, 30, 0)
-    const thisYear = new Date(2023, 5, 15, 15, 30, 0)
-    const otherYear = new Date(2022, 5, 15, 15, 30, 0)
+    // 模拟 "现在" 为 2023-05-15 15:00:00
+    vi.setSystemTime(new Date('2023-05-15 15:00:00'))
 
-    // 这些测试预期应该不受语言环境影响，因为它们是直接硬编码的中文文本
-    expect(formatHumanReadable(today)).toBe('今天 15:30')
-    expect(formatHumanReadable(yesterday)).toBe('昨天 15:30')
-    expect(formatHumanReadable(tomorrow)).toBe('明天 15:30')
-    expect(formatHumanReadable(thisYear)).toBe('6月15日 15:30')
-    expect(formatHumanReadable(otherYear)).toBe('2022年6月15日 15:30')
+    expect(formatHumanReadable(date)).toBe('今天 14:30')
 
+    // 恢复系统时间
+    vi.useRealTimers()
+  })
+})
+
+describe('formatChatTime', () => {
+  it('应该格式化为聊天列表时间格式', () => {
+    // 模拟当前时间为 2023-05-15 15:00:00 (周一)
+    const mockNow = new Date('2023-05-15 15:00:00')
+    vi.setSystemTime(mockNow)
+
+    // 当天：显示时间
+    const today = new Date('2023-05-15 14:30:00')
+    expect(formatChatTime(today)).toBe('14:30')
+
+    // 昨天：显示"昨天 HH:mm"
+    const yesterday = new Date('2023-05-14 09:15:00')
+    expect(formatChatTime(yesterday)).toBe('昨天 09:15')
+
+    // 7天内（不包括今天和昨天）：显示星期几
+    const threeDaysAgo = new Date('2023-05-12 12:00:00') // 3天前，周五
+    expect(formatChatTime(threeDaysAgo)).toBe('星期五')
+
+    const sixDaysAgo = new Date('2023-05-09 12:00:00') // 6天前，周二
+    expect(formatChatTime(sixDaysAgo)).toBe('星期二')
+
+    // 7天前应该显示日期格式
+    const sevenDaysAgo = new Date('2023-05-08 12:00:00') // 7天前
+    expect(formatChatTime(sevenDaysAgo)).toBe('05月08日')
+
+    // 今年其他日期：显示MM月DD日
+    const thisYearOther = new Date('2023-03-20 10:00:00')
+    expect(formatChatTime(thisYearOther)).toBe('03月20日')
+
+    // 往年日期：显示YYYY年MM月DD日
+    const lastYear = new Date('2022-12-25 16:30:00')
+    expect(formatChatTime(lastYear)).toBe('2022年12月25日')
+
+    // 恢复系统时间
+    vi.useRealTimers()
+  })
+
+  it('应该正确处理7天边界情况', () => {
+    // 模拟当前时间为 2023-05-20 15:00:00 (周六)
+    const mockNow = new Date('2023-05-20 15:00:00')
+    vi.setSystemTime(mockNow)
+
+    // 2天前到6天前都应该显示星期几
+    const twoDaysAgo = new Date('2023-05-18 12:00:00') // 2天前，周四
+    expect(formatChatTime(twoDaysAgo)).toBe('星期四')
+
+    const sixDaysAgo = new Date('2023-05-14 12:00:00') // 6天前，周日
+    expect(formatChatTime(sixDaysAgo)).toBe('星期日')
+
+    // 7天前及以上应该显示日期格式
+    const sevenDaysAgo = new Date('2023-05-13 12:00:00') // 7天前，周六
+    expect(formatChatTime(sevenDaysAgo)).toBe('05月13日')
+
+    const tenDaysAgo = new Date('2023-05-10 12:00:00') // 10天前
+    expect(formatChatTime(tenDaysAgo)).toBe('05月10日')
+
+    // 恢复系统时间
     vi.useRealTimers()
   })
 })

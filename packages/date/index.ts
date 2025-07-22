@@ -386,3 +386,53 @@ export function formatHumanReadable(date: DateLike): string {
     return d.format('M月D日 HH:mm')
   return d.format('YYYY年M月D日 HH:mm')
 }
+
+/**
+ * 格式化日期为聊天列表时间格式（类似微信聊天列表）
+ * @param date 日期
+ * @returns 格式化后的时间字符串
+ * - 当天：HH:mm
+ * - 昨天：昨天 HH:mm
+ * - 7天内（不包括今天和昨天）：星期几
+ * - 今年其他日期：MM月DD日
+ * - 往年日期：YYYY年MM月DD日
+ * @group Date
+ * @example
+ * ```ts
+ * formatChatTime(new Date()) // "14:30"
+ * formatChatTime(new Date(Date.now() - 24 * 60 * 60 * 1000)) // "昨天 09:15"
+ * formatChatTime(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)) // "星期三"
+ * formatChatTime('2023-05-15') // "05月15日"
+ * formatChatTime('2022-12-25') // "2022年12月25日"
+ * ```
+ */
+export function formatChatTime(date: DateLike): string {
+  const d = dayjs(convertToDayjsParam(date))
+  const now = dayjs()
+
+  // 当天：显示时间
+  if (d.isSame(now, 'day')) {
+    return d.format('HH:mm')
+  }
+
+  // 昨天：显示"昨天 HH:mm"
+  if (d.isSame(now.subtract(1, 'day'), 'day')) {
+    return `昨天 ${d.format('HH:mm')}`
+  }
+
+  // 7天内（不包括今天和昨天）：显示星期几
+  const daysDiff = now.diff(d, 'day')
+  if (daysDiff >= 2 && daysDiff < 7) {
+    const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+    const dayIndex = d.day()
+    return weekdays[dayIndex] || '星期日'
+  }
+
+  // 今年其他日期：显示MM月DD日
+  if (d.isSame(now, 'year')) {
+    return d.format('MM月DD日')
+  }
+
+  // 往年日期：显示YYYY年MM月DD日
+  return d.format('YYYY年MM月DD日')
+}

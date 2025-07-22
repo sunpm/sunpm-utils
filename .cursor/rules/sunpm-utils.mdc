@@ -1,0 +1,67 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Before diving into the best practices, please note that you may need to adapt the globs depending on your project's specific structure and file types.
+
+---
+name: dayjs-best-practices.mdc
+description: Best practices for using Day.js for date manipulation
+globs: **/*.{ts,tsx,js,jsx}
+---
+
+- Use Day.js plugins for extended functionality
+- Format dates consistently across the application
+- Utilize Day.js for timezone handling
+
+---
+name: typescript-best-practices.mdc
+description: TypeScript coding standards and type safety guidelines
+globs: **/*.{ts,tsx}
+---
+
+- Use strict null checks
+- Prefer interface over type
+- Use type guards and assertions
+- Implement proper type inference
+
+---
+name: tsup-best-practices.mdc
+description: Best practices for using tsup as a bundler
+globs: **/*.{ts,js}
+---
+
+- Configure tsup for optimal build performance
+- Use tsup's watch mode for development
+- Leverage tsup's tree-shaking capabilities
+
+---
+name: vitest-best-practices.mdc
+description: Best practices for testing with Vitest
+globs: **/*.{ts,js}
+---
+
+- Write clear and descriptive test names
+- Use Vitest's mocking capabilities effectively
+- Implement snapshot testing where applicable
+
+---
+name: eslint-best-practices.mdc
+description: Best practices for using ESLint for code linting
+globs: **/*.{ts,tsx,js,jsx}
+---
+
+- Customize ESLint rules to fit project needs
+- Use ESLint plugins for additional checks
+- Integrate ESLint with your IDE for real-time feedback
+
+---
+name: typedoc-best-practices.mdc
+description: Best practices for generating documentation with TypeDoc
+globs: **/*.{ts}
+---
+
+- Use clear and descriptive comments for better documentation
+- Configure TypeDoc to include necessary information
+- Regularly update documentation alongside code changes
