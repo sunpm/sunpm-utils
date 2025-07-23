@@ -86,10 +86,16 @@ export function isMillisecondTimestamp(value: unknown): boolean {
  * ```
  */
 export function convertToDayjsParam(value: DateLike) {
-  // 如果是数字，且是10位数字，则可能是秒级时间戳，需要转为毫秒
+  // 如果已经是毫秒级时间戳，直接返回
+  if (isMillisecondTimestamp(value)) {
+    return value
+  }
+
+  // 如果是数字且是10位数字，则可能是秒级时间戳，需要转为毫秒
   if (isNumber(value) && String(value).length === 10) {
     return value * 1000
   }
+
   return value
 }
 
