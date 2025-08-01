@@ -8,6 +8,7 @@ import {
   isEmptyObject,
   isFunction,
   isMap,
+  isMobilePhone,
   isNaN,
   isNull,
   isNullOrUndefined,
@@ -396,5 +397,87 @@ describe('isPlainObject', () => {
     expect(isPlainObject('string')).toBe(false)
     expect(isPlainObject(true)).toBe(false)
     expect(isPlainObject(() => {})).toBe(false)
+  })
+})
+
+describe('isMobilePhone', () => {
+  it('应该识别有效的手机号码', () => {
+    // 移动号段 - 字符串格式
+    expect(isMobilePhone('13812345678')).toBe(true)
+    expect(isMobilePhone('13987654321')).toBe(true)
+    expect(isMobilePhone('15012345678')).toBe(true)
+    expect(isMobilePhone('15987654321')).toBe(true)
+
+    // 移动号段 - 数字格式
+    expect(isMobilePhone(13812345678)).toBe(true)
+    expect(isMobilePhone(13987654321)).toBe(true)
+    expect(isMobilePhone(15012345678)).toBe(true)
+    expect(isMobilePhone(15987654321)).toBe(true)
+
+    // 联通号段 - 字符串格式
+    expect(isMobilePhone('13012345678')).toBe(true)
+    expect(isMobilePhone('13112345678')).toBe(true)
+    expect(isMobilePhone('18512345678')).toBe(true)
+    expect(isMobilePhone('18612345678')).toBe(true)
+
+    // 联通号段 - 数字格式
+    expect(isMobilePhone(13012345678)).toBe(true)
+    expect(isMobilePhone(13112345678)).toBe(true)
+    expect(isMobilePhone(18512345678)).toBe(true)
+    expect(isMobilePhone(18612345678)).toBe(true)
+
+    // 电信号段 - 字符串格式
+    expect(isMobilePhone('18012345678')).toBe(true)
+    expect(isMobilePhone('18112345678')).toBe(true)
+    expect(isMobilePhone('19012345678')).toBe(true)
+    expect(isMobilePhone('19912345678')).toBe(true)
+
+    // 电信号段 - 数字格式
+    expect(isMobilePhone(18012345678)).toBe(true)
+    expect(isMobilePhone(18112345678)).toBe(true)
+    expect(isMobilePhone(19012345678)).toBe(true)
+    expect(isMobilePhone(19912345678)).toBe(true)
+  })
+
+  it('应该拒绝无效的手机号码', () => {
+    // 长度不对 - 字符串格式
+    expect(isMobilePhone('1381234567')).toBe(false) // 10位
+    expect(isMobilePhone('138123456789')).toBe(false) // 12位
+
+    // 长度不对 - 数字格式
+    expect(isMobilePhone(1381234567)).toBe(false) // 10位
+    expect(isMobilePhone(138123456789)).toBe(false) // 12位
+
+    // 不是以1开头
+    expect(isMobilePhone('23812345678')).toBe(false)
+    expect(isMobilePhone('01812345678')).toBe(false)
+    expect(isMobilePhone(23812345678)).toBe(false)
+
+    // 第二位不是3-9
+    expect(isMobilePhone('10812345678')).toBe(false)
+    expect(isMobilePhone('11812345678')).toBe(false)
+    expect(isMobilePhone('12812345678')).toBe(false)
+    expect(isMobilePhone(10812345678)).toBe(false)
+    expect(isMobilePhone(11812345678)).toBe(false)
+    expect(isMobilePhone(12812345678)).toBe(false)
+
+    // 包含非数字字符（只对字符串有效）
+    expect(isMobilePhone('138-1234-5678')).toBe(false)
+    expect(isMobilePhone('138 1234 5678')).toBe(false)
+    expect(isMobilePhone('138a1234567')).toBe(false)
+
+    // 非字符串非数字类型
+    expect(isMobilePhone(null)).toBe(false)
+    expect(isMobilePhone(undefined)).toBe(false)
+    expect(isMobilePhone({})).toBe(false)
+    expect(isMobilePhone([])).toBe(false)
+    expect(isMobilePhone(true)).toBe(false)
+
+    // 空字符串
+    expect(isMobilePhone('')).toBe(false)
+
+    // 特殊数字情况
+    expect(isMobilePhone(Number.NaN)).toBe(false)
+    expect(isMobilePhone(Infinity)).toBe(false)
   })
 })

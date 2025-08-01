@@ -425,3 +425,42 @@ export function isPlainObject(value: unknown): value is Record<string, any> {
   const proto = Object.getPrototypeOf(value)
   return proto === Object.prototype || proto === null
 }
+
+/**
+ * 检查值是否为有效的手机号码
+ * @param val 要检查的值
+ * @returns 如果是有效的手机号码则返回 true，否则返回 false
+ * @group Is
+ * @example
+ * ```ts
+ * isMobilePhone('13812345678') // true
+ * isMobilePhone(13812345678) // true
+ * isMobilePhone('15987654321') // true
+ * isMobilePhone(15987654321) // true
+ * isMobilePhone('18600000000') // true
+ * isMobilePhone(18600000000) // true
+ * isMobilePhone('12345678901') // false（不是有效号段）
+ * isMobilePhone(12345678901) // false（不是有效号段）
+ * isMobilePhone('1381234567') // false（长度不对）
+ * isMobilePhone(1381234567) // false（长度不对）
+ * isMobilePhone('138123456789') // false（长度不对）
+ * isMobilePhone(138123456789) // false（长度不对）
+ * isMobilePhone('') // false
+ * isMobilePhone(null) // false
+ * ```
+ */
+export function isMobilePhone(val: unknown): boolean {
+  // 如果既不是字符串也不是数字，直接返回 false
+  if (!isString(val) && !isNumber(val)) {
+    return false
+  }
+
+  // 转换为字符串进行验证
+  const phoneStr = String(val)
+
+  // 中国大陆手机号码正则表达式
+  // 11位数字，以1开头，第二位是3-9的数字
+  const mobileRegex = /^1[3-9]\d{9}$/
+
+  return mobileRegex.test(phoneStr)
+}
