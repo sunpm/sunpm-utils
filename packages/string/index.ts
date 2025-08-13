@@ -236,3 +236,82 @@ export function replaceNBSP(str?: string): string {
 
   return str.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' ')
 }
+
+/**
+ * 解析JSON字符串，处理异常情况
+ *
+ * 支持解析各种有效的JSON格式，包括对象、数组、字符串、数字、布尔值等。
+ * 如果解析失败，会在控制台输出错误信息并返回原始字符串。
+ *
+ * @param str 待解析的字符串
+ * @param defaultValue 解析失败时的默认返回值，默认为原始字符串
+ * @returns 解析后的对象、数组或其他JSON值，解析失败时返回默认值
+ * @group String
+ * @example
+ * ```ts
+ * // 解析对象
+ * parseJsonStr('{"name": "Tom", "age": 25}') // { name: 'Tom', age: 25 }
+ *
+ * // 解析数组
+ * parseJsonStr('[1, 2, 3]') // [1, 2, 3]
+ *
+ * // 解析基础类型
+ * parseJsonStr('"hello"') // 'hello'
+ * parseJsonStr('123') // 123
+ * parseJsonStr('true') // true
+ *
+ * // 处理无效JSON
+ * parseJsonStr('{invalid json}') // '{invalid json}'（返回原字符串）
+ *
+ * // 处理空值
+ * parseJsonStr('') // {}
+ * parseJsonStr(null) // {}
+ * parseJsonStr(undefined) // {}
+ *
+ * // 自定义默认值
+ * parseJsonStr('invalid', null) // null
+ *
+ * // 非JSON格式的字符串
+ * parseJsonStr('hello world') // 'hello world'
+ * ```
+ */
+export function parseJsonStr<T = any>(str?: string | null, defaultValue?: T): T | string | Record<string, any> {
+  // 处理空值情况
+  if (!str) {
+    return defaultValue !== undefined ? defaultValue : {}
+  }
+
+  // 确保输入是字符串
+  if (!isString(str)) {
+    return defaultValue !== undefined ? defaultValue : str as any
+  }
+
+  const trimmedStr = str.trim()
+
+  // 检查是否可能是JSON格式
+  const isLikelyJson = (
+    // 对象格式
+    (trimmedStr.startsWith('{') && trimmedStr.endsWith('}'))
+    // 数组格式
+    || (trimmedStr.startsWith('[') && trimmedStr.endsWith(']'))
+    // 字符串格式
+    || (trimmedStr.startsWith('"') && trimmedStr.endsWith('"'))
+    // 数字格式（包括负数、小数、科学计数法）
+    || /^-?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i.test(trimmedStr)
+    // 布尔值和null
+    || ['true', 'false', 'null'].includes(trimmedStr)
+  )
+
+  // 如果不像JSON格式，直接返回原字符串
+  if (!isLikelyJson) {
+    return defaultValue !== undefined ? defaultValue : str
+  }
+
+  try {
+    return JSON.parse(trimmedStr) as T
+  }
+  catch (error) {
+    console.error('解析 JSON 失败: 输入字符串为', str, '错误详情: ', error)
+    return defaultValue !== undefined ? defaultValue : str
+  }
+}
