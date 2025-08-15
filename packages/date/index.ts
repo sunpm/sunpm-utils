@@ -442,3 +442,107 @@ export function formatChatTime(date: DateLike): string {
   // 往年日期：显示YYYY年MM月DD日
   return d.format('YYYY年MM月DD日')
 }
+
+/**
+ * 格式化时间戳为时长字符串
+ *
+ * 支持自定义格式化模板和智能单位显示。如果提供格式化字符串，则按照指定格式返回；
+ * 如果不提供，则智能判断显示单位，只显示有意义的时间单位。
+ *
+ * @param timestamp 时间戳（毫秒）或者持续时间（毫秒）
+ * @param format 可选的格式化字符串，支持 YY（年）、MM（月）、DD（天）、HH（小时）、mm（分钟）、ss（秒钟）占位符
+ * @returns 格式化后的时长字符串
+ * @group Date
+ * @example
+ * ```ts
+ * // 使用自定义格式
+ * formatDuration(3661000, 'HH:mm:ss') // "01:01:01"
+ * formatDuration(3661000, 'HH时mm分ss秒') // "01时01分01秒"
+ * formatDuration(90061000, 'DD天HH时mm分ss秒') // "01天01时01分01秒"
+ * formatDuration(2592000000, 'MM月DD天') // "01月00天"
+ * formatDuration(31536000000, 'YY年MM月DD天') // "01年00月00天"
+ *
+ * // 智能格式（只显示有意义的单位）
+ * formatDuration(3600000) // "1小时"（正好1小时）
+ * formatDuration(3661000) // "1小时1分钟1秒"（1小时1分钟1秒）
+ * formatDuration(90061000) // "1天1小时1分钟1秒"（1天1小时1分钟1秒）
+ * formatDuration(2592000000) // "1个月"（30天）
+ * formatDuration(31536000000) // "1年"（365天）
+ * formatDuration(125000) // "2分钟5秒"（2分钟5秒）
+ * formatDuration(30000) // "30秒"（30秒）
+ * formatDuration(5000) // "5秒"（5秒）
+ * formatDuration(0) // "0秒"（0秒）
+ *
+ * // 处理超大时间值
+ * formatDuration(94608000000) // "3年"（3*365天）
+ * formatDuration(94694461000) // "3年1天1小时1分钟1秒"
+ * ```
+ */
+export function formatDuration(timestamp: number, format?: string): string {
+  // 确保timestamp是正数
+  const duration = Math.abs(timestamp)
+
+  // 定义时间单位常量（毫秒）
+  const SECOND = 1000
+  const MINUTE = 60 * SECOND
+  const HOUR = 60 * MINUTE
+  const DAY = 24 * HOUR
+  const MONTH = 30 * DAY // 30天 = 1个月
+  const YEAR = 365 * DAY // 365天 = 1年
+
+  // 也可以在当前时间上加上 timestamp，使用 dayjs 计算距离现在多少时间，不需要手动计算
+  // 计算各个时间单位
+  const years = Math.floor(duration / YEAR)
+  const months = Math.floor((duration % YEAR) / MONTH)
+  const days = Math.floor((duration % MONTH) / DAY)
+  const hours = Math.floor((duration % DAY) / HOUR)
+  const minutes = Math.floor((duration % HOUR) / MINUTE)
+  const seconds = Math.floor((duration % MINUTE) / SECOND)
+
+  // 如果提供了格式化字符串，按照格式返回
+  if (format) {
+    const paddedYears = years.toString().padStart(2, '0')
+    const paddedMonths = months.toString().padStart(2, '0')
+    const paddedDays = days.toString().padStart(2, '0')
+    const paddedHours = hours.toString().padStart(2, '0')
+    const paddedMinutes = minutes.toString().padStart(2, '0')
+    const paddedSeconds = seconds.toString().padStart(2, '0')
+
+    return format
+      .replace(/YY/g, paddedYears)
+      .replace(/MM/g, paddedMonths)
+      .replace(/DD/g, paddedDays)
+      .replace(/HH/g, paddedHours)
+      .replace(/mm/g, paddedMinutes)
+      .replace(/ss/g, paddedSeconds)
+  }
+
+  // 智能格式：只显示有意义的单位
+  const parts: string[] = []
+
+  if (years > 0) {
+    parts.push(`${years}年`)
+  }
+
+  if (months > 0) {
+    parts.push(`${months}个月`)
+  }
+
+  if (days > 0) {
+    parts.push(`${days}天`)
+  }
+
+  if (hours > 0) {
+    parts.push(`${hours}小时`)
+  }
+
+  if (minutes > 0) {
+    parts.push(`${minutes}分钟`)
+  }
+
+  if (seconds > 0 || parts.length === 0) {
+    parts.push(`${seconds}秒`)
+  }
+
+  return parts.join('')
+}

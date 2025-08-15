@@ -10,6 +10,7 @@ import {
   endOf,
   formatChatTime,
   formatDate,
+  formatDuration,
   formatFullTime,
   formatHumanReadable,
   fromNow,
@@ -370,5 +371,117 @@ describe('formatChatTime', () => {
 
     // 恢复系统时间
     vi.useRealTimers()
+  })
+})
+
+describe('formatDuration', () => {
+  it('应该使用自定义格式正确格式化时长', () => {
+    expect(formatDuration(3661000, 'HH:mm:ss')).toBe('01:01:01')
+    expect(formatDuration(3661000, 'HH时mm分ss秒')).toBe('01时01分01秒')
+    expect(formatDuration(3661000, 'HH mm ss')).toBe('01 01 01')
+    expect(formatDuration(125000, 'mm:ss')).toBe('02:05')
+    expect(formatDuration(5000, 'ss')).toBe('05')
+  })
+
+  it('应该使用扩展格式支持天、月、年', () => {
+    // 测试天单位
+    expect(formatDuration(90061000, 'DD天HH时mm分ss秒')).toBe('01天01时01分01秒')
+    expect(formatDuration(86400000, 'DD天')).toBe('01天') // 正好1天
+
+    // 测试月单位（30天 = 1个月）
+    const MONTH_MS = 30 * 24 * 60 * 60 * 1000
+    expect(formatDuration(MONTH_MS, 'MM月DD天')).toBe('01月00天')
+
+    // 测试年单位（365天 = 1年）
+    const YEAR_MS = 365 * 24 * 60 * 60 * 1000
+    expect(formatDuration(YEAR_MS, 'YY年MM月DD天')).toBe('01年00月05天') // 365 ÷ 30 = 12个月余5天
+
+    // 测试复合格式
+    expect(formatDuration(YEAR_MS + MONTH_MS + 86400000 + 3661000, 'YY年MM月DD天HH时mm分ss秒'))
+      .toBe('01年01月06天01时01分01秒') // 1年+1月+1天+1时1分1秒
+  })
+
+  it('应该智能格式化时长（只显示有意义的单位）', () => {
+    expect(formatDuration(3600000)).toBe('1小时')
+    expect(formatDuration(3661000)).toBe('1小时1分钟1秒')
+    expect(formatDuration(125000)).toBe('2分钟5秒')
+    expect(formatDuration(30000)).toBe('30秒')
+    expect(formatDuration(5000)).toBe('5秒')
+    expect(formatDuration(0)).toBe('0秒')
+  })
+
+  it('应该智能处理天、月、年单位', () => {
+    // 测试天
+    expect(formatDuration(86400000)).toBe('1天') // 正好1天
+    expect(formatDuration(90061000)).toBe('1天1小时1分钟1秒')
+    expect(formatDuration(172800000)).toBe('2天') // 正好2天
+
+    // 测试月（30天 = 1个月）
+    const MONTH_MS = 30 * 24 * 60 * 60 * 1000
+    expect(formatDuration(MONTH_MS)).toBe('1个月') // 正好30天
+    expect(formatDuration(MONTH_MS + 86400000)).toBe('1个月1天') // 31天
+
+    // 测试年（365天 = 1年）
+    const YEAR_MS = 365 * 24 * 60 * 60 * 1000
+    expect(formatDuration(YEAR_MS)).toBe('1年5天') // 365天 = 12个月+5天
+    expect(formatDuration(YEAR_MS + MONTH_MS)).toBe('1年1个月5天') // 1年+1个月
+  })
+
+  it('应该正确处理大于24小时但小于1天的情况', () => {
+    expect(formatDuration(90000000)).toBe('1天1小时') // 25小时 = 1天1小时
+    expect(formatDuration(90061000)).toBe('1天1小时1分钟1秒')
+  })
+
+  it('应该正确处理只有分钟的情况', () => {
+    expect(formatDuration(60000)).toBe('1分钟')
+    expect(formatDuration(120000)).toBe('2分钟')
+    expect(formatDuration(3540000)).toBe('59分钟')
+  })
+
+  it('应该正确处理只有小时的情况', () => {
+    expect(formatDuration(7200000)).toBe('2小时')
+    expect(formatDuration(10800000)).toBe('3小时')
+  })
+
+  it('应该正确处理小时+分钟的情况', () => {
+    expect(formatDuration(3660000)).toBe('1小时1分钟')
+    expect(formatDuration(7320000)).toBe('2小时2分钟')
+  })
+
+  it('应该正确处理负数时间戳', () => {
+    expect(formatDuration(-3661000, 'HH:mm:ss')).toBe('01:01:01')
+    expect(formatDuration(-3661000)).toBe('1小时1分钟1秒')
+    expect(formatDuration(-90061000)).toBe('1天1小时1分钟1秒')
+  })
+
+  it('应该正确处理复杂的自定义格式', () => {
+    // 测试不同的分隔符和格式
+    expect(formatDuration(3661000, 'HH-mm-ss')).toBe('01-01-01')
+    expect(formatDuration(3661000, 'HH/mm/ss')).toBe('01/01/01')
+    expect(formatDuration(3661000, 'HH小时mm分钟ss秒钟')).toBe('01小时01分钟01秒钟')
+
+    // 测试扩展格式
+    expect(formatDuration(90061000, 'DD-HH-mm-ss')).toBe('01-01-01-01')
+    expect(formatDuration(90061000, 'DD/HH/mm/ss')).toBe('01/01/01/01')
+  })
+
+  it('应该正确处理零值的边界情况', () => {
+    expect(formatDuration(0, 'HH:mm:ss')).toBe('00:00:00')
+    expect(formatDuration(1000, 'HH:mm:ss')).toBe('00:00:01')
+    expect(formatDuration(60000, 'HH:mm:ss')).toBe('00:01:00')
+    expect(formatDuration(3600000, 'HH:mm:ss')).toBe('01:00:00')
+    expect(formatDuration(86400000, 'DD:HH:mm:ss')).toBe('01:00:00:00')
+  })
+
+  it('应该正确处理超大时间值', () => {
+    // 测试多年的情况（365天 * 3 = 3年）
+    const threeYears = 3 * 365 * 24 * 60 * 60 * 1000
+    expect(formatDuration(threeYears)).toBe('3年15天') // 3*365天 = 36个月+15天
+
+    // 测试复合超大时间值
+    const YEAR_MS = 365 * 24 * 60 * 60 * 1000
+    const MONTH_MS = 30 * 24 * 60 * 60 * 1000
+    const complexLargeTime = 3 * YEAR_MS + MONTH_MS + 86400000 + 3661000
+    expect(formatDuration(complexLargeTime)).toBe('3年1个月16天1小时1分钟1秒') // 3年+1月+1天+1时1分1秒
   })
 })
