@@ -310,8 +310,8 @@ export function parseJsonStr<T = any>(str?: string | null, defaultValue?: T): T 
   try {
     return JSON.parse(trimmedStr) as T
   }
-  catch (error) {
-    console.error('解析 JSON 失败: 输入字符串为', str, '错误详情: ', error)
+  catch {
+    // JSON 解析失败时返回默认值或原字符串，这是预期行为
     return defaultValue !== undefined ? defaultValue : str
   }
 }

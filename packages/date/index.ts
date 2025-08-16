@@ -451,7 +451,7 @@ export function formatChatTime(date: DateLike): string {
  *
  * @param timestamp 时间戳（毫秒）或者持续时间（毫秒）
  * @param format 可选的格式化字符串，支持 YY（年）、MM（月）、DD（天）、HH（小时）、mm（分钟）、ss（秒钟）占位符
- * @returns 格式化后的时长字符串
+ * @returns 格式化后的时长字符串或数字
  * @group Date
  * @example
  * ```ts
@@ -462,11 +462,11 @@ export function formatChatTime(date: DateLike): string {
  * formatDuration(2592000000, 'MM月DD天') // "01月00天"
  * formatDuration(31536000000, 'YY年MM月DD天') // "01年00月00天"
  *
- * // 单一格式返回数字（双字母或单字母）
+ * // 单一格式返回数字（双字母或单字母，支持小数）
  * formatDuration(604800000, 'HH') // 168（总小时数）
  * formatDuration(604800000, 'H') // 168（总小时数）
- * formatDuration(3600000, 'mm') // 60（总分钟数）
- * formatDuration(3600000, 'm') // 60（总分钟数）
+ * formatDuration(90000, 'mm') // 1.5（总分钟数，支持小数）
+ * formatDuration(90000, 'm') // 1.5（总分钟数，支持小数）
  * formatDuration(604800000, 'DD') // 7（总天数）
  * formatDuration(604800000, 'D') // 7（总天数）
  *
@@ -511,13 +511,13 @@ export function formatDuration(timestamp: number, format?: string): string | num
   if (format) {
     const trimmedFormat = format.trim()
 
-    // 计算各单位的总数
-    const totalYears = Math.floor(duration / YEAR)
-    const totalMonths = Math.floor(duration / MONTH)
-    const totalDays = Math.floor(duration / DAY)
-    const totalHours = Math.floor(duration / HOUR)
-    const totalMinutes = Math.floor(duration / MINUTE)
-    const totalSeconds = Math.floor(duration / SECOND)
+    // 计算各单位的总数（精确值，保留小数）
+    const totalYears = duration / YEAR
+    const totalMonths = duration / MONTH
+    const totalDays = duration / DAY
+    const totalHours = duration / HOUR
+    const totalMinutes = duration / MINUTE
+    const totalSeconds = duration / SECOND
 
     // 单位映射表
     const unitMap: Record<string, { total: number, current: number }> = {
@@ -535,9 +535,11 @@ export function formatDuration(timestamp: number, format?: string): string | num
       s: { total: totalSeconds, current: seconds },
     }
 
-    // 如果是单一单位格式，返回该单位的总数（数字）
+    // 如果是单一单位格式，返回该单位的总数（数字，保留合理精度）
     if (unitMap[trimmedFormat]) {
-      return unitMap[trimmedFormat].total
+      const totalValue = unitMap[trimmedFormat].total
+      // 保留最多3位小数，但去除末尾的零
+      return Math.round(totalValue * 1000) / 1000
     }
 
     // 复合格式：替换所有匹配的格式标记

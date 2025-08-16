@@ -518,4 +518,30 @@ describe('formatDuration', () => {
     expect(formatDuration(90000000, 'D天H时')).toBe('1天1时') // 单字母混合
     expect(formatDuration(90000000, 'DD天HH时')).toBe('01天01时') // 双字母混合
   })
+
+  it('应该在单一格式中支持小数', () => {
+    // 测试小数分钟
+    expect(formatDuration(90000, 'm')).toBe(1.5) // 90秒 = 1.5分钟
+    expect(formatDuration(150000, 'm')).toBe(2.5) // 150秒 = 2.5分钟
+
+    // 测试小数秒
+    expect(formatDuration(7500, 's')).toBe(7.5) // 7500毫秒 = 7.5秒
+    expect(formatDuration(12500, 's')).toBe(12.5) // 12500毫秒 = 12.5秒
+
+    // 测试小数小时
+    expect(formatDuration(1800000, 'H')).toBe(0.5) // 30分钟 = 0.5小时
+    expect(formatDuration(5400000, 'H')).toBe(1.5) // 90分钟 = 1.5小时
+
+    // 测试小数天
+    expect(formatDuration(43200000, 'D')).toBe(0.5) // 12小时 = 0.5天
+    expect(formatDuration(129600000, 'D')).toBe(1.5) // 36小时 = 1.5天
+
+    // 测试精度（保留最多3位小数）
+    expect(formatDuration(33333, 's')).toBe(33.333) // 33333毫秒 = 33.333秒
+    expect(formatDuration(1, 's')).toBe(0.001) // 1毫秒 = 0.001秒
+
+    // 测试整数情况仍然返回整数
+    expect(formatDuration(60000, 'm')).toBe(1) // 60秒 = 1分钟（整数）
+    expect(formatDuration(3600000, 'H')).toBe(1) // 3600秒 = 1小时（整数）
+  })
 })
