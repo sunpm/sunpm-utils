@@ -113,6 +113,8 @@ export function convertToDayjsParam(value: DateLike) {
  * ```
  */
 export function formatDate(date: DateLike, format = 'YYYY-MM-DD'): string {
+  if (!date)
+    return ''
   return dayjs(convertToDayjsParam(date)).format(format)
 }
 
