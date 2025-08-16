@@ -1,6 +1,5 @@
 ---
-description: 
-globs: 
+globs: *.ts
 alwaysApply: false
 ---
 Before diving into the best practices, please note that you may need to adapt the globs depending on your project's specific structure and file types.
@@ -55,6 +54,7 @@ globs: **/*.{ts,tsx,js,jsx}
 - Customize ESLint rules to fit project needs
 - Use ESLint plugins for additional checks
 - Integrate ESLint with your IDE for real-time feedback
+- No need to fix linter errors, auto fix is configured on save.
 
 ---
 name: typedoc-best-practices.mdc

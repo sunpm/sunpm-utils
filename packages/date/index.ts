@@ -462,6 +462,14 @@ export function formatChatTime(date: DateLike): string {
  * formatDuration(2592000000, 'MM月DD天') // "01月00天"
  * formatDuration(31536000000, 'YY年MM月DD天') // "01年00月00天"
  *
+ * // 单一格式返回数字（双字母或单字母）
+ * formatDuration(604800000, 'HH') // 168（总小时数）
+ * formatDuration(604800000, 'H') // 168（总小时数）
+ * formatDuration(3600000, 'mm') // 60（总分钟数）
+ * formatDuration(3600000, 'm') // 60（总分钟数）
+ * formatDuration(604800000, 'DD') // 7（总天数）
+ * formatDuration(604800000, 'D') // 7（总天数）
+ *
  * // 智能格式（只显示有意义的单位）
  * formatDuration(3600000) // "1小时"（正好1小时）
  * formatDuration(3661000) // "1小时1分钟1秒"（1小时1分钟1秒）
@@ -478,7 +486,7 @@ export function formatChatTime(date: DateLike): string {
  * formatDuration(94694461000) // "3年1天1小时1分钟1秒"
  * ```
  */
-export function formatDuration(timestamp: number, format?: string): string {
+export function formatDuration(timestamp: number, format?: string): string | number {
   // 确保timestamp是正数
   const duration = Math.abs(timestamp)
 
@@ -501,20 +509,52 @@ export function formatDuration(timestamp: number, format?: string): string {
 
   // 如果提供了格式化字符串，按照格式返回
   if (format) {
-    const paddedYears = years.toString().padStart(2, '0')
-    const paddedMonths = months.toString().padStart(2, '0')
-    const paddedDays = days.toString().padStart(2, '0')
-    const paddedHours = hours.toString().padStart(2, '0')
-    const paddedMinutes = minutes.toString().padStart(2, '0')
-    const paddedSeconds = seconds.toString().padStart(2, '0')
+    const trimmedFormat = format.trim()
 
-    return format
-      .replace(/YY/g, paddedYears)
-      .replace(/MM/g, paddedMonths)
-      .replace(/DD/g, paddedDays)
-      .replace(/HH/g, paddedHours)
-      .replace(/mm/g, paddedMinutes)
-      .replace(/ss/g, paddedSeconds)
+    // 计算各单位的总数
+    const totalYears = Math.floor(duration / YEAR)
+    const totalMonths = Math.floor(duration / MONTH)
+    const totalDays = Math.floor(duration / DAY)
+    const totalHours = Math.floor(duration / HOUR)
+    const totalMinutes = Math.floor(duration / MINUTE)
+    const totalSeconds = Math.floor(duration / SECOND)
+
+    // 单位映射表
+    const unitMap: Record<string, { total: number, current: number }> = {
+      YY: { total: totalYears, current: years },
+      Y: { total: totalYears, current: years },
+      MM: { total: totalMonths, current: months },
+      M: { total: totalMonths, current: months },
+      DD: { total: totalDays, current: days },
+      D: { total: totalDays, current: days },
+      HH: { total: totalHours, current: hours },
+      H: { total: totalHours, current: hours },
+      mm: { total: totalMinutes, current: minutes },
+      m: { total: totalMinutes, current: minutes },
+      ss: { total: totalSeconds, current: seconds },
+      s: { total: totalSeconds, current: seconds },
+    }
+
+    // 如果是单一单位格式，返回该单位的总数（数字）
+    if (unitMap[trimmedFormat]) {
+      return unitMap[trimmedFormat].total
+    }
+
+    // 复合格式：替换所有匹配的格式标记
+    let result = format
+
+    // 按照长度降序处理，避免短格式覆盖长格式（如 H 覆盖 HH）
+    const formatTokens = ['YY', 'MM', 'DD', 'HH', 'mm', 'ss', 'Y', 'M', 'D', 'H', 'm', 's']
+
+    for (const token of formatTokens) {
+      if (result.includes(token) && unitMap[token]) {
+        const { current } = unitMap[token]
+        const paddedValue = current.toString().padStart(token.length, '0')
+        result = result.replace(new RegExp(token, 'g'), paddedValue)
+      }
+    }
+
+    return result
   }
 
   // 智能格式：只显示有意义的单位

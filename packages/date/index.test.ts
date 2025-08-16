@@ -380,7 +380,7 @@ describe('formatDuration', () => {
     expect(formatDuration(3661000, 'HH时mm分ss秒')).toBe('01时01分01秒')
     expect(formatDuration(3661000, 'HH mm ss')).toBe('01 01 01')
     expect(formatDuration(125000, 'mm:ss')).toBe('02:05')
-    expect(formatDuration(5000, 'ss')).toBe('05')
+    expect(formatDuration(5000, 'ss')).toBe(5)
   })
 
   it('应该使用扩展格式支持天、月、年', () => {
@@ -483,5 +483,39 @@ describe('formatDuration', () => {
     const MONTH_MS = 30 * 24 * 60 * 60 * 1000
     const complexLargeTime = 3 * YEAR_MS + MONTH_MS + 86400000 + 3661000
     expect(formatDuration(complexLargeTime)).toBe('3年1个月16天1小时1分钟1秒') // 3年+1月+1天+1时1分1秒
+  })
+
+  it('应该在单一单位格式中显示总数而非模运算结果', () => {
+    // 测试单一小时格式显示总小时数（返回数字）
+    expect(formatDuration(604800000, 'HH')).toBe(168) // 7天 = 168小时
+    expect(formatDuration(90000000, 'HH')).toBe(25) // 25小时
+
+    // 测试单一分钟格式显示总分钟数（返回数字）
+    expect(formatDuration(3600000, 'mm')).toBe(60) // 1小时 = 60分钟
+    expect(formatDuration(7200000, 'mm')).toBe(120) // 2小时 = 120分钟
+
+    // 测试单一秒格式显示总秒数（返回数字）
+    expect(formatDuration(120000, 'ss')).toBe(120) // 2分钟 = 120秒
+
+    // 测试单一天格式显示总天数（返回数字）
+    expect(formatDuration(604800000, 'DD')).toBe(7) // 7天
+
+    // 测试单字母格式（返回数字）
+    expect(formatDuration(604800000, 'H')).toBe(168) // 7天 = 168小时
+    expect(formatDuration(3600000, 'm')).toBe(60) // 1小时 = 60分钟
+    expect(formatDuration(120000, 's')).toBe(120) // 2分钟 = 120秒
+    expect(formatDuration(604800000, 'D')).toBe(7) // 7天
+    expect(formatDuration(2592000000, 'M')).toBe(1) // 30天 = 1个月
+    expect(formatDuration(31536000000, 'Y')).toBe(1) // 365天 = 1年
+
+    // 确保复合格式仍然使用模运算（各单位在正确范围内，返回字符串）
+    expect(formatDuration(604800000, 'DD天HH时')).toBe('07天00时')
+    expect(formatDuration(90000000, 'DD天HH时')).toBe('01天01时')
+
+    // 测试单字母格式在复合格式中的表现（根据字母数量决定补零位数）
+    expect(formatDuration(3661000, 'H:m:s')).toBe('1:1:1') // 单字母不补零
+    expect(formatDuration(3661000, 'HH:mm:ss')).toBe('01:01:01') // 双字母补零到两位
+    expect(formatDuration(90000000, 'D天H时')).toBe('1天1时') // 单字母混合
+    expect(formatDuration(90000000, 'DD天HH时')).toBe('01天01时') // 双字母混合
   })
 })
