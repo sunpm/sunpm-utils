@@ -1,7 +1,7 @@
 {
   "name": "@pmun/utils",
   "type": "module",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Sunpm 的主观个人工具函数库",
   "author": "sunpm",
   "license": "MIT",
