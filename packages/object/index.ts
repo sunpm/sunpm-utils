@@ -256,3 +256,94 @@ export function filterObjectByKeys(
     return newObject
   }, {})
 }
+
+/**
+ * 创建一个新对象，通过函数转换每个键
+ * @param obj 原始对象
+ * @param iteratee 转换函数，接收值、键和对象，返回新的键名
+ * @returns 转换后的新对象
+ * @group Object
+ * @example
+ * ```ts
+ * const obj = { a: 1, b: 2, c: 3 }
+ * mapKeys(obj, (value, key) => key.toUpperCase())
+ * // { A: 1, B: 2, C: 3 }
+ *
+ * mapKeys(obj, (value, key) => `prefix_${key}`)
+ * // { prefix_a: 1, prefix_b: 2, prefix_c: 3 }
+ * ```
+ */
+export function mapKeys<T extends Record<string, any>>(
+  obj: T,
+  iteratee: (value: T[keyof T], key: string, obj: T) => string,
+): Record<string, T[keyof T]> {
+  const result: Record<string, T[keyof T]> = {}
+
+  Object.keys(obj).forEach((key) => {
+    const newKey = iteratee(obj[key], key, obj)
+    result[newKey] = obj[key]
+  })
+
+  return result
+}
+
+/**
+ * 创建一个新对象，通过函数转换每个值
+ * @param obj 原始对象
+ * @param iteratee 转换函数，接收值、键和对象，返回新的值
+ * @returns 转换后的新对象
+ * @group Object
+ * @example
+ * ```ts
+ * const obj = { a: 1, b: 2, c: 3 }
+ * mapValues(obj, value => value * 2)
+ * // { a: 2, b: 4, c: 6 }
+ *
+ * const users = { user1: { age: 20 }, user2: { age: 30 } }
+ * mapValues(users, user => user.age)
+ * // { user1: 20, user2: 30 }
+ * ```
+ */
+export function mapValues<T extends Record<string, any>, R>(
+  obj: T,
+  iteratee: (value: T[keyof T], key: string, obj: T) => R,
+): Record<keyof T, R> {
+  const result = {} as Record<keyof T, R>
+
+  Object.keys(obj).forEach((key) => {
+    result[key as keyof T] = iteratee(obj[key], key, obj)
+  })
+
+  return result
+}
+
+/**
+ * 反转对象的键值对，值变成键，键变成值
+ * @param obj 原始对象
+ * @returns 反转后的新对象
+ * @group Object
+ * @example
+ * ```ts
+ * invert({ a: '1', b: '2', c: '3' })
+ * // { '1': 'a', '2': 'b', '3': 'c' }
+ *
+ * invert({ firstName: 'John', lastName: 'Doe' })
+ * // { John: 'firstName', Doe: 'lastName' }
+ *
+ * // 注意：如果有重复的值，后面的键会覆盖前面的
+ * invert({ a: '1', b: '1' })
+ * // { '1': 'b' }
+ * ```
+ */
+export function invert<T extends Record<string, string | number>>(
+  obj: T,
+): Record<string, string> {
+  const result: Record<string, string> = {}
+
+  Object.keys(obj).forEach((key) => {
+    const value = obj[key]
+    result[String(value)] = key
+  })
+
+  return result
+}

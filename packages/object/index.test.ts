@@ -5,6 +5,9 @@ import {
   filterObjectByKeys,
   get,
   hasOwnProp,
+  invert,
+  mapKeys,
+  mapValues,
   merge,
   objectToQueryString,
   omit,
@@ -229,6 +232,78 @@ describe('filterObjectByKeys', () => {
     const originalObject = { name: 'John' }
     const result = filterObjectByKeys(originalObject, [])
 
+    expect(result).toEqual({})
+  })
+})
+
+describe('mapKeys', () => {
+  it('应该转换对象的键', () => {
+    const obj = { a: 1, b: 2, c: 3 }
+    const result = mapKeys(obj, (value, key) => key.toUpperCase())
+    expect(result).toEqual({ A: 1, B: 2, C: 3 })
+  })
+
+  it('应该支持添加前缀', () => {
+    const obj = { a: 1, b: 2 }
+    const result = mapKeys(obj, (value, key) => `prefix_${key}`)
+    expect(result).toEqual({ prefix_a: 1, prefix_b: 2 })
+  })
+
+  it('应该可以访问原始对象', () => {
+    const obj = { a: 1, b: 2 }
+    const result = mapKeys(obj, (value, key, o) => {
+      expect(o).toBe(obj)
+      return key
+    })
+    expect(result).toEqual(obj)
+  })
+})
+
+describe('mapValues', () => {
+  it('应该转换对象的值', () => {
+    const obj = { a: 1, b: 2, c: 3 }
+    const result = mapValues(obj, value => value * 2)
+    expect(result).toEqual({ a: 2, b: 4, c: 6 })
+  })
+
+  it('应该从对象中提取属性', () => {
+    const users = { user1: { age: 20 }, user2: { age: 30 } }
+    const result = mapValues(users, user => user.age)
+    expect(result).toEqual({ user1: 20, user2: 30 })
+  })
+
+  it('应该可以访问键和原始对象', () => {
+    const obj = { a: 1, b: 2 }
+    const result = mapValues(obj, (value, key, o) => {
+      expect(o).toBe(obj)
+      return `${key}:${value}`
+    })
+    expect(result).toEqual({ a: 'a:1', b: 'b:2' })
+  })
+})
+
+describe('invert', () => {
+  it('应该反转对象的键值对', () => {
+    const obj = { a: '1', b: '2', c: '3' }
+    const result = invert(obj)
+    expect(result).toEqual({ 1: 'a', 2: 'b', 3: 'c' })
+  })
+
+  it('应该处理数字值', () => {
+    const obj = { a: 1, b: 2 }
+    const result = invert(obj)
+    expect(result).toEqual({ 1: 'a', 2: 'b' })
+  })
+
+  it('重复的值应该使用最后的键', () => {
+    const obj = { a: '1', b: '1' }
+    const result = invert(obj)
+    expect(result).toEqual({ 1: 'b' })
+  })
+
+  it('应该处理空对象', () => {
+    const obj = {}
+    const result = invert(obj)
     expect(result).toEqual({})
   })
 })

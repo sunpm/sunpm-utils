@@ -111,6 +111,7 @@ describe('isClass', () => {
     expect(isClass(() => {})).toBe(false)
     expect(isClass(() => {})).toBe(false)
     expect(isClass(Math.sin)).toBe(false)
+    // eslint-disable-next-line no-console
     expect(isClass(console.log)).toBe(false)
     expect(isClass({})).toBe(false)
     expect(isClass([])).toBe(false)

@@ -442,3 +442,220 @@ export function arrayReplaceNBSP<T extends Record<string, string | number | bool
 
   return []
 }
+
+/**
+ * 将嵌套数组扁平化一层
+ * @param array 要扁平化的数组
+ * @returns 扁平化后的新数组
+ * @group Array
+ * @example
+ * ```ts
+ * flatten([1, [2, 3], [4, [5, 6]]]) // [1, 2, 3, 4, [5, 6]]
+ * flatten([[1, 2], [3, 4]]) // [1, 2, 3, 4]
+ * flatten([1, 2, 3]) // [1, 2, 3]（已经是扁平的）
+ * ```
+ */
+export function flatten<T>(array: (T | T[])[]): T[] {
+  return array.reduce<T[]>((acc, val) => {
+    if (Array.isArray(val)) {
+      return acc.concat(val)
+    }
+    return acc.concat(val as T)
+  }, [])
+}
+
+/**
+ * 递归扁平化数组至指定深度
+ * @param array 要扁平化的数组
+ * @param depth 扁平化深度，默认为 1
+ * @returns 扁平化后的新数组
+ * @group Array
+ * @example
+ * ```ts
+ * flattenDepth([1, [2, [3, [4]]]], 1) // [1, 2, [3, [4]]]
+ * flattenDepth([1, [2, [3, [4]]]], 2) // [1, 2, 3, [4]]
+ * flattenDepth([1, [2, [3, [4]]]], 3) // [1, 2, 3, 4]
+ * ```
+ */
+export function flattenDepth(array: any[], depth = 1): any[] {
+  if (depth <= 0)
+    return array.slice()
+
+  return array.reduce((acc, val) => {
+    if (Array.isArray(val)) {
+      return acc.concat(flattenDepth(val, depth - 1))
+    }
+    return acc.concat(val)
+  }, [])
+}
+
+/**
+ * 递归扁平化嵌套数组至完全扁平
+ * @param array 要扁平化的数组
+ * @returns 完全扁平化后的新数组
+ * @group Array
+ * @example
+ * ```ts
+ * flattenDeep([1, [2, [3, [4]]]]) // [1, 2, 3, 4]
+ * flattenDeep([[1, 2], [3, [4, [5]]]]) // [1, 2, 3, 4, 5]
+ * flattenDeep([1, 2, 3]) // [1, 2, 3]
+ * ```
+ */
+export function flattenDeep(array: any[]): any[] {
+  return array.reduce((acc, val) => {
+    if (Array.isArray(val)) {
+      return acc.concat(flattenDeep(val))
+    }
+    return acc.concat(val)
+  }, [])
+}
+
+/**
+ * 返回第一个数组中不存在于其他数组的元素
+ * @param array 主数组
+ * @param values 要排除的值数组
+ * @returns 差集数组
+ * @group Array
+ * @example
+ * ```ts
+ * difference([1, 2, 3, 4], [2, 4]) // [1, 3]
+ * difference([1, 2, 3], [4, 5]) // [1, 2, 3]
+ * difference(['a', 'b', 'c'], ['b', 'd']) // ['a', 'c']
+ * ```
+ */
+export function difference<T>(array: T[], ...values: T[][]): T[] {
+  const excludeSet = new Set(values.flat())
+  return array.filter(item => !excludeSet.has(item))
+}
+
+/**
+ * 返回所有数组的交集（所有数组中都存在的元素）
+ * @param arrays 要比较的数组
+ * @returns 交集数组
+ * @group Array
+ * @example
+ * ```ts
+ * intersection([1, 2, 3], [2, 3, 4], [2, 3, 5]) // [2, 3]
+ * intersection([1, 2], [2, 3], [3, 4]) // []（没有共同元素）
+ * intersection(['a', 'b'], ['b', 'c'], ['b', 'd']) // ['b']
+ * ```
+ */
+export function intersection<T>(...arrays: T[][]): T[] {
+  if (arrays.length === 0)
+    return []
+  if (arrays.length === 1)
+    return unique(arrays[0] ?? [])
+
+  const first = arrays[0]
+  if (!first)
+    return []
+
+  const rest = arrays.slice(1)
+  return unique(first).filter(item =>
+    rest.every(arr => arr.includes(item)),
+  )
+}
+
+/**
+ * 返回所有数组的并集（去重后的所有元素）
+ * @param arrays 要合并的数组
+ * @returns 并集数组
+ * @group Array
+ * @example
+ * ```ts
+ * union([1, 2], [2, 3], [3, 4]) // [1, 2, 3, 4]
+ * union([1, 1, 2], [2, 3, 3]) // [1, 2, 3]
+ * union(['a', 'b'], ['b', 'c']) // ['a', 'b', 'c']
+ * ```
+ */
+export function union<T>(...arrays: T[][]): T[] {
+  return unique(arrays.flat())
+}
+
+/**
+ * 根据迭代函数返回的值进行数组去重
+ * @param array 原始数组
+ * @param iteratee 迭代函数，返回用于比较的值
+ * @returns 去重后的新数组
+ * @group Array
+ * @example
+ * ```ts
+ * const users = [
+ *   { id: 1, name: 'Tom' },
+ *   { id: 2, name: 'Jerry' },
+ *   { id: 1, name: 'Tom2' }
+ * ]
+ * uniqBy(users, user => user.id)
+ * // [{ id: 1, name: 'Tom' }, { id: 2, name: 'Jerry' }]
+ *
+ * uniqBy([2.1, 1.2, 2.3], Math.floor) // [2.1, 1.2]
+ * ```
+ */
+export function uniqBy<T, K>(array: T[], iteratee: (item: T) => K): T[] {
+  const seen = new Set<K>()
+  return array.filter((item) => {
+    const key = iteratee(item)
+    if (seen.has(key)) {
+      return false
+    }
+    seen.add(key)
+    return true
+  })
+}
+
+/**
+ * 根据迭代函数返回的值进行排序
+ * @param array 要排序的数组
+ * @param iteratee 迭代函数或属性名，返回用于排序的值
+ * @param order 排序方向，'asc' 为升序，'desc' 为降序，默认为 'asc'
+ * @returns 排序后的新数组，不会修改原数组
+ * @group Array
+ * @example
+ * ```ts
+ * const users = [
+ *   { name: 'Tom', age: 25 },
+ *   { name: 'Jerry', age: 20 },
+ *   { name: 'Alice', age: 30 }
+ * ]
+ *
+ * // 使用函数
+ * sortBy(users, user => user.age)
+ * // [{ name: 'Jerry', age: 20 }, { name: 'Tom', age: 25 }, { name: 'Alice', age: 30 }]
+ *
+ * // 降序
+ * sortBy(users, user => user.age, 'desc')
+ * // [{ name: 'Alice', age: 30 }, { name: 'Tom', age: 25 }, { name: 'Jerry', age: 20 }]
+ *
+ * // 使用属性名
+ * sortBy(users, 'name')
+ * // [{ name: 'Alice', age: 30 }, { name: 'Jerry', age: 20 }, { name: 'Tom', age: 25 }]
+ *
+ * // 数字数组排序
+ * sortBy([3, 1, 4, 1, 5], x => x) // [1, 1, 3, 4, 5]
+ * ```
+ */
+export function sortBy<T>(
+  array: T[],
+  iteratee: ((item: T) => any) | keyof T,
+  order: 'asc' | 'desc' = 'asc',
+): T[] {
+  const result = [...array]
+  const getValue = typeof iteratee === 'function'
+    ? iteratee
+    : (item: T) => item[iteratee]
+
+  result.sort((a, b) => {
+    const aVal = getValue(a)
+    const bVal = getValue(b)
+
+    let comparison = 0
+    if (aVal > bVal)
+      comparison = 1
+    else if (aVal < bVal)
+      comparison = -1
+
+    return order === 'desc' ? -comparison : comparison
+  })
+
+  return result
+}

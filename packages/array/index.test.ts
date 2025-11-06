@@ -4,15 +4,23 @@ import {
   arrayReplaceNBSP,
   arrayToObject,
   chunk,
+  difference,
   first,
+  flatten,
+  flattenDeep,
+  flattenDepth,
   groupBy,
+  intersection,
   isEqual,
   last,
   remove,
   renameTreeNodes,
   sample,
   shuffle,
+  sortBy,
   transformTree,
+  union,
+  uniqBy,
   unique,
 } from './index'
 
@@ -407,5 +415,156 @@ describe('arrayReplaceNBSP', () => {
     const result = arrayReplaceNBSP(emptyData, 'name')
 
     expect(result).toEqual([])
+  })
+})
+
+describe('flatten', () => {
+  it('应该将嵌套数组扁平化一层', () => {
+    expect(flatten([1, [2, 3], [4, [5, 6]]])).toEqual([1, 2, 3, 4, [5, 6]])
+  })
+
+  it('应该处理已经扁平的数组', () => {
+    expect(flatten([1, 2, 3])).toEqual([1, 2, 3])
+  })
+
+  it('应该处理空数组', () => {
+    expect(flatten([])).toEqual([])
+  })
+})
+
+describe('flattenDepth', () => {
+  it('应该扁平化到指定深度', () => {
+    expect(flattenDepth([1, [2, [3, [4]]]], 1)).toEqual([1, 2, [3, [4]]])
+    expect(flattenDepth([1, [2, [3, [4]]]], 2)).toEqual([1, 2, 3, [4]])
+    expect(flattenDepth([1, [2, [3, [4]]]], 3)).toEqual([1, 2, 3, 4])
+  })
+
+  it('深度为0时应该返回原数组副本', () => {
+    const arr = [1, [2, 3]]
+    const result = flattenDepth(arr, 0)
+    expect(result).toEqual([1, [2, 3]])
+    expect(result).not.toBe(arr)
+  })
+})
+
+describe('flattenDeep', () => {
+  it('应该完全扁平化嵌套数组', () => {
+    expect(flattenDeep([1, [2, [3, [4]]]])).toEqual([1, 2, 3, 4])
+    expect(flattenDeep([[1, 2], [3, [4, [5]]]])).toEqual([1, 2, 3, 4, 5])
+  })
+
+  it('应该处理已经扁平的数组', () => {
+    expect(flattenDeep([1, 2, 3])).toEqual([1, 2, 3])
+  })
+})
+
+describe('difference', () => {
+  it('应该返回差集', () => {
+    expect(difference([1, 2, 3, 4], [2, 4])).toEqual([1, 3])
+    expect(difference([1, 2, 3], [4, 5])).toEqual([1, 2, 3])
+  })
+
+  it('应该支持多个排除数组', () => {
+    expect(difference([1, 2, 3, 4, 5], [2], [4])).toEqual([1, 3, 5])
+  })
+
+  it('应该处理字符串数组', () => {
+    expect(difference(['a', 'b', 'c'], ['b', 'd'])).toEqual(['a', 'c'])
+  })
+})
+
+describe('intersection', () => {
+  it('应该返回交集', () => {
+    expect(intersection([1, 2, 3], [2, 3, 4], [2, 3, 5])).toEqual([2, 3])
+  })
+
+  it('没有共同元素时应该返回空数组', () => {
+    expect(intersection([1, 2], [2, 3], [3, 4])).toEqual([])
+  })
+
+  it('应该处理单个数组', () => {
+    expect(intersection([1, 2, 2, 3])).toEqual([1, 2, 3])
+  })
+
+  it('应该处理空数组', () => {
+    expect(intersection()).toEqual([])
+  })
+})
+
+describe('union', () => {
+  it('应该返回并集', () => {
+    expect(union([1, 2], [2, 3], [3, 4])).toEqual([1, 2, 3, 4])
+  })
+
+  it('应该去重', () => {
+    expect(union([1, 1, 2], [2, 3, 3])).toEqual([1, 2, 3])
+  })
+
+  it('应该处理字符串数组', () => {
+    expect(union(['a', 'b'], ['b', 'c'])).toEqual(['a', 'b', 'c'])
+  })
+})
+
+describe('uniqBy', () => {
+  it('应该根据函数返回值去重', () => {
+    const users = [
+      { id: 1, name: 'Tom' },
+      { id: 2, name: 'Jerry' },
+      { id: 1, name: 'Tom2' },
+    ]
+    const result = uniqBy(users, user => user.id)
+    expect(result).toEqual([
+      { id: 1, name: 'Tom' },
+      { id: 2, name: 'Jerry' },
+    ])
+  })
+
+  it('应该处理数字数组', () => {
+    expect(uniqBy([2.1, 1.2, 2.3], Math.floor)).toEqual([2.1, 1.2])
+  })
+})
+
+describe('sortBy', () => {
+  it('应该使用函数排序', () => {
+    const users = [
+      { name: 'Tom', age: 25 },
+      { name: 'Jerry', age: 20 },
+      { name: 'Alice', age: 30 },
+    ]
+    const result = sortBy(users, user => user.age)
+    expect(result[0]?.age).toBe(20)
+    expect(result[1]?.age).toBe(25)
+    expect(result[2]?.age).toBe(30)
+  })
+
+  it('应该支持降序排序', () => {
+    const users = [
+      { name: 'Tom', age: 25 },
+      { name: 'Jerry', age: 20 },
+      { name: 'Alice', age: 30 },
+    ]
+    const result = sortBy(users, user => user.age, 'desc')
+    expect(result[0]?.age).toBe(30)
+    expect(result[1]?.age).toBe(25)
+    expect(result[2]?.age).toBe(20)
+  })
+
+  it('应该使用属性名排序', () => {
+    const users = [
+      { name: 'Tom', age: 25 },
+      { name: 'Jerry', age: 20 },
+      { name: 'Alice', age: 30 },
+    ]
+    const result = sortBy(users, 'name')
+    expect(result[0]?.name).toBe('Alice')
+    expect(result[1]?.name).toBe('Jerry')
+    expect(result[2]?.name).toBe('Tom')
+  })
+
+  it('应该不修改原数组', () => {
+    const arr = [3, 1, 2]
+    const result = sortBy(arr, x => x)
+    expect(result).toEqual([1, 2, 3])
+    expect(arr).toEqual([3, 1, 2])
   })
 })

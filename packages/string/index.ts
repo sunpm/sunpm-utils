@@ -315,3 +315,101 @@ export function parseJsonStr<T = any>(str?: string | null, defaultValue?: T): T 
     return defaultValue !== undefined ? defaultValue : str
   }
 }
+
+/**
+ * 将字符串分割成单词数组
+ * @param str 要分割的字符串
+ * @returns 单词数组
+ * @group String
+ * @example
+ * ```ts
+ * words('hello world') // ['hello', 'world']
+ * words('helloWorld') // ['hello', 'World']
+ * words('hello-world-foo') // ['hello', 'world', 'foo']
+ * words('hello_world_foo') // ['hello', 'world', 'foo']
+ * words('HelloWorldFoo') // ['Hello', 'World', 'Foo']
+ * words('hello123world') // ['hello', '123', 'world']
+ * ```
+ */
+export function words(str: string): string[] {
+  // 匹配连续的字母数字字符、或大写字母开头的驼峰单词
+  // 改进：支持全大写带下划线的情况
+  const pattern = /[A-Z]?[a-z]+|[A-Z]+(?=[A-Z][a-z]|\d|\W|$|\b)|\d+|[A-Z]+/g
+  return str.match(pattern) || []
+}
+
+/**
+ * 将字符串转换为蛇形命名（snake_case）
+ * @param str 输入字符串
+ * @returns 蛇形命名的字符串
+ * @group String
+ * @example
+ * ```ts
+ * snakeCase('helloWorld') // 'hello_world'
+ * snakeCase('HelloWorld') // 'hello_world'
+ * snakeCase('hello-world') // 'hello_world'
+ * snakeCase('hello world') // 'hello_world'
+ * snakeCase('HelloWorldFoo') // 'hello_world_foo'
+ * ```
+ */
+export function snakeCase(str: string): string {
+  return words(str).map(word => word.toLowerCase()).join('_')
+}
+
+/**
+ * 将字符串转换为帕斯卡命名（PascalCase）
+ * @param str 输入字符串
+ * @returns 帕斯卡命名的字符串
+ * @group String
+ * @example
+ * ```ts
+ * pascalCase('hello world') // 'HelloWorld'
+ * pascalCase('hello-world') // 'HelloWorld'
+ * pascalCase('hello_world') // 'HelloWorld'
+ * pascalCase('helloWorld') // 'HelloWorld'
+ * pascalCase('HELLO_WORLD') // 'HelloWorld'
+ * ```
+ */
+export function pascalCase(str: string): string {
+  return words(str)
+    .map(word => capitalize(word.toLowerCase()))
+    .join('')
+}
+
+/**
+ * 简单的模板字符串替换
+ * @param template 模板字符串，使用 {{key}} 或 {key} 标记占位符
+ * @param data 数据对象
+ * @returns 替换后的字符串
+ * @group String
+ * @example
+ * ```ts
+ * template('Hello {{name}}!', { name: 'Tom' }) // 'Hello Tom!'
+ * template('Hello {name}, you are {age} years old', { name: 'Tom', age: 25 })
+ * // 'Hello Tom, you are 25 years old'
+ *
+ * // 支持嵌套属性访问
+ * template('Hello {{user.name}}!', { user: { name: 'Tom' } }) // 'Hello Tom!'
+ *
+ * // 未找到的键会保持原样
+ * template('Hello {{name}}!', {}) // 'Hello {{name}}!'
+ * ```
+ */
+export function template(template: string, data: Record<string, any>): string {
+  return template.replace(/\{\{?(\w+(?:\.\w+)*)\}?\}/g, (match, key) => {
+    // 支持点分隔的嵌套属性访问，如 user.name
+    const keys = key.split('.')
+    let value: any = data
+
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k]
+      }
+      else {
+        return match // 如果找不到键，保持原样
+      }
+    }
+
+    return value !== undefined && value !== null ? String(value) : match
+  })
+}

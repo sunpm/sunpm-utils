@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { camelToKebab, capitalize, ensureRpxUnit, isEmptyString, kebabToCamel, parseJsonStr, replaceNBSP, truncate } from './index'
+import { camelToKebab, capitalize, ensureRpxUnit, isEmptyString, kebabToCamel, parseJsonStr, pascalCase, replaceNBSP, snakeCase, template, truncate, words } from './index'
 
 describe('isEmptyString', () => {
   it('应该检测空字符串', () => {
@@ -149,5 +149,114 @@ describe('parseJsonStr', () => {
     expect(parseJsonStr(123 as any)).toBe(123)
     expect(parseJsonStr({} as any)).toEqual({})
     expect(parseJsonStr([] as any)).toEqual([])
+  })
+})
+
+describe('words', () => {
+  it('应该分割普通字符串', () => {
+    expect(words('hello world')).toEqual(['hello', 'world'])
+  })
+
+  it('应该分割驼峰命名', () => {
+    expect(words('helloWorld')).toEqual(['hello', 'World'])
+    expect(words('HelloWorldFoo')).toEqual(['Hello', 'World', 'Foo'])
+  })
+
+  it('应该分割短横线命名', () => {
+    expect(words('hello-world-foo')).toEqual(['hello', 'world', 'foo'])
+  })
+
+  it('应该分割下划线命名', () => {
+    expect(words('hello_world_foo')).toEqual(['hello', 'world', 'foo'])
+  })
+
+  it('应该处理混合情况', () => {
+    expect(words('hello123world')).toEqual(['hello', '123', 'world'])
+  })
+
+  it('应该处理空字符串', () => {
+    expect(words('')).toEqual([])
+  })
+})
+
+describe('snakeCase', () => {
+  it('应该转换驼峰命名', () => {
+    expect(snakeCase('helloWorld')).toBe('hello_world')
+    expect(snakeCase('HelloWorld')).toBe('hello_world')
+  })
+
+  it('应该转换短横线命名', () => {
+    expect(snakeCase('hello-world')).toBe('hello_world')
+  })
+
+  it('应该转换空格分隔', () => {
+    expect(snakeCase('hello world')).toBe('hello_world')
+  })
+
+  it('应该转换帕斯卡命名', () => {
+    expect(snakeCase('HelloWorldFoo')).toBe('hello_world_foo')
+  })
+
+  it('应该处理大写字符串', () => {
+    expect(snakeCase('HELLO_WORLD')).toBe('hello_world')
+  })
+})
+
+describe('pascalCase', () => {
+  it('应该转换空格分隔', () => {
+    expect(pascalCase('hello world')).toBe('HelloWorld')
+  })
+
+  it('应该转换短横线命名', () => {
+    expect(pascalCase('hello-world')).toBe('HelloWorld')
+  })
+
+  it('应该转换下划线命名', () => {
+    expect(pascalCase('hello_world')).toBe('HelloWorld')
+  })
+
+  it('应该转换驼峰命名', () => {
+    expect(pascalCase('helloWorld')).toBe('HelloWorld')
+  })
+
+  it('应该处理大写字符串', () => {
+    expect(pascalCase('HELLO_WORLD')).toBe('HelloWorld')
+  })
+})
+
+describe('template', () => {
+  it('应该替换双花括号占位符', () => {
+    expect(template('Hello {{name}}!', { name: 'Tom' })).toBe('Hello Tom!')
+  })
+
+  it('应该替换单花括号占位符', () => {
+    expect(template('Hello {name}!', { name: 'Tom' })).toBe('Hello Tom!')
+  })
+
+  it('应该替换多个占位符', () => {
+    const result = template('Hello {name}, you are {age} years old', {
+      name: 'Tom',
+      age: 25,
+    })
+    expect(result).toBe('Hello Tom, you are 25 years old')
+  })
+
+  it('应该支持嵌套属性', () => {
+    const result = template('Hello {{user.name}}!', { user: { name: 'Tom' } })
+    expect(result).toBe('Hello Tom!')
+  })
+
+  it('未找到的键应保持原样', () => {
+    expect(template('Hello {{name}}!', {})).toBe('Hello {{name}}!')
+  })
+
+  it('应该处理 null 和 undefined 值', () => {
+    expect(template('Hello {{name}}!', { name: null })).toBe('Hello {{name}}!')
+    expect(template('Hello {{name}}!', { name: undefined })).toBe('Hello {{name}}!')
+  })
+
+  it('应该将非字符串值转换为字符串', () => {
+    expect(template('Count: {{count}}', { count: 123 })).toBe('Count: 123')
+    expect(template('Active: {{active}}', { active: true })).toBe('Active: true')
   })
 })
