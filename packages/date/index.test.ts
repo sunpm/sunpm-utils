@@ -1,11 +1,13 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   add,
   addDays,
   addMonths,
   addYears,
+  commonDateShortcuts,
   convertToDayjsParam,
   createDate,
+  createDateShortcuts,
   diff,
   endOf,
   formatChatTime,
@@ -14,8 +16,20 @@ import {
   formatFullTime,
   formatHumanReadable,
   fromNow,
+  getDateByOffset,
   getDayOfWeek,
   getDaysInMonth,
+  getLastDaysRange,
+  getLastMonthsRange,
+  getLastWeeksRange,
+  getThisHalfYearRange,
+  getThisMonthRange,
+  getThisQuarterRange,
+  getThisWeekRange,
+  getThisYearRange,
+  getTodayRange,
+  getTodayStr,
+  getYesterdayStr,
   isDateInRange,
   isMillisecondTimestamp,
   now,
@@ -543,5 +557,528 @@ describe('formatDuration', () => {
     // 测试整数情况仍然返回整数
     expect(formatDuration(60000, 'm')).toBe(1) // 60秒 = 1分钟（整数）
     expect(formatDuration(3600000, 'H')).toBe(1) // 3600秒 = 1小时（整数）
+  })
+})
+
+// ==================== 日期范围工具测试 ====================
+
+describe('getDateByOffset', () => {
+  it('应该返回今天的日期', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    const today = getDateByOffset()
+    expect(today.getFullYear()).toBe(2023)
+    expect(today.getMonth()).toBe(4) // 5月是第4个月（0-indexed）
+    expect(today.getDate()).toBe(15)
+
+    vi.useRealTimers()
+  })
+
+  it('应该返回指定偏移天数的日期', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    const yesterday = getDateByOffset(-1)
+    expect(yesterday.getDate()).toBe(14)
+
+    const tomorrow = getDateByOffset(1)
+    expect(tomorrow.getDate()).toBe(16)
+
+    const weekAgo = getDateByOffset(-7)
+    expect(weekAgo.getDate()).toBe(8)
+
+    vi.useRealTimers()
+  })
+})
+
+describe('getYesterdayStr', () => {
+  it('应该返回昨天的日期字符串', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    expect(getYesterdayStr()).toBe('2023-05-14')
+
+    vi.useRealTimers()
+  })
+})
+
+describe('getTodayStr', () => {
+  it('应该返回今天的日期字符串', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    expect(getTodayStr()).toBe('2023-05-15')
+
+    vi.useRealTimers()
+  })
+})
+
+describe('getTodayRange', () => {
+  it('应该返回今天的开始和结束时间戳', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    const [start, end] = getTodayRange()
+
+    const startDate = new Date(start)
+    expect(startDate.getFullYear()).toBe(2023)
+    expect(startDate.getMonth()).toBe(4)
+    expect(startDate.getDate()).toBe(15)
+    expect(startDate.getHours()).toBe(0)
+    expect(startDate.getMinutes()).toBe(0)
+    expect(startDate.getSeconds()).toBe(0)
+
+    const endDate = new Date(end)
+    expect(endDate.getFullYear()).toBe(2023)
+    expect(endDate.getMonth()).toBe(4)
+    expect(endDate.getDate()).toBe(15)
+    expect(endDate.getHours()).toBe(23)
+    expect(endDate.getMinutes()).toBe(59)
+    expect(endDate.getSeconds()).toBe(59)
+
+    vi.useRealTimers()
+  })
+})
+
+describe('getThisWeekRange', () => {
+  it('应该返回本周一到周日的时间范围', () => {
+    vi.useFakeTimers()
+    // 2023-05-15 是周一
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    const [start, end] = getThisWeekRange()
+
+    const startDate = new Date(start)
+    expect(startDate.getDate()).toBe(15) // 周一
+    expect(startDate.getHours()).toBe(0)
+
+    const endDate = new Date(end)
+    expect(endDate.getDate()).toBe(21) // 周日
+    expect(endDate.getHours()).toBe(23)
+
+    vi.useRealTimers()
+  })
+
+  it('应该在周日时正确返回本周范围', () => {
+    vi.useFakeTimers()
+    // 2023-05-21 是周日
+    vi.setSystemTime(new Date('2023-05-21 12:00:00'))
+
+    const [start, end] = getThisWeekRange()
+
+    const startDate = new Date(start)
+    expect(startDate.getDate()).toBe(15) // 周一
+
+    const endDate = new Date(end)
+    expect(endDate.getDate()).toBe(21) // 周日
+
+    vi.useRealTimers()
+  })
+
+  it('应该在周三时正确返回本周范围', () => {
+    vi.useFakeTimers()
+    // 2023-05-17 是周三
+    vi.setSystemTime(new Date('2023-05-17 12:00:00'))
+
+    const [start, end] = getThisWeekRange()
+
+    const startDate = new Date(start)
+    expect(startDate.getDate()).toBe(15) // 周一
+
+    const endDate = new Date(end)
+    expect(endDate.getDate()).toBe(21) // 周日
+
+    vi.useRealTimers()
+  })
+})
+
+describe('getThisMonthRange', () => {
+  it('应该返回本月的开始和结束时间戳', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    const [start, end] = getThisMonthRange()
+
+    const startDate = new Date(start)
+    expect(startDate.getMonth()).toBe(4) // 5月
+    expect(startDate.getDate()).toBe(1)
+    expect(startDate.getHours()).toBe(0)
+
+    const endDate = new Date(end)
+    expect(endDate.getMonth()).toBe(4) // 5月
+    expect(endDate.getDate()).toBe(31) // 5月有31天
+    expect(endDate.getHours()).toBe(23)
+
+    vi.useRealTimers()
+  })
+
+  it('应该正确处理2月份', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-02-15 12:00:00'))
+
+    const [, end] = getThisMonthRange()
+
+    const endDate = new Date(end)
+    expect(endDate.getDate()).toBe(28) // 2023年2月有28天
+
+    vi.useRealTimers()
+  })
+
+  it('应该正确处理闰年2月', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2024-02-15 12:00:00'))
+
+    const [, end] = getThisMonthRange()
+
+    const endDate = new Date(end)
+    expect(endDate.getDate()).toBe(29) // 2024年2月有29天
+
+    vi.useRealTimers()
+  })
+})
+
+describe('getThisQuarterRange', () => {
+  it('应该返回Q1的时间范围（1-3月）', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-02-15 12:00:00'))
+
+    const [start, end] = getThisQuarterRange()
+
+    const startDate = new Date(start)
+    expect(startDate.getMonth()).toBe(0) // 1月
+    expect(startDate.getDate()).toBe(1)
+
+    const endDate = new Date(end)
+    expect(endDate.getMonth()).toBe(2) // 3月
+    expect(endDate.getDate()).toBe(31)
+
+    vi.useRealTimers()
+  })
+
+  it('应该返回Q2的时间范围（4-6月）', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    const [start, end] = getThisQuarterRange()
+
+    const startDate = new Date(start)
+    expect(startDate.getMonth()).toBe(3) // 4月
+    expect(startDate.getDate()).toBe(1)
+
+    const endDate = new Date(end)
+    expect(endDate.getMonth()).toBe(5) // 6月
+    expect(endDate.getDate()).toBe(30)
+
+    vi.useRealTimers()
+  })
+
+  it('应该返回Q3的时间范围（7-9月）', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-08-15 12:00:00'))
+
+    const [start, end] = getThisQuarterRange()
+
+    const startDate = new Date(start)
+    expect(startDate.getMonth()).toBe(6) // 7月
+
+    const endDate = new Date(end)
+    expect(endDate.getMonth()).toBe(8) // 9月
+    expect(endDate.getDate()).toBe(30)
+
+    vi.useRealTimers()
+  })
+
+  it('应该返回Q4的时间范围（10-12月）', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-11-15 12:00:00'))
+
+    const [start, end] = getThisQuarterRange()
+
+    const startDate = new Date(start)
+    expect(startDate.getMonth()).toBe(9) // 10月
+
+    const endDate = new Date(end)
+    expect(endDate.getMonth()).toBe(11) // 12月
+    expect(endDate.getDate()).toBe(31)
+
+    vi.useRealTimers()
+  })
+})
+
+describe('getThisHalfYearRange', () => {
+  it('应该返回上半年的时间范围（1-6月）', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-03-15 12:00:00'))
+
+    const [start, end] = getThisHalfYearRange()
+
+    const startDate = new Date(start)
+    expect(startDate.getMonth()).toBe(0) // 1月
+    expect(startDate.getDate()).toBe(1)
+
+    const endDate = new Date(end)
+    expect(endDate.getMonth()).toBe(5) // 6月
+    expect(endDate.getDate()).toBe(30)
+
+    vi.useRealTimers()
+  })
+
+  it('应该返回下半年的时间范围（7-12月）', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-09-15 12:00:00'))
+
+    const [start, end] = getThisHalfYearRange()
+
+    const startDate = new Date(start)
+    expect(startDate.getMonth()).toBe(6) // 7月
+    expect(startDate.getDate()).toBe(1)
+
+    const endDate = new Date(end)
+    expect(endDate.getMonth()).toBe(11) // 12月
+    expect(endDate.getDate()).toBe(31)
+
+    vi.useRealTimers()
+  })
+})
+
+describe('getThisYearRange', () => {
+  it('应该返回本年的开始和结束时间戳', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    const [start, end] = getThisYearRange()
+
+    const startDate = new Date(start)
+    expect(startDate.getFullYear()).toBe(2023)
+    expect(startDate.getMonth()).toBe(0) // 1月
+    expect(startDate.getDate()).toBe(1)
+    expect(startDate.getHours()).toBe(0)
+
+    const endDate = new Date(end)
+    expect(endDate.getFullYear()).toBe(2023)
+    expect(endDate.getMonth()).toBe(11) // 12月
+    expect(endDate.getDate()).toBe(31)
+    expect(endDate.getHours()).toBe(23)
+
+    vi.useRealTimers()
+  })
+})
+
+describe('getLastDaysRange', () => {
+  it('应该返回最近7天的时间范围', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    const [start, end] = getLastDaysRange(7)
+
+    const startDate = new Date(start)
+    expect(startDate.getDate()).toBe(9) // 15 - 7 + 1 = 9
+    expect(startDate.getHours()).toBe(0)
+
+    const endDate = new Date(end)
+    expect(endDate.getDate()).toBe(15)
+
+    vi.useRealTimers()
+  })
+
+  it('应该返回最近30天的时间范围', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    const [start, end] = getLastDaysRange(30)
+
+    const startDate = new Date(start)
+    expect(startDate.getMonth()).toBe(3) // 4月
+    expect(startDate.getDate()).toBe(16) // 15 - 30 + 1 = -14 -> 4月16日
+
+    const endDate = new Date(end)
+    expect(endDate.getMonth()).toBe(4) // 5月
+    expect(endDate.getDate()).toBe(15)
+
+    vi.useRealTimers()
+  })
+})
+
+describe('getLastWeeksRange', () => {
+  it('应该返回最近2周的时间范围', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    const [start, end] = getLastWeeksRange(2)
+
+    const startDate = new Date(start)
+    expect(startDate.getDate()).toBe(1) // 15 - 14 = 1
+
+    const endDate = new Date(end)
+    expect(endDate.getDate()).toBe(15)
+
+    vi.useRealTimers()
+  })
+})
+
+describe('getLastMonthsRange', () => {
+  it('应该返回最近3个月的时间范围', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    const [start, end] = getLastMonthsRange(3)
+
+    const startDate = new Date(start)
+    expect(startDate.getMonth()).toBe(1) // 2月
+    expect(startDate.getDate()).toBe(15)
+    expect(startDate.getHours()).toBe(0)
+
+    const endDate = new Date(end)
+    expect(endDate.getMonth()).toBe(4) // 5月
+    expect(endDate.getDate()).toBe(15)
+
+    vi.useRealTimers()
+  })
+
+  it('应该返回最近12个月的时间范围', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    const [start, end] = getLastMonthsRange(12)
+
+    const startDate = new Date(start)
+    expect(startDate.getFullYear()).toBe(2022)
+    expect(startDate.getMonth()).toBe(4) // 5月
+
+    const endDate = new Date(end)
+    expect(endDate.getFullYear()).toBe(2023)
+    expect(endDate.getMonth()).toBe(4) // 5月
+
+    vi.useRealTimers()
+  })
+})
+
+describe('commonDateShortcuts', () => {
+  it('应该包含所有预设的快捷键', () => {
+    expect(commonDateShortcuts).toHaveProperty('今天')
+    expect(commonDateShortcuts).toHaveProperty('本周')
+    expect(commonDateShortcuts).toHaveProperty('本月')
+    expect(commonDateShortcuts).toHaveProperty('本季度')
+    expect(commonDateShortcuts).toHaveProperty('本半年')
+    expect(commonDateShortcuts).toHaveProperty('本年')
+    expect(commonDateShortcuts).toHaveProperty('最近7天')
+    expect(commonDateShortcuts).toHaveProperty('最近30天')
+    expect(commonDateShortcuts).toHaveProperty('最近3个月')
+    expect(commonDateShortcuts).toHaveProperty('最近半年')
+    expect(commonDateShortcuts).toHaveProperty('最近一年')
+  })
+
+  it('每个快捷键应该返回有效的日期范围', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+
+    Object.entries(commonDateShortcuts).forEach(([_key, fn]) => {
+      const [start, end] = fn!()
+      expect(typeof start).toBe('number')
+      expect(typeof end).toBe('number')
+      expect(start).toBeLessThanOrEqual(end)
+    })
+
+    vi.useRealTimers()
+  })
+})
+
+describe('createDateShortcuts', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-05-15 12:00:00'))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('应该从字符串数组创建快捷键', () => {
+    const shortcuts = createDateShortcuts(['今天', '本周', '本月'])
+
+    expect(Object.keys(shortcuts)).toEqual(['今天', '本周', '本月'])
+    expect(typeof shortcuts.今天).toBe('function')
+    expect(typeof shortcuts.本周).toBe('function')
+    expect(typeof shortcuts.本月).toBe('function')
+  })
+
+  it('应该从对象数组创建快捷键（自定义键名）', () => {
+    const shortcuts = createDateShortcuts([
+      { 今日: '今天' },
+      { 这周: '本周' },
+    ])
+
+    expect(Object.keys(shortcuts)).toEqual(['今日', '这周'])
+    expect(typeof shortcuts.今日).toBe('function')
+    expect(typeof shortcuts.这周).toBe('function')
+  })
+
+  it('应该支持自定义函数', () => {
+    const customFn = () => [Date.now() - 86400000, Date.now()] as [number, number]
+    const shortcuts = createDateShortcuts([
+      { 自定义: customFn },
+    ])
+
+    expect(shortcuts.自定义).toBe(customFn)
+  })
+
+  it('应该直接返回对象配置', () => {
+    const config = {
+      今天: getTodayRange,
+      自定义: () => [Date.now(), Date.now()] as [number, number],
+    }
+
+    const shortcuts = createDateShortcuts(config)
+    expect(shortcuts).toBe(config)
+  })
+
+  it('应该对未知的快捷键发出警告', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    createDateShortcuts(['未知快捷键'])
+
+    expect(warnSpy).toHaveBeenCalledWith('[createDateShortcuts] 未找到快捷键: "未知快捷键"')
+
+    warnSpy.mockRestore()
+  })
+
+  it('应该对对象数组中未知的快捷键发出警告', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    createDateShortcuts([{ 测试: '未知快捷键' }])
+
+    expect(warnSpy).toHaveBeenCalledWith('[createDateShortcuts] 未找到快捷键: "未知快捷键"')
+
+    warnSpy.mockRestore()
+  })
+
+  it('创建的快捷键应该返回正确的日期范围', () => {
+    const shortcuts = createDateShortcuts(['今天', '本月'])
+
+    const todayFn = shortcuts['今天']
+    const monthFn = shortcuts['本月']
+
+    expect(todayFn).toBeDefined()
+    expect(monthFn).toBeDefined()
+
+    const [todayStart, todayEnd] = todayFn!()
+    const [monthStart, monthEnd] = monthFn!()
+
+    // 验证今天的范围
+    const todayStartDate = new Date(todayStart)
+    expect(todayStartDate.getDate()).toBe(15)
+    expect(todayStartDate.getHours()).toBe(0)
+
+    const todayEndDate = new Date(todayEnd)
+    expect(todayEndDate.getDate()).toBe(15)
+    expect(todayEndDate.getHours()).toBe(23)
+
+    // 验证本月的范围
+    const monthStartDate = new Date(monthStart)
+    expect(monthStartDate.getDate()).toBe(1)
+
+    const monthEndDate = new Date(monthEnd)
+    expect(monthEndDate.getDate()).toBe(31)
   })
 })

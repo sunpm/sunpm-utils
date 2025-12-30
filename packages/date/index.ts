@@ -590,3 +590,377 @@ export function formatDuration(timestamp: number, format?: string): string | num
 
   return parts.join('')
 }
+
+// ==================== 日期范围工具 ====================
+
+/**
+ * 日期范围元组类型，包含开始和结束时间戳（毫秒）
+ */
+export type DateRange = [number, number]
+
+/**
+ * 日期快捷键函数类型
+ */
+export type DateShortcutFn = () => DateRange
+
+/**
+ * 预设快捷键名称
+ */
+export type PresetShortcutKey =
+  | '今天'
+  | '本周'
+  | '本月'
+  | '本季度'
+  | '本半年'
+  | '本年'
+  | '最近7天'
+  | '最近30天'
+  | '最近3个月'
+  | '最近半年'
+  | '最近一年'
+
+/**
+ * 日期快捷键配置对象类型
+ * 支持预设快捷键名称和自定义字符串键
+ */
+export type DateShortcutsConfig = {
+  [K in PresetShortcutKey]?: DateShortcutFn
+} & {
+  [key: string]: DateShortcutFn | undefined
+}
+
+/**
+ * 日期快捷键配置项类型，可以是预设名称字符串或自定义配置对象
+ * 支持预设快捷键名称（带自动补全）和任意自定义字符串
+ */
+export type DateShortcutItem = PresetShortcutKey | (string & {}) | Record<string, PresetShortcutKey | (string & {}) | DateShortcutFn>
+
+/**
+ * 获取指定偏移天数的日期
+ * @param offset 偏移天数（负数表示过去，正数表示未来），默认为 0
+ * @returns 日期对象
+ * @group DateRange
+ * @example
+ * ```ts
+ * getDateByOffset() // 今天
+ * getDateByOffset(-1) // 昨天
+ * getDateByOffset(1) // 明天
+ * getDateByOffset(-7) // 7天前
+ * ```
+ */
+export function getDateByOffset(offset = 0): Date {
+  return add(new Date(), offset, 'day')
+}
+
+/**
+ * 获取昨天的日期字符串 (YYYY-MM-DD)
+ * @returns 昨天的日期字符串
+ * @group DateRange
+ * @example
+ * ```ts
+ * getYesterdayStr() // "2023-05-14"（假设今天是 2023-05-15）
+ * ```
+ */
+export function getYesterdayStr(): string {
+  return formatDate(getDateByOffset(-1))
+}
+
+/**
+ * 获取今天的日期字符串 (YYYY-MM-DD)
+ * @returns 今天的日期字符串
+ * @group DateRange
+ * @example
+ * ```ts
+ * getTodayStr() // "2023-05-15"
+ * ```
+ */
+export function getTodayStr(): string {
+  return formatDate(new Date())
+}
+
+/**
+ * 获取今天的开始和结束时间戳
+ * @returns 日期范围元组 [开始时间戳, 结束时间戳]
+ * @group DateRange
+ * @example
+ * ```ts
+ * const [start, end] = getTodayRange()
+ * // start: 今天 00:00:00 的时间戳
+ * // end: 今天 23:59:59.999 的时间戳
+ * ```
+ */
+export function getTodayRange(): DateRange {
+  const now = new Date()
+  return [startOf(now, 'day').getTime(), endOf(now, 'day').getTime()]
+}
+
+/**
+ * 获取本周的开始和结束时间戳（周一到周日）
+ * @returns 日期范围元组 [开始时间戳, 结束时间戳]
+ * @group DateRange
+ * @example
+ * ```ts
+ * const [start, end] = getThisWeekRange()
+ * // start: 本周一 00:00:00 的时间戳
+ * // end: 本周日 23:59:59.999 的时间戳
+ * ```
+ */
+export function getThisWeekRange(): DateRange {
+  const now = new Date()
+  const day = now.getDay() || 7 // 将周日从 0 改为 7
+  const mondayOffset = -(day - 1)
+  const sundayOffset = 7 - day
+
+  const start = startOf(add(now, mondayOffset, 'day'), 'day')
+  const end = endOf(add(now, sundayOffset, 'day'), 'day')
+  return [start.getTime(), end.getTime()]
+}
+
+/**
+ * 获取本月的开始和结束时间戳
+ * @returns 日期范围元组 [开始时间戳, 结束时间戳]
+ * @group DateRange
+ * @example
+ * ```ts
+ * const [start, end] = getThisMonthRange()
+ * // start: 本月1日 00:00:00 的时间戳
+ * // end: 本月最后一天 23:59:59.999 的时间戳
+ * ```
+ */
+export function getThisMonthRange(): DateRange {
+  const now = new Date()
+  return [startOf(now, 'month').getTime(), endOf(now, 'month').getTime()]
+}
+
+/**
+ * 获取本季度的开始和结束时间戳
+ * @returns 日期范围元组 [开始时间戳, 结束时间戳]
+ * @group DateRange
+ * @example
+ * ```ts
+ * const [start, end] = getThisQuarterRange()
+ * // 如果当前是5月（Q2），则：
+ * // start: 4月1日 00:00:00 的时间戳
+ * // end: 6月30日 23:59:59.999 的时间戳
+ * ```
+ */
+export function getThisQuarterRange(): DateRange {
+  const now = new Date()
+  const quarter = Math.floor(now.getMonth() / 3)
+  const start = new Date(now.getFullYear(), quarter * 3, 1, 0, 0, 0, 0)
+  const end = new Date(now.getFullYear(), quarter * 3 + 3, 0, 23, 59, 59, 999)
+  return [start.getTime(), end.getTime()]
+}
+
+/**
+ * 获取本半年的开始和结束时间戳
+ * @returns 日期范围元组 [开始时间戳, 结束时间戳]
+ * @group DateRange
+ * @example
+ * ```ts
+ * const [start, end] = getThisHalfYearRange()
+ * // 如果当前是5月（上半年），则：
+ * // start: 1月1日 00:00:00 的时间戳
+ * // end: 6月30日 23:59:59.999 的时间戳
+ * ```
+ */
+export function getThisHalfYearRange(): DateRange {
+  const now = new Date()
+  const half = now.getMonth() < 6 ? 0 : 1
+  const start = new Date(now.getFullYear(), half * 6, 1, 0, 0, 0, 0)
+  const end = new Date(now.getFullYear(), half * 6 + 6, 0, 23, 59, 59, 999)
+  return [start.getTime(), end.getTime()]
+}
+
+/**
+ * 获取本年的开始和结束时间戳
+ * @returns 日期范围元组 [开始时间戳, 结束时间戳]
+ * @group DateRange
+ * @example
+ * ```ts
+ * const [start, end] = getThisYearRange()
+ * // start: 1月1日 00:00:00 的时间戳
+ * // end: 12月31日 23:59:59.999 的时间戳
+ * ```
+ */
+export function getThisYearRange(): DateRange {
+  const now = new Date()
+  return [startOf(now, 'year').getTime(), endOf(now, 'year').getTime()]
+}
+
+/**
+ * 获取最近 N 天的时间范围
+ * @param days 天数
+ * @returns 日期范围元组 [开始时间戳, 结束时间戳]
+ * @group DateRange
+ * @example
+ * ```ts
+ * const [start, end] = getLastDaysRange(7)
+ * // start: 7天前 00:00:00 的时间戳
+ * // end: 当前时间戳
+ *
+ * const [start, end] = getLastDaysRange(30)
+ * // start: 30天前 00:00:00 的时间戳
+ * // end: 当前时间戳
+ * ```
+ */
+export function getLastDaysRange(days: number): DateRange {
+  const now = new Date()
+  const start = startOf(add(now, -(days - 1), 'day'), 'day')
+  return [start.getTime(), now.getTime()]
+}
+
+/**
+ * 获取最近 N 周的时间范围
+ * @param weeks 周数
+ * @returns 日期范围元组 [开始时间戳, 结束时间戳]
+ * @group DateRange
+ * @example
+ * ```ts
+ * const [start, end] = getLastWeeksRange(2)
+ * // start: 2周前的时间戳
+ * // end: 当前时间戳
+ * ```
+ */
+export function getLastWeeksRange(weeks: number): DateRange {
+  const now = new Date()
+  const start = add(now, -weeks * 7, 'day')
+  return [start.getTime(), now.getTime()]
+}
+
+/**
+ * 获取最近 N 个月的时间范围
+ * @param months 月数
+ * @returns 日期范围元组 [开始时间戳, 结束时间戳]
+ * @group DateRange
+ * @example
+ * ```ts
+ * const [start, end] = getLastMonthsRange(3)
+ * // start: 3个月前当天 00:00:00 的时间戳
+ * // end: 当前时间戳
+ *
+ * const [start, end] = getLastMonthsRange(12)
+ * // start: 12个月前当天 00:00:00 的时间戳
+ * // end: 当前时间戳
+ * ```
+ */
+export function getLastMonthsRange(months: number): DateRange {
+  const now = new Date()
+  const start = startOf(add(now, -months, 'month'), 'day')
+  return [start.getTime(), now.getTime()]
+}
+
+/**
+ * 常用日期范围快捷键配置
+ *
+ * 可直接用于 DateRangePicker 组件的 shortcuts 属性
+ *
+ * @group DateRange
+ * @example
+ * ```ts
+ * // 在 Element Plus 中使用
+ * <el-date-picker
+ *   type="daterange"
+ *   :shortcuts="Object.entries(commonDateShortcuts).map(([text, value]) => ({ text, value }))"
+ * />
+ *
+ * // 获取今天的范围
+ * const [start, end] = commonDateShortcuts['今天']()
+ *
+ * // 获取本月的范围
+ * const [start, end] = commonDateShortcuts['本月']()
+ * ```
+ */
+export const commonDateShortcuts: DateShortcutsConfig = {
+  今天: getTodayRange,
+  本周: getThisWeekRange,
+  本月: getThisMonthRange,
+  本季度: getThisQuarterRange,
+  本半年: getThisHalfYearRange,
+  本年: getThisYearRange,
+  最近7天: () => getLastDaysRange(7),
+  最近30天: () => getLastDaysRange(30),
+  最近3个月: () => getLastMonthsRange(3),
+  最近半年: () => getLastMonthsRange(6),
+  最近一年: () => getLastMonthsRange(12),
+}
+
+/**
+ * 创建日期范围快捷键配置
+ *
+ * 支持多种输入格式，简化快捷键配置。可以从预设的 commonDateShortcuts 中选择，
+ * 也可以自定义快捷键名称和函数。
+ *
+ * @param config 快捷键配置，支持以下格式：
+ *   - 字符串数组：从 commonDateShortcuts 中选择预设快捷键
+ *   - 对象数组：自定义键名映射到预设或自定义函数
+ *   - 对象：直接传入快捷键配置对象
+ * @returns 快捷键配置对象
+ * @group DateRange
+ * @example
+ * ```ts
+ * // 方式1: 传入字符串数组（从 commonDateShortcuts 中选择）
+ * const shortcuts = createDateShortcuts(['今天', '本周', '本月'])
+ * // => { 今天: getTodayRange, 本周: getThisWeekRange, 本月: getThisMonthRange }
+ *
+ * // 方式2: 传入对象数组（支持自定义键名）
+ * const shortcuts = createDateShortcuts([
+ *   { 今天: '今天' },
+ *   { 这周: '本周' }, // 显示"这周"，实际使用"本周"的逻辑
+ *   { 自定义: () => [Date.now() - 86400000, Date.now()] }
+ * ])
+ *
+ * // 方式3: 直接传入对象（兼容旧方式）
+ * const shortcuts = createDateShortcuts({
+ *   今天: commonDateShortcuts['今天'],
+ *   自定义: () => [Date.now(), Date.now()]
+ * })
+ *
+ * // 在 Vue 组件中使用
+ * const shortcuts = createDateShortcuts(['今天', '本周', '本月', '最近7天'])
+ * // 转换为 Element Plus 格式
+ * const elShortcuts = Object.entries(shortcuts).map(([text, value]) => ({ text, value }))
+ * ```
+ */
+export function createDateShortcuts(
+  config: DateShortcutItem[] | DateShortcutsConfig,
+): DateShortcutsConfig {
+  // 如果是对象，直接返回
+  if (!Array.isArray(config)) {
+    return config
+  }
+
+  const result: DateShortcutsConfig = {}
+
+  config.forEach((item) => {
+    if (typeof item === 'string') {
+      // 字符串数组: ['今天', '本周']
+      if (commonDateShortcuts[item]) {
+        result[item] = commonDateShortcuts[item]
+      }
+      else {
+        console.warn(`[createDateShortcuts] 未找到快捷键: "${item}"`)
+      }
+    }
+    else if (typeof item === 'object' && item !== null) {
+      // 对象数组: [{ 今天: '今天' }, { 这周: '本周' }]
+      Object.entries(item).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+          // value 是字符串，从 commonDateShortcuts 中查找
+          if (commonDateShortcuts[value]) {
+            result[key] = commonDateShortcuts[value]
+          }
+          else {
+            console.warn(`[createDateShortcuts] 未找到快捷键: "${value}"`)
+          }
+        }
+        else if (typeof value === 'function') {
+          // value 是函数，直接使用
+          result[key] = value
+        }
+      })
+    }
+  })
+
+  return result
+}
