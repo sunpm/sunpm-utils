@@ -623,11 +623,7 @@ export type PresetShortcutKey =
  * 日期快捷键配置对象类型
  * 支持预设快捷键名称和自定义字符串键
  */
-export type DateShortcutsConfig = {
-  [K in PresetShortcutKey]?: DateShortcutFn
-} & {
-  [key: string]: DateShortcutFn | undefined
-}
+export type DateShortcutsConfig = Record<string, DateShortcutFn>
 
 /**
  * 日期快捷键配置项类型，可以是预设名称字符串或自定义配置对象
