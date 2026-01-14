@@ -19,7 +19,7 @@ dayjs.locale('zh-cn')
 /**
  * 表示日期的各种类型，可以是日期对象、日期字符串或时间戳
  */
-export type DateLike = Date | string | number
+export type DateLike = Date | string | number | undefined
 
 // 注册插件
 dayjs.extend(relativeTime)
