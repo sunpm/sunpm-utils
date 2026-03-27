@@ -238,6 +238,37 @@ export function replaceNBSP(str?: string): string {
 }
 
 /**
+ * 安全解析后端下发的数字分隔字符串
+ *
+ * 主要用于接收类似 `1,2,3` 这样的关系型 ID 串，前端接管后始终得到可信的数字数组。
+ * 会主动拦截 `undefined`、`null`、空字符串、空白片段以及非法数字片段，避免出现脏数据混入结果。
+ *
+ * @param str 待解析的数字字符串
+ * @param separator 分隔符，默认为英文逗号
+ * @returns 解析后的数字数组；当输入无效或无可用数字时返回空数组
+ * @group String
+ * @example
+ * ```ts
+ * parseNumberArray('1,2,3') // [1, 2, 3]
+ * parseNumberArray('1, 2, 3') // [1, 2, 3]
+ * parseNumberArray('1,,2,foo,3') // [1, 2, 3]
+ * parseNumberArray(null) // []
+ * parseNumberArray('1|2|3', '|') // [1, 2, 3]
+ * ```
+ */
+export function parseNumberArray(str?: string | null, separator = ','): number[] {
+  if (!str || !isString(str))
+    return []
+
+  return str
+    .split(separator)
+    .map(item => item.trim())
+    .filter(Boolean)
+    .map(item => Number(item))
+    .filter(num => Number.isFinite(num))
+}
+
+/**
  * 解析JSON字符串，处理异常情况
  *
  * 支持解析各种有效的JSON格式，包括对象、数组、字符串、数字、布尔值等。

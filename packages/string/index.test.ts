@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { camelToKebab, capitalize, ensureRpxUnit, isEmptyString, kebabToCamel, parseJsonStr, pascalCase, replaceNBSP, snakeCase, template, truncate, words } from './index'
+import { camelToKebab, capitalize, ensureRpxUnit, isEmptyString, kebabToCamel, parseJsonStr, parseNumberArray, pascalCase, replaceNBSP, snakeCase, template, truncate, words } from './index'
 
 describe('isEmptyString', () => {
   it('应该检测空字符串', () => {
@@ -149,6 +149,30 @@ describe('parseJsonStr', () => {
     expect(parseJsonStr(123 as any)).toBe(123)
     expect(parseJsonStr({} as any)).toEqual({})
     expect(parseJsonStr([] as any)).toEqual([])
+  })
+})
+
+describe('parseNumberArray', () => {
+  it('应该正确解析标准逗号分隔的数字字符串', () => {
+    expect(parseNumberArray('1,2,3')).toEqual([1, 2, 3])
+    expect(parseNumberArray('1, 2, 3')).toEqual([1, 2, 3])
+    expect(parseNumberArray('0,-1,2.5')).toEqual([0, -1, 2.5])
+  })
+
+  it('应该处理空值并返回空数组', () => {
+    expect(parseNumberArray('')).toEqual([])
+    expect(parseNumberArray(null)).toEqual([])
+    expect(parseNumberArray(undefined)).toEqual([])
+  })
+
+  it('应该过滤空白片段和非法数字片段', () => {
+    expect(parseNumberArray('1,,2,foo,  ,3')).toEqual([1, 2, 3])
+    expect(parseNumberArray(' , , ')).toEqual([])
+  })
+
+  it('应该支持自定义分隔符', () => {
+    expect(parseNumberArray('1|2|3', '|')).toEqual([1, 2, 3])
+    expect(parseNumberArray('10 / 20 / test / 30', '/')).toEqual([10, 20, 30])
   })
 })
 
