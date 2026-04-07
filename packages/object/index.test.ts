@@ -9,6 +9,7 @@ import {
   mapKeys,
   mapValues,
   merge,
+  mergeWithDefaultModel,
   objectToQueryString,
   omit,
   pick,
@@ -233,6 +234,58 @@ describe('filterObjectByKeys', () => {
     const result = filterObjectByKeys(originalObject, [])
 
     expect(result).toEqual({})
+  })
+})
+
+describe('mergeWithDefaultModel', () => {
+  it('应该只按默认模型的键进行覆盖', () => {
+    const defaultModel = { id: '', name: '', age: 18, enabled: true }
+    const source = { name: 'Tom', age: 20, extra: 'ignored' }
+
+    const result = mergeWithDefaultModel(defaultModel, source)
+
+    expect(result).toEqual({ id: '', name: 'Tom', age: 20, enabled: true })
+  })
+
+  it('source 中为 undefined 的字段不应覆盖默认值', () => {
+    const defaultModel = { name: 'Guest', age: 18 }
+    const source = { name: undefined, age: 20 }
+
+    const result = mergeWithDefaultModel(defaultModel, source)
+
+    expect(result).toEqual({ name: 'Guest', age: 20 })
+  })
+
+  it('应允许 null、空字符串、0、false 覆盖默认值', () => {
+    const defaultModel = { name: 'Guest', score: 100, enabled: true, note: 'ok' }
+    const source = { name: '', score: 0, enabled: false, note: null }
+
+    const result = mergeWithDefaultModel(defaultModel, source)
+
+    expect(result).toEqual({ name: '', score: 0, enabled: false, note: null })
+  })
+
+  it('source 为空或非对象时应返回默认模型的拷贝', () => {
+    const defaultModel = { name: 'Guest', age: 18 }
+
+    const fromNull = mergeWithDefaultModel(defaultModel, null)
+    const fromUndefined = mergeWithDefaultModel(defaultModel)
+    const fromPrimitive = mergeWithDefaultModel(defaultModel, 1 as any)
+
+    expect(fromNull).toEqual(defaultModel)
+    expect(fromUndefined).toEqual(defaultModel)
+    expect(fromPrimitive).toEqual(defaultModel)
+  })
+
+  it('不应修改 defaultModel 与 source 本身', () => {
+    const defaultModel = { profile: { name: 'Guest' }, age: 18 }
+    const source = { profile: { name: 'Tom' }, age: 20 }
+
+    const result = mergeWithDefaultModel(defaultModel, source)
+    result.profile.name = 'Changed'
+
+    expect(defaultModel).toEqual({ profile: { name: 'Guest' }, age: 18 })
+    expect(source).toEqual({ profile: { name: 'Tom' }, age: 20 })
   })
 })
 

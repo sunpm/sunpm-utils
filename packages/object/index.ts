@@ -258,6 +258,53 @@ export function filterObjectByKeys(
 }
 
 /**
+ * 根据默认模型的属性键（key），从源数据中提取匹配字段，
+ * 并将非 undefined 的值覆盖到默认模型上，返回安全的新对象。
+ *
+ * 适用于表单回填场景：避免接口返回的冗余字段污染表单参数，
+ * 同时不破坏已定义的默认值。
+ *
+ * @param defaultModel 默认数据定义（提供合法的 Key 列表和基础默认值）
+ * @param source 外部源数据（可为空或非对象，非对象时会被忽略）
+ * @returns 提纯组合后的安全数据对象
+ * @group Object
+ * @example
+ * ```ts
+ * const defaultForm = {
+ *   id: '',
+ *   name: '',
+ *   age: 18,
+ *   enabled: true,
+ * }
+ *
+ * mergeWithDefaultModel(defaultForm, {
+ *   name: 'Tom',
+ *   age: undefined,
+ *   extra: 'ignored',
+ * })
+ * // { id: '', name: 'Tom', age: 18, enabled: true }
+ * ```
+ */
+export function mergeWithDefaultModel<T extends Record<string, any>>(
+  defaultModel: T,
+  source?: Record<string, any> | null,
+): T {
+  const result = deepClone(defaultModel)
+
+  if (!isPlainObject(source))
+    return result
+
+  Object.keys(defaultModel).forEach((key) => {
+    const sourceValue = source[key]
+    if (sourceValue !== undefined) {
+      result[key as keyof T] = deepClone(sourceValue)
+    }
+  })
+
+  return result
+}
+
+/**
  * 创建一个新对象，通过函数转换每个键
  * @param obj 原始对象
  * @param iteratee 转换函数，接收值、键和对象，返回新的键名
