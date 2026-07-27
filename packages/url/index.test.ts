@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ensureLeadingSlash, getQueryStringify, parseQueryString, stripLeadingSlash } from './index'
+import { appendQuery, ensureLeadingSlash, getQueryStringify, parseQueryString, stripLeadingSlash } from './index'
 
 describe('getQueryStringify', () => {
   it('应该返回带有?前缀的查询字符串', () => {
@@ -123,5 +123,45 @@ describe('stripLeadingSlash', () => {
     expect(stripLeadingSlash('')).toBe('')
     expect(stripLeadingSlash(null)).toBe('')
     expect(stripLeadingSlash(undefined)).toBe('')
+  })
+})
+
+describe('appendQuery', () => {
+  it('应该能成功向不带查询参数的 URL 追加参数', () => {
+    expect(appendQuery('https://example.com/page', { name: 'Tom', age: 25 }))
+      .toBe('https://example.com/page?name=Tom&age=25')
+  })
+
+  it('应该能正确向已包含查询参数的 URL 追加参数', () => {
+    expect(appendQuery('https://example.com/page?tab=1', { name: 'Tom' }))
+      .toBe('https://example.com/page?tab=1&name=Tom')
+  })
+
+  it('应该正确处理带有 hash # 的 URL 并将参数拼接到 hash 之前', () => {
+    expect(appendQuery('https://example.com/page#section-1', { name: 'Tom' }))
+      .toBe('https://example.com/page?name=Tom#section-1')
+
+    expect(appendQuery('https://example.com/page?tab=1#section-1', { name: 'Tom' }))
+      .toBe('https://example.com/page?tab=1&name=Tom#section-1')
+  })
+
+  it('应该支持相对路径或小程序页面路径（如 /pages/login/index）', () => {
+    expect(appendQuery('/pages/login/index', { redirect: '/home' }))
+      .toBe('/pages/login/index?redirect=%2Fhome')
+
+    expect(appendQuery('/pages/login/index?type=wx', { redirect: '/home' }))
+      .toBe('/pages/login/index?type=wx&redirect=%2Fhome')
+  })
+
+  it('当 params 为空对象、null 或 undefined 时，保持原始 URL 不变', () => {
+    expect(appendQuery('https://example.com/page', {})).toBe('https://example.com/page')
+    expect(appendQuery('https://example.com/page', null)).toBe('https://example.com/page')
+    expect(appendQuery('https://example.com/page', undefined)).toBe('https://example.com/page')
+    expect(appendQuery('', { name: 'Tom' })).toBe('')
+  })
+
+  it('应该过滤掉 null 和 undefined 的参数值', () => {
+    expect(appendQuery('https://example.com/page', { name: 'Tom', empty: null, undef: undefined }))
+      .toBe('https://example.com/page?name=Tom')
   })
 })

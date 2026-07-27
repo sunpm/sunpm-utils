@@ -177,3 +177,45 @@ export function stripLeadingSlash(path?: string | null): string {
     return ''
   return path.startsWith('/') ? path.slice(1) : path
 }
+
+/**
+ * 向 URL 中追加查询参数对象
+ *
+ * @param {string} url - 原始 URL 或路径
+ * @param {Record<string, any>} [params] - 需要追加的查询参数对象
+ * @returns {string} 追加查询参数后的 URL
+ * @group Url
+ * @example
+ * ```ts
+ * appendQuery('https://example.com/page', { name: 'Tom', age: 25 })
+ * // 'https://example.com/page?name=Tom&age=25'
+ *
+ * appendQuery('https://example.com/page?tab=1', { name: 'Tom' })
+ * // 'https://example.com/page?tab=1&name=Tom'
+ *
+ * appendQuery('https://example.com/page#section-1', { name: 'Tom' })
+ * // 'https://example.com/page?name=Tom#section-1'
+ * ```
+ */
+export function appendQuery(url: string, params?: Record<string, any> | null): string {
+  if (!url)
+    return ''
+  if (!params || typeof params !== 'object')
+    return url
+
+  const queryString = objectToQueryString(params)
+  if (!queryString)
+    return url
+
+  const hashIndex = url.indexOf('#')
+  let mainUrl = url
+  let hash = ''
+
+  if (hashIndex !== -1) {
+    mainUrl = url.slice(0, hashIndex)
+    hash = url.slice(hashIndex)
+  }
+
+  const separator = mainUrl.includes('?') ? '&' : '?'
+  return `${mainUrl}${separator}${queryString}${hash}`
+}
