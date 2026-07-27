@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getQueryStringify, parseQueryString } from './index'
+import { ensureLeadingSlash, getQueryStringify, parseQueryString, stripLeadingSlash } from './index'
 
 describe('getQueryStringify', () => {
   it('应该返回带有?前缀的查询字符串', () => {
@@ -86,5 +86,42 @@ describe('parseQueryString', () => {
     expect(parseQueryString('https://example.com/no-params')).toEqual({})
     expect(parseQueryString('?')).toEqual({})
     expect(parseQueryString('?emptyKey=')).toEqual({ emptyKey: '' })
+  })
+})
+
+describe('ensureLeadingSlash', () => {
+  it('如果不以 / 开头，应补全 /', () => {
+    expect(ensureLeadingSlash('foo/bar')).toBe('/foo/bar')
+    expect(ensureLeadingSlash('path')).toBe('/path')
+  })
+
+  it('如果已以 / 开头，应保持不变', () => {
+    expect(ensureLeadingSlash('/foo/bar')).toBe('/foo/bar')
+    expect(ensureLeadingSlash('/')).toBe('/')
+  })
+
+  it('对于空值或未定义应返回空字符串', () => {
+    expect(ensureLeadingSlash('')).toBe('')
+    expect(ensureLeadingSlash(null)).toBe('')
+    expect(ensureLeadingSlash(undefined)).toBe('')
+  })
+})
+
+describe('stripLeadingSlash', () => {
+  it('如果以 / 开头，应移除前导 /', () => {
+    expect(stripLeadingSlash('/foo/bar')).toBe('foo/bar')
+    expect(stripLeadingSlash('/path')).toBe('path')
+    expect(stripLeadingSlash('/')).toBe('')
+  })
+
+  it('如果不以 / 开头，应保持不变', () => {
+    expect(stripLeadingSlash('foo/bar')).toBe('foo/bar')
+    expect(stripLeadingSlash('path')).toBe('path')
+  })
+
+  it('对于空值或未定义应返回空字符串', () => {
+    expect(stripLeadingSlash('')).toBe('')
+    expect(stripLeadingSlash(null)).toBe('')
+    expect(stripLeadingSlash(undefined)).toBe('')
   })
 })

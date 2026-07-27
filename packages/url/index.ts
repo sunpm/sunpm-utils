@@ -139,3 +139,41 @@ export function parseQueryString(url: string, options: ParseQueryStringOptions =
 
   return result
 }
+
+/**
+ * 确保路径以斜杠 `/` 开头
+ *
+ * @param {string | null | undefined} path - 路径字符串
+ * @returns {string} 包含前导斜杠的路径字符串，若输入为空则返回空字符串
+ * @group Url
+ * @example
+ * ```ts
+ * ensureLeadingSlash('foo/bar') // '/foo/bar'
+ * ensureLeadingSlash('/foo/bar') // '/foo/bar'
+ * ensureLeadingSlash('') // ''
+ * ```
+ */
+export function ensureLeadingSlash(path?: string | null): string {
+  if (!path)
+    return ''
+  return path.startsWith('/') ? path : `/${path}`
+}
+
+/**
+ * 确保路径不以斜杠 `/` 开头
+ *
+ * @param {string | null | undefined} path - 路径字符串
+ * @returns {string} 不包含前导斜杠的路径字符串，若输入为空则返回空字符串
+ * @group Url
+ * @example
+ * ```ts
+ * stripLeadingSlash('/foo/bar') // 'foo/bar'
+ * stripLeadingSlash('foo/bar') // 'foo/bar'
+ * stripLeadingSlash('') // ''
+ * ```
+ */
+export function stripLeadingSlash(path?: string | null): string {
+  if (!path)
+    return ''
+  return path.startsWith('/') ? path.slice(1) : path
+}
