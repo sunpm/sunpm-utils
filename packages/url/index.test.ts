@@ -157,11 +157,20 @@ describe('appendQuery', () => {
     expect(appendQuery('https://example.com/page', {})).toBe('https://example.com/page')
     expect(appendQuery('https://example.com/page', null)).toBe('https://example.com/page')
     expect(appendQuery('https://example.com/page', undefined)).toBe('https://example.com/page')
+    expect(appendQuery('https://example.com/page', 'not-an-object' as any)).toBe('https://example.com/page')
     expect(appendQuery('', { name: 'Tom' })).toBe('')
   })
 
   it('应该过滤掉 null 和 undefined 的参数值', () => {
     expect(appendQuery('https://example.com/page', { name: 'Tom', empty: null, undef: undefined }))
       .toBe('https://example.com/page?name=Tom')
+  })
+
+  it('应该支持传入 options 控制 URI 编码行为', () => {
+    expect(appendQuery('https://example.com/page', { name: '张三', city: '北京' }, { encode: false }))
+      .toBe('https://example.com/page?name=张三&city=北京')
+
+    expect(appendQuery('https://example.com/page', { name: 'Tom' }, { encode: val => val.toUpperCase() }))
+      .toBe('https://example.com/page?NAME=TOM')
   })
 })

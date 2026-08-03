@@ -1,3 +1,5 @@
+import type { ObjectToQueryStringOptions } from '../object'
+import { isObject } from '../is'
 import { objectToQueryString } from '../object'
 
 /**
@@ -183,6 +185,7 @@ export function stripLeadingSlash(path?: string | null): string {
  *
  * @param {string} url - 原始 URL 或路径
  * @param {Record<string, any>} [params] - 需要追加的查询参数对象
+ * @param {ObjectToQueryStringOptions} [options] - 参数转换与编码选项
  * @returns {string} 追加查询参数后的 URL
  * @group Url
  * @example
@@ -195,15 +198,22 @@ export function stripLeadingSlash(path?: string | null): string {
  *
  * appendQuery('https://example.com/page#section-1', { name: 'Tom' })
  * // 'https://example.com/page?name=Tom#section-1'
+ *
+ * appendQuery('https://example.com/page', { name: '张三' }, { encode: false })
+ * // 'https://example.com/page?name=张三'
  * ```
  */
-export function appendQuery(url: string, params?: Record<string, any> | null): string {
+export function appendQuery(
+  url: string,
+  params?: Record<string, any> | null,
+  options?: ObjectToQueryStringOptions,
+): string {
   if (!url)
     return ''
-  if (!params || typeof params !== 'object')
+  if (!isObject(params))
     return url
 
-  const queryString = objectToQueryString(params)
+  const queryString = objectToQueryString(params, options)
   if (!queryString)
     return url
 
