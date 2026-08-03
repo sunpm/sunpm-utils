@@ -141,12 +141,26 @@ describe('objectToQueryString', () => {
     expect(objectToQueryString({ name: 'Tom', age: 25 })).toBe('name=Tom&age=25')
   })
 
-  it('应该处理特殊字符', () => {
+  it('应该处理特殊字符（默认进行 URI 编码）', () => {
     expect(objectToQueryString({ search: 'hello world' })).toBe('search=hello%20world')
+  })
+
+  it('默认应该对中文等字符进行转义', () => {
+    expect(objectToQueryString({ name: '张三', city: '北京' })).toBe(`name=${encodeURIComponent('张三')}&city=${encodeURIComponent('北京')}`)
+  })
+
+  it('当 encode 设置为 false 时，不应对中文字符及特殊字符转义', () => {
+    expect(objectToQueryString({ name: '张三', city: '北京' }, { encode: false })).toBe('name=张三&city=北京')
+  })
+
+  it('应该支持自定义 encode 函数', () => {
+    const customEncode = (val: string) => `_${val}_`
+    expect(objectToQueryString({ a: '1', b: '2' }, { encode: customEncode })).toBe('_a_=_1_&_b_=_2_')
   })
 
   it('应该处理数组值', () => {
     expect(objectToQueryString({ tags: ['js', 'ts'] })).toBe('tags=js&tags=ts')
+    expect(objectToQueryString({ tags: ['前端', '测试'] }, { encode: false })).toBe('tags=前端&tags=测试')
   })
 
   it('应该过滤 null 和 undefined 值', () => {

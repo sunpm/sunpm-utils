@@ -3,7 +3,7 @@
  * @description 提供各种对象处理函数，包括对象深拷贝、合并、转换等实用功能
  */
 
-import { isPlainObject } from '../is'
+import { isFunction, isNullOrUndefined, isPlainObject } from '../is'
 
 /**
  * 检查对象是否具有指定的自有属性。
@@ -147,9 +147,18 @@ export function omit<T extends Record<string, any>, K extends keyof T>(obj: T, k
   return result
 }
 
+export interface ObjectToQueryStringOptions {
+  /**
+   * 是否对键和值进行 URI 编码，或者传入自定义编码函数
+   * @default true
+   */
+  encode?: boolean | ((val: string) => string)
+}
+
 /**
  * 将对象转换为 URL 查询字符串
  * @param obj 要转换的对象
+ * @param options 转换选项
  * @returns 格式化后的查询字符串（不包含前导?）
  * @group Object
  * @example
@@ -158,16 +167,28 @@ export function omit<T extends Record<string, any>, K extends keyof T>(obj: T, k
  * objectToQueryString({ search: 'hello world', page: 1 }) // 'search=hello%20world&page=1'
  * objectToQueryString({ tags: ['js', 'ts'] }) // 'tags=js&tags=ts'
  * objectToQueryString({ name: 'Tom', empty: null }) // 'name=Tom'（null 和 undefined 会被过滤）
+ * objectToQueryString({ name: '张三' }, { encode: false }) // 'name=张三'（不进行 URI 编码）
  * ```
  */
-export function objectToQueryString(obj: Record<string, any>): string {
+export function objectToQueryString(
+  obj: Record<string, any>,
+  options: ObjectToQueryStringOptions = {},
+): string {
+  const { encode = true } = options
+
+  const encodeFn = isFunction(encode)
+    ? encode
+    : encode
+      ? encodeURIComponent
+      : (val: string) => val
+
   return Object.entries(obj)
-    .filter(([_, value]) => value !== undefined && value !== null)
+    .filter(([_, value]) => !isNullOrUndefined(value))
     .map(([key, value]) => {
       if (Array.isArray(value)) {
-        return value.map(item => `${encodeURIComponent(key)}=${encodeURIComponent(String(item))}`).join('&')
+        return value.map(item => `${encodeFn(key)}=${encodeFn(String(item))}`).join('&')
       }
-      return `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`
+      return `${encodeFn(key)}=${encodeFn(String(value))}`
     })
     .join('&')
 }
