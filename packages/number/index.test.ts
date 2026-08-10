@@ -59,6 +59,23 @@ describe('formatCurrency', () => {
     const result = formatCurrency(1234.56)
     expect(result).not.toBe('')
   })
+
+  it('应该支持数字字符串', () => {
+    const result = formatCurrency('1234.56', { currency: 'CNY', locale: 'zh-CN' })
+    expect(result).toMatch(/¥|￥|CNY/) // 匹配币种符号
+    expect(result).toMatch(/1[,，.]234[,，.]56/) // 匹配数值部分
+  })
+
+  it('showSymbol 为 false 时不应显示货币符号', () => {
+    const result = formatCurrency(1234.56, { currency: 'CNY', locale: 'zh-CN', showSymbol: false })
+    expect(result).not.toMatch(/¥|￥|CNY/) // 不应包含货币符号
+    expect(result).toMatch(/1[,，.]234[,，.]56/) // 数值部分格式化不变
+  })
+
+  it('非法输入应返回空字符串', () => {
+    expect(formatCurrency('abc')).toBe('')
+    expect(formatCurrency(Number.NaN)).toBe('')
+  })
 })
 
 describe('clamp', () => {

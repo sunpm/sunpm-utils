@@ -41,12 +41,13 @@ export function formatThousands(num: number, locale?: string): string {
 
 /**
  * 将数字格式化为货币字符串
- * @param value 要格式化的数字
+ * @param value 要格式化的数字，支持 number 或数字字符串（如 '1234.56'）
  * @param options 格式化选项
  * @param options.currency 货币代码（如 'CNY', 'USD'），默认为 'CNY'
  * @param options.locale 地区设置（如 'zh-CN', 'en-US'），默认为 'zh-CN'
  * @param options.minimumFractionDigits 最小小数位数，默认为 2
  * @param options.maximumFractionDigits 最大小数位数，默认为 2
+ * @param options.showSymbol 是否显示货币符号，默认为 true
  * @returns 格式化后的货币字符串
  * @group Number
  * @example
@@ -55,15 +56,18 @@ export function formatThousands(num: number, locale?: string): string {
  * formatCurrency(1234.56, { currency: 'USD', locale: 'en-US' }) // '$1,234.56'
  * formatCurrency(1234.56789, { maximumFractionDigits: 4 }) // '¥1,234.5679'
  * formatCurrency(1234, { minimumFractionDigits: 0 }) // '¥1,234'
+ * formatCurrency('1234.56') // '¥1,234.56'，支持数字字符串
+ * formatCurrency(1234.56, { showSymbol: false }) // '1,234.56'
  * ```
  */
 export function formatCurrency(
-  value: number,
+  value: number | string,
   options: {
     currency?: string
     locale?: string
     minimumFractionDigits?: number
     maximumFractionDigits?: number
+    showSymbol?: boolean
   } = {},
 ): string {
   const {
@@ -71,14 +75,19 @@ export function formatCurrency(
     locale = 'zh-CN',
     minimumFractionDigits = 2,
     maximumFractionDigits = 2,
+    showSymbol = true,
   } = options
 
+  const num = Number(value)
+  if (!Number.isFinite(num))
+    return ''
+
   return new Intl.NumberFormat(locale, {
-    style: 'currency',
+    style: showSymbol ? 'currency' : 'decimal',
     currency,
     minimumFractionDigits,
     maximumFractionDigits,
-  }).format(value)
+  }).format(num)
 }
 
 /**
