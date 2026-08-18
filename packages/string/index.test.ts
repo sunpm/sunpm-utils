@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { camelToKebab, capitalize, ensureRpxUnit, isEmptyString, kebabToCamel, parseJsonStr, parseNumberArray, pascalCase, replaceNBSP, snakeCase, template, truncate, words } from './index'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { camelToKebab, capitalize, ensureRpxUnit, isEmptyString, kebabToCamel, parseJsonStr, parseNumberArray, pascalCase, replaceNBSP, snakeCase, template, truncate, uuid, words } from './index'
 
 describe('isEmptyString', () => {
   it('应该检测空字符串', () => {
@@ -282,5 +282,26 @@ describe('template', () => {
   it('应该将非字符串值转换为字符串', () => {
     expect(template('Count: {{count}}', { count: 123 })).toBe('Count: 123')
     expect(template('Active: {{active}}', { active: true })).toBe('Active: true')
+  })
+})
+
+const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+describe('uuid', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('应该生成 UUID v4 格式', () => {
+    expect(uuid()).toMatch(UUID_V4)
+  })
+
+  it('连续两次调用结果应不同', () => {
+    expect(uuid()).not.toBe(uuid())
+  })
+
+  it('在没有 crypto.randomUUID 时应仍生成合法 v4', () => {
+    vi.stubGlobal('crypto', {})
+    expect(uuid()).toMatch(UUID_V4)
   })
 })

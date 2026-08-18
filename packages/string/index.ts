@@ -3,7 +3,7 @@
  * @description 提供各种字符串处理函数，包括字符串转换、格式化、验证等实用功能
  */
 
-import { isNaN, isString } from '../is'
+import { isFunction, isNaN, isString } from '../is'
 
 /**
  * 将字符串首字母转为大写
@@ -106,6 +106,26 @@ export function randomString(length: number, chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ
   }
 
   return result
+}
+
+/**
+ * 生成 UUID v4
+ * @returns UUID v4 字符串
+ * @group String
+ * @example
+ * ```ts
+ * uuid() // 例如: '550e8400-e29b-41d4-a716-446655440000'
+ * ```
+ */
+export function uuid(): string {
+  if (typeof crypto !== 'undefined' && isFunction(crypto.randomUUID))
+    return crypto.randomUUID()
+
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (ch) => {
+    const r = (Math.random() * 16) | 0
+    const v = ch === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
 }
 
 /**
