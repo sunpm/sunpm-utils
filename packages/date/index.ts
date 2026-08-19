@@ -4,14 +4,14 @@ import type { Dayjs, ManipulateType, OpUnitType, QUnitType } from 'dayjs'
  * @description 提供各种日期时间处理函数，包括日期格式化、日期计算、比较等实用功能。基于 dayjs 库实现。
  */
 import dayjs from 'dayjs'
-import isBetween from 'dayjs/plugin/isBetween'
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
-import relativeTime from 'dayjs/plugin/relativeTime'
+import isBetween from 'dayjs/plugin/isBetween.js'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter.js'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore.js'
+import relativeTime from 'dayjs/plugin/relativeTime.js'
 import { isNaN, isNumber } from '../is'
 
 // 导入本地化语言
-import 'dayjs/locale/zh-cn'
+import 'dayjs/locale/zh-cn.js'
 
 // 设置全局语言为中文
 dayjs.locale('zh-cn')
@@ -28,9 +28,9 @@ dayjs.extend(isSameOrAfter)
 dayjs.extend(isBetween)
 
 // 可以按需导入更多插件
-// import weekOfYear from 'dayjs/plugin/weekOfYear'
-// import isLeapYear from 'dayjs/plugin/isLeapYear'
-// import customParseFormat from 'dayjs/plugin/customParseFormat'
+// import weekOfYear from 'dayjs/plugin/weekOfYear.js'
+// import isLeapYear from 'dayjs/plugin/isLeapYear.js'
+// import customParseFormat from 'dayjs/plugin/customParseFormat.js'
 // dayjs.extend(weekOfYear)
 // dayjs.extend(isLeapYear)
 // dayjs.extend(customParseFormat)
