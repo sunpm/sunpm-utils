@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, expectTypeOf, it } from 'vitest'
 import {
   clamp,
   formatCurrency,
@@ -6,10 +6,156 @@ import {
   formatThousands,
   isEven,
   isOdd,
+  isZero,
   percentage,
   randomInt,
   round,
+  toNumber,
+  trimDecimalZeros,
 } from './index'
+
+describe('trimDecimalZeros', () => {
+  it.each([
+    ['12.00', '12'],
+    ['12.50', '12.5'],
+    ['12.00500', '12.005'],
+    ['1000', '1000'],
+    ['1000.000', '1000'],
+    ['12.', '12'],
+    ['.500', '.5'],
+    ['.000', '0'],
+    ['+.00', '+0'],
+    ['-.00', '-0'],
+    ['-0.00', '-0'],
+    [' +0012.500 ', '+0012.5'],
+    [12.5, '12.5'],
+    [0, '0'],
+    [-0, '0'],
+    [1e-7, '1e-7'],
+    [1e21, '1e+21'],
+  ])('应该将 %j 清理为 %s', (value, expected) => {
+    expect(trimDecimalZeros(value)).toBe(expected)
+  })
+
+  it('应该保留超出 number 精度或范围的字符串', () => {
+    expect(trimDecimalZeros('9007199254740993.0100')).toBe('9007199254740993.01')
+    const tiny = `0.${'0'.repeat(400)}100`
+    expect(trimDecimalZeros(tiny)).toBe(`0.${'0'.repeat(400)}1`)
+    const huge = '9'.repeat(400)
+    expect(trimDecimalZeros(`${huge}.00`)).toBe(huge)
+  })
+
+  it.each([
+    ['1.200e+3', '1.2e+3'],
+    ['12.00E-10', '12E-10'],
+    ['1e+100', '1e+100'],
+    ['.00e3', '0e3'],
+    ['1.0100e-400', '1.01e-400'],
+  ])('应该清理科学计数法 %s 并保留指数', (value, expected) => {
+    expect(trimDecimalZeros(value)).toBe(expected)
+  })
+})
+
+describe('isZero', () => {
+  it.each([0, -0, '0', '0.00', '-0.000', '+00.00', ' 0 ', '.0', '-.00', '0.', '0e3', '-0.00E-400'])('应该识别零值 %j', (value) => {
+    expect(isZero(value)).toBe(true)
+  })
+
+  it.each([1, -1, 0.01, Number.MIN_VALUE, '0.01', '-0.1', '10', '1e-400', '-1e-400', '1e400'])('不应将非零值 %j 判断为零', (value) => {
+    expect(isZero(value)).toBe(false)
+  })
+
+  it('不应将小数位极长的非零字符串判断为零', () => {
+    expect(isZero(`0.${'0'.repeat(400)}1`)).toBe(false)
+  })
+})
+
+describe('toNumber', () => {
+  it.each([
+    ['12.00', 12],
+    ['12.50', 12.5],
+    [' +0012.50 ', 12.5],
+    ['-.50', -0.5],
+    ['12.', 12],
+    ['0.00', 0],
+    ['-0.00', -0],
+    ['1.25e2', 125],
+    ['1E-7', 1e-7],
+    [0, 0],
+    [-0, -0],
+    [12.5, 12.5],
+    [Number.MAX_VALUE, Number.MAX_VALUE],
+    [Number.MIN_VALUE, Number.MIN_VALUE],
+  ])('应该将 %j 转换为 number', (value, expected) => {
+    expect(toNumber(value)).toBe(expected)
+  })
+
+  it('应该在溢出时返回兜底值', () => {
+    expect(toNumber('1e400')).toBeUndefined()
+    expect(toNumber('-1e400', null)).toBeNull()
+    expect(toNumber('9'.repeat(400), 0)).toBe(0)
+  })
+
+  it('应该支持自定义兜底值，并保留有效的零值', () => {
+    expect(toNumber('', 0)).toBe(0)
+    expect(toNumber(null, 10)).toBe(10)
+    expect(toNumber(undefined, null)).toBeNull()
+    expect(toNumber('abc', undefined)).toBeUndefined()
+    expect(toNumber('0.00', 10)).toBe(0)
+  })
+
+  it('应该根据兜底值推导适合组件绑定的类型', () => {
+    expectTypeOf(toNumber('12.50')).toEqualTypeOf<number | undefined>()
+    expectTypeOf(toNumber('12.50', 0)).toEqualTypeOf<number>()
+    expectTypeOf(toNumber('', null)).toEqualTypeOf<number | null>()
+    expectTypeOf(toNumber('', undefined)).toEqualTypeOf<number | undefined>()
+    expectTypeOf(trimDecimalZeros('12.00')).toEqualTypeOf<string>()
+    expectTypeOf(isZero('0.00')).toEqualTypeOf<boolean>()
+  })
+})
+
+describe('数字输入边界', () => {
+  it.each([
+    '',
+    '   ',
+    '\t\n',
+    null,
+    undefined,
+    true,
+    false,
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    Number.NEGATIVE_INFINITY,
+    'NaN',
+    'Infinity',
+    'abc',
+    '12px',
+    'abc.00',
+    '1,000.00',
+    '0x00',
+    '0b0',
+    '0o0',
+    '1_000',
+    '.',
+    '+',
+    '-',
+    '1.2.3',
+    '0e',
+    '0 0',
+    [],
+    [0],
+    {},
+    { valueOf: () => 0 },
+    0n,
+    Symbol('0'),
+  ].map(value => ({ value })))('应该拒绝空值或无效输入 %#', ({ value }) => {
+    expect(trimDecimalZeros(value)).toBe('')
+    expect(isZero(value)).toBe(false)
+    expect(toNumber(value)).toBeUndefined()
+    expect(toNumber(value, null)).toBeNull()
+    expect(toNumber(value, 10)).toBe(10)
+  })
+})
 
 describe('round', () => {
   it('应该正确四舍五入', () => {
