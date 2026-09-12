@@ -3,6 +3,116 @@
  * @description 提供各种数字处理函数，包括数字格式化、计算、范围控制等实用功能
  */
 
+function getDecimalString(value: unknown): string | undefined {
+  if (typeof value === 'number')
+    return Number.isFinite(value) ? String(value) : undefined
+  if (typeof value !== 'string')
+    return undefined
+
+  const text = value.trim()
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(text) ? text : undefined
+}
+
+/**
+ * 去掉小数末尾多余的零，始终返回字符串
+ * 字符串不经过 Number 转换，保留精度、正负号和整数部分的前导零。
+ * 支持科学计数法，仅清理尾数的小数零，保留指数部分。
+ * @param value 数字或十进制数字字符串，自动去除首尾空白
+ * @returns 清理后的字符串；空值、非有限数字或无效输入返回空字符串
+ * @group Number
+ * @example
+ * ```ts
+ * trimDecimalZeros('12.00') // '12'
+ * trimDecimalZeros('12.50') // '12.5'
+ * trimDecimalZeros('9007199254740993.0100') // '9007199254740993.01'
+ * trimDecimalZeros('1.200e+3') // '1.2e+3'
+ * trimDecimalZeros(null) // ''
+ * ```
+ */
+export function trimDecimalZeros(value: unknown): string {
+  const text = getDecimalString(value)
+  if (text === undefined)
+    return ''
+
+  const pointIndex = text.indexOf('.')
+  if (pointIndex === -1)
+    return text
+
+  const exponentIndex = text.search(/e/i)
+  const mantissaEnd = exponentIndex === -1 ? text.length : exponentIndex
+  let end = mantissaEnd
+  while (end > pointIndex + 1 && text[end - 1] === '0')
+    end--
+  if (end === pointIndex + 1)
+    end = pointIndex
+
+  let result = text.slice(0, end)
+  if (result === '' || result === '+' || result === '-')
+    result += '0'
+  return result + text.slice(mantissaEnd)
+}
+
+/**
+ * 判断数字或十进制数字字符串是否为零，支持科学计数法
+ * 直接检查字符串尾数，避免极小的非零值转成 Number 后被误判为零。
+ * @param value 待判断的值，字符串自动去除首尾空白
+ * @returns 零和负零返回 true；空值、无效输入和非零值返回 false
+ * @group Number
+ * @example
+ * ```ts
+ * isZero(0) // true
+ * isZero('-0.00') // true
+ * isZero('0.00e+3') // true
+ * isZero('1e-400') // false
+ * isZero('') // false
+ * isZero(null) // false
+ * ```
+ */
+export function isZero(value: unknown): boolean {
+  if (typeof value === 'number')
+    return value === 0
+
+  const text = getDecimalString(value)
+  if (text === undefined)
+    return false
+
+  const exponentIndex = text.search(/e/i)
+  const mantissa = exponentIndex === -1 ? text : text.slice(0, exponentIndex)
+  return !/[1-9]/.test(mantissa)
+}
+
+/**
+ * 将数字或十进制数字字符串转换为有限 number，支持科学计数法
+ * 不接受布尔值、对象、进制前缀、千位分隔符或带单位的字符串。
+ * 转换遵循 JavaScript number 的精度规则；需要保留原始精度时使用字符串。
+ * @param value 待转换的值，字符串自动去除首尾空白
+ * @param defaultValue 空值、无效输入或溢出时的返回值，默认为 undefined；可传入数字或 null
+ * @returns 转换后的数字或指定的兜底值，返回类型随兜底值推导
+ * @group Number
+ * @example
+ * ```ts
+ * toNumber('12.00') // 12
+ * toNumber('12.50') // 12.5
+ * toNumber('') // undefined，保留输入框的空状态
+ * toNumber(null, 0) // 0，返回类型为 number
+ * toNumber('', null) // null，返回类型为 number | null
+ * toNumber('12px') // undefined
+ * ```
+ */
+export function toNumber(value: unknown, defaultValue?: undefined): number | undefined
+export function toNumber<T extends number | null | undefined>(value: unknown, defaultValue: T): number | T
+export function toNumber(value: unknown, defaultValue?: number | null): number | null | undefined {
+  if (typeof value === 'number')
+    return Number.isFinite(value) ? value : defaultValue
+
+  const text = getDecimalString(value)
+  if (text === undefined)
+    return defaultValue
+
+  const num = Number(text)
+  return Number.isFinite(num) ? num : defaultValue
+}
+
 /**
  * 将数字四舍五入到指定小数位
  * @param num 要处理的数字
