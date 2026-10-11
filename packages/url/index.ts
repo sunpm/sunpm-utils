@@ -43,7 +43,7 @@ export function getQueryStringify(params: Record<string, any> | null | undefined
 export interface ParseQueryStringOptions {
   /**
    * 是否自动转换值的类型（如 "true" -> true, "false" -> false, 数字字符串转为 number, JSON 字符串转为对象/数组）
-   * @default true
+   * @defaultValue true
    */
   parseTypes?: boolean
 }
@@ -52,7 +52,7 @@ export interface ParseQueryStringOptions {
  * 将 URL 查询参数字符串解析为 JavaScript 对象（字面量）
  *
  * @param {string} url - 需要解析的 URL 字符串或查询参数字符串
- * @param {ParseQueryStringOptions} [options] - 解析选项
+ * @param {ParseQueryStringOptions} [options] - 解析选项，默认为 `{}`，省略时自动转换值的类型（`parseTypes: true`）
  * @returns {Record<string, any>} 解析后的对象
  * @group Url
  * @example
@@ -145,7 +145,7 @@ export function parseQueryString(url: string, options: ParseQueryStringOptions =
 /**
  * 确保路径以斜杠 `/` 开头
  *
- * @param {string | null | undefined} path - 路径字符串
+ * @param {string | null | undefined} path - 路径字符串，省略时返回空字符串 `''`
  * @returns {string} 包含前导斜杠的路径字符串，若输入为空则返回空字符串
  * @group Url
  * @example
@@ -164,7 +164,7 @@ export function ensureLeadingSlash(path?: string | null): string {
 /**
  * 确保路径不以斜杠 `/` 开头
  *
- * @param {string | null | undefined} path - 路径字符串
+ * @param {string | null | undefined} path - 路径字符串，省略时返回空字符串 `''`
  * @returns {string} 不包含前导斜杠的路径字符串，若输入为空则返回空字符串
  * @group Url
  * @example
@@ -184,8 +184,8 @@ export function stripLeadingSlash(path?: string | null): string {
  * 向 URL 中追加查询参数对象
  *
  * @param {string} url - 原始 URL 或路径
- * @param {Record<string, any>} [params] - 需要追加的查询参数对象
- * @param {ObjectToQueryStringOptions} [options] - 参数转换与编码选项
+ * @param {Record<string, any>} [params] - 需要追加的查询参数对象，省略时返回原 URL
+ * @param {ObjectToQueryStringOptions} [options] - 参数转换与编码选项，省略时对键和值进行 URI 编码（`encode: true`）
  * @returns {string} 追加查询参数后的 URL
  * @group Url
  * @example

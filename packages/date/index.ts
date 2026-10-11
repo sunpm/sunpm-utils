@@ -37,7 +37,7 @@ dayjs.extend(isBetween)
 
 /**
  * 创建 dayjs 对象
- * @param date 日期参数，可以是日期对象、时间戳或日期字符串
+ * @param date 日期参数，可以是日期对象、时间戳或日期字符串；省略时使用当前日期时间
  * @returns dayjs 对象
  * @group Date
  * @example
@@ -102,11 +102,12 @@ export function convertToDayjsParam(value: DateLike) {
 /**
  * 格式化日期为指定格式的字符串
  * @param date 日期对象、时间戳或日期字符串
- * @param format 格式字符串，支持的占位符请参考 [dayjs 文档](https://day.js.org/docs/zh-CN/durations/format#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8D%A0%E4%BD%8D%E7%AC%A6%E5%88%97%E8%A1%A8)
+ * @param format 格式字符串，默认为 `'YYYY-MM-DD'`，支持的占位符请参考 [dayjs 文档](https://day.js.org/docs/zh-CN/durations/format#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8D%A0%E4%BD%8D%E7%AC%A6%E5%88%97%E8%A1%A8)
  * @returns 格式化后的日期字符串
  * @group Date
  * @example
  * ```ts
+ * formatDate('2023-05-15') // "2023-05-15"（使用默认格式）
  * formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss') // "2023-05-16 14:30:45"
  * formatDate('2023-05-15', 'YYYY年MM月DD日') // "2023年05月15日"
  * formatDate(1684123456000, 'MM/DD/YYYY') // "05/15/2023"
@@ -452,7 +453,7 @@ export function formatChatTime(date: DateLike): string {
  * 如果不提供，则智能判断显示单位，只显示有意义的时间单位。
  *
  * @param timestamp 时间戳（毫秒）或者持续时间（毫秒）
- * @param format 可选的格式化字符串，支持 YY（年）、MM（月）、DD（天）、HH（小时）、mm（分钟）、ss（秒钟）占位符
+ * @param format 格式化字符串，省略时自动选择有意义的时间单位；支持 YY（年）、MM（月）、DD（天）、HH（小时）、mm（分钟）、ss（秒钟）占位符
  * @returns 格式化后的时长字符串或数字
  * @group Date
  * @example

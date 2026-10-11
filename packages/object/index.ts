@@ -70,7 +70,7 @@ export function deepClone<T>(obj: T): T {
  * 从对象中获取指定路径的值，支持点分隔的嵌套路径
  * @param obj 源对象
  * @param path 属性路径，如 'user.address.street'
- * @param defaultValue 默认值，当路径不存在时返回
+ * @param defaultValue 路径不存在或值为 `undefined` 时的返回值，默认为 `undefined`
  * @returns 路径对应的值，如果路径不存在则返回默认值
  * @group Object
  * @example
@@ -150,7 +150,7 @@ export function omit<T extends Record<string, any>, K extends keyof T>(obj: T, k
 export interface ObjectToQueryStringOptions {
   /**
    * 是否对键和值进行 URI 编码，或者传入自定义编码函数
-   * @default true
+   * @defaultValue true
    */
   encode?: boolean | ((val: string) => string)
 }
@@ -158,7 +158,7 @@ export interface ObjectToQueryStringOptions {
 /**
  * 将对象转换为 URL 查询字符串
  * @param obj 要转换的对象
- * @param options 转换选项
+ * @param options 转换选项，默认为 `{}`，省略时对键和值进行 URI 编码（`encode: true`）
  * @returns 格式化后的查询字符串（不包含前导?）
  * @group Object
  * @example
@@ -252,7 +252,7 @@ export function deepMerge(...objects: Record<string, any>[]): Record<string, any
  * 根据传入的键数组和键名映射对象过滤并重命名对象，返回一个新对象
  * @param originalObject 要过滤的原始对象
  * @param keysArray 要保留的键名数组
- * @param keyMapping 可选的键名映射对象，格式为 { 原键名: 新键名 }
+ * @param keyMapping 键名映射对象，格式为 `{ 原键名: 新键名 }`，默认为 `{}`，省略时保留原键名
  * @returns 返回一个新对象，其中只包含原对象中匹配的键值对，并根据映射重命名键
  * @group Object
  * @example
@@ -286,7 +286,7 @@ export function filterObjectByKeys(
  * 同时不破坏已定义的默认值。
  *
  * @param defaultModel 默认数据定义（提供合法的 Key 列表和基础默认值）
- * @param source 外部源数据（可为空或非对象，非对象时会被忽略）
+ * @param source 外部源数据，省略或为非普通对象时返回默认模型的深拷贝
  * @returns 提纯组合后的安全数据对象
  * @group Object
  * @example
