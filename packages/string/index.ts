@@ -237,8 +237,8 @@ export function ensureRpxUnit(val: string | number): string {
 /**
  * 替换字符串中的 `&nbsp;` 为不换行空格
  *
- * @param {string} str - 字符串
- * @returns {string} 处理后的字符串
+ * @param {string} str - 字符串，省略时返回 `undefined`
+ * @returns {string} 处理后的字符串；非字符串输入原样返回
  *
  * @group String
  * @example
@@ -263,12 +263,13 @@ export function replaceNBSP(str?: string): string {
  * 主要用于接收类似 `1,2,3` 这样的关系型 ID 串，前端接管后始终得到可信的数字数组。
  * 会主动拦截 `undefined`、`null`、空字符串、空白片段以及非法数字片段，避免出现脏数据混入结果。
  *
- * @param str 待解析的数字字符串
- * @param separator 分隔符，默认为英文逗号
+ * @param str 待解析的数字字符串，省略时返回空数组 `[]`
+ * @param separator 分隔符，默认为英文逗号 `','`
  * @returns 解析后的数字数组；当输入无效或无可用数字时返回空数组
  * @group String
  * @example
  * ```ts
+ * parseNumberArray() // []
  * parseNumberArray('1,2,3') // [1, 2, 3]
  * parseNumberArray('1, 2, 3') // [1, 2, 3]
  * parseNumberArray('1,,2,foo,3') // [1, 2, 3]
@@ -292,11 +293,11 @@ export function parseNumberArray(str?: string | null, separator = ','): number[]
  * 解析JSON字符串，处理异常情况
  *
  * 支持解析各种有效的JSON格式，包括对象、数组、字符串、数字、布尔值等。
- * 如果解析失败，会在控制台输出错误信息并返回原始字符串。
+ * 空值或解析失败时返回指定的兜底值；未指定时，空值返回空对象，解析失败返回原始字符串。
  *
- * @param str 待解析的字符串
- * @param defaultValue 解析失败时的默认返回值，默认为原始字符串
- * @returns 解析后的对象、数组或其他JSON值，解析失败时返回默认值
+ * @param str 待解析的字符串，省略时返回 `defaultValue`，未指定兜底值时返回 `{}`
+ * @param defaultValue 空值或解析失败时的兜底值；省略时，`undefined`、`null` 和空字符串返回 `{}`，解析失败返回原始字符串
+ * @returns 解析后的 JSON 值；空值或解析失败时按 `defaultValue` 的规则返回
  * @group String
  * @example
  * ```ts

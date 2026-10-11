@@ -135,12 +135,12 @@ export function round(num: number, precision = 0): number {
 /**
  * 将数字格式化为带千位分隔符的字符串
  * @param num 要格式化的数字
- * @param locale 区域设置，默认为浏览器默认区域
+ * @param locale 区域设置，省略时使用当前运行环境的默认区域
  * @returns 格式化后的字符串
  * @group Number
  * @example
  * ```ts
- * formatThousands(1234567) // '1,234,567'（根据浏览器默认区域可能有所不同）
+ * formatThousands(1234567) // '1,234,567'（根据运行环境的默认区域可能有所不同）
  * formatThousands(1234567.89, 'en-US') // '1,234,567.89'
  * formatThousands(1234567.89, 'de-DE') // '1.234.567,89'
  * ```
@@ -149,15 +149,39 @@ export function formatThousands(num: number, locale?: string): string {
   return num.toLocaleString(locale)
 }
 
+/** 货币格式化选项 */
+export interface FormatCurrencyOptions {
+  /**
+   * 货币代码（如 'CNY', 'USD'）
+   * @defaultValue 'CNY'
+   */
+  currency?: string
+  /**
+   * 地区设置（如 'zh-CN', 'en-US'）
+   * @defaultValue 'zh-CN'
+   */
+  locale?: string
+  /**
+   * 最小小数位数
+   * @defaultValue 2
+   */
+  minimumFractionDigits?: number
+  /**
+   * 最大小数位数
+   * @defaultValue 2
+   */
+  maximumFractionDigits?: number
+  /**
+   * 是否显示货币符号
+   * @defaultValue true
+   */
+  showSymbol?: boolean
+}
+
 /**
  * 将数字格式化为货币字符串
  * @param value 要格式化的数字，支持 number 或数字字符串（如 '1234.56'）
- * @param options 格式化选项
- * @param options.currency 货币代码（如 'CNY', 'USD'），默认为 'CNY'
- * @param options.locale 地区设置（如 'zh-CN', 'en-US'），默认为 'zh-CN'
- * @param options.minimumFractionDigits 最小小数位数，默认为 2
- * @param options.maximumFractionDigits 最大小数位数，默认为 2
- * @param options.showSymbol 是否显示货币符号，默认为 true
+ * @param options 格式化选项，默认为 `{}`，省略时按 `'zh-CN'` 格式显示人民币符号并保留 2 位小数
  * @returns 格式化后的货币字符串
  * @group Number
  * @example
@@ -172,13 +196,7 @@ export function formatThousands(num: number, locale?: string): string {
  */
 export function formatCurrency(
   value: number | string,
-  options: {
-    currency?: string
-    locale?: string
-    minimumFractionDigits?: number
-    maximumFractionDigits?: number
-    showSymbol?: boolean
-  } = {},
+  options: FormatCurrencyOptions = {},
 ): string {
   const {
     currency = 'CNY',
