@@ -221,14 +221,30 @@ export function groupBy<T, K extends string | number | symbol>(array: T[], keyFn
   }, {} as Record<K, T[]>)
 }
 
+/** "全部"选项的配置 */
+export interface AppendUniversalOptionConfig<V = any> {
+  /**
+   * 选项标签的字段名
+   * @defaultValue 'label'
+   */
+  name?: string
+  /**
+   * "全部"选项的值
+   * @defaultValue ''
+   */
+  value?: V
+  /**
+   * 选项值的字段名
+   * @defaultValue 'value'
+   */
+  valueKey?: string
+}
+
 /**
  * 在选项数组前添加一个"全部"选项
  *
  * @param options - 原始选项数组
- * @param config - 配置选项
- * @param config.name - 选项标签的字段名 (默认为 'label')
- * @param config.value - "全部"选项的值 (默认为 '')
- * @param config.valueKey - 选项值的字段名 (默认为 'value')
+ * @param {AppendUniversalOptionConfig<V>} config - 配置选项，默认为 `{}`，省略时添加 `{ label: '全部', value: '' }`
  * @returns 添加了"全部"选项的新数组
  *
  * @group Array
@@ -269,11 +285,7 @@ export function appendUniversalOption<T extends Record<string, any>, V = any>(
     name = 'label',
     value = '' as V,
     valueKey = 'value',
-  }: {
-    name?: string
-    value?: V
-    valueKey?: string
-  } = {},
+  }: AppendUniversalOptionConfig<V> = {},
 ): T[] {
   return [
     {
