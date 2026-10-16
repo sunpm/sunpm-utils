@@ -162,12 +162,12 @@ export interface FormatCurrencyOptions {
    */
   locale?: string
   /**
-   * 最小小数位数
+   * 最小小数位数；省略时默认 2，若指定的最大小数位数更小，则随之降低
    * @defaultValue 2
    */
   minimumFractionDigits?: number
   /**
-   * 最大小数位数
+   * 最大小数位数；省略时默认 2，若指定的最小小数位数更大，则随之提高
    * @defaultValue 2
    */
   maximumFractionDigits?: number
@@ -180,34 +180,39 @@ export interface FormatCurrencyOptions {
 
 /**
  * 将数字格式化为货币字符串
- * @param value 要格式化的数字，支持 number 或数字字符串（如 '1234.56'）
+ * @param value 数字或十进制数字字符串（允许首尾空白），也支持 null、undefined
  * @param options 格式化选项，默认为 `{}`，省略时按 `'zh-CN'` 格式显示人民币符号并保留 2 位小数
- * @returns 格式化后的货币字符串
+ * @returns 格式化后的货币字符串；空值、非有限数字或无效输入返回空字符串
  * @group Number
  * @example
  * ```ts
  * formatCurrency(1234.56) // '¥1,234.56'
  * formatCurrency(1234.56, { currency: 'USD', locale: 'en-US' }) // '$1,234.56'
  * formatCurrency(1234.56789, { maximumFractionDigits: 4 }) // '¥1,234.5679'
+ * formatCurrency(1234.56, { maximumFractionDigits: 0 }) // '¥1,235'，四舍五入为整数
  * formatCurrency(1234, { minimumFractionDigits: 0 }) // '¥1,234'
+ * formatCurrency(1234.56, { minimumFractionDigits: 4 }) // '¥1,234.5600'
  * formatCurrency('1234.56') // '¥1,234.56'，支持数字字符串
  * formatCurrency(1234.56, { showSymbol: false }) // '1,234.56'
+ * formatCurrency(null) // ''
+ * formatCurrency(undefined) // ''
+ * formatCurrency(' ') // ''
  * ```
  */
 export function formatCurrency(
-  value: number | string,
+  value: number | string | null | undefined,
   options: FormatCurrencyOptions = {},
 ): string {
   const {
     currency = 'CNY',
     locale = 'zh-CN',
-    minimumFractionDigits = 2,
-    maximumFractionDigits = 2,
+    minimumFractionDigits = Math.min(2, options.maximumFractionDigits ?? 2),
+    maximumFractionDigits = Math.max(2, minimumFractionDigits),
     showSymbol = true,
   } = options
 
-  const num = Number(value)
-  if (!Number.isFinite(num))
+  const num = toNumber(value)
+  if (num === undefined)
     return ''
 
   return new Intl.NumberFormat(locale, {
