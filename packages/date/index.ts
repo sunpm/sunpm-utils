@@ -17,7 +17,7 @@ import 'dayjs/locale/zh-cn.js'
 dayjs.locale('zh-cn')
 
 /**
- * 表示日期的各种类型，可以是日期对象、日期字符串或时间戳
+ * 表示日期的各种类型，可以是日期对象、日期字符串或时间戳；支持 10 位秒级和 13 位毫秒级数字字符串，0 和 '0' 视为无效日期
  */
 export type DateLike = Date | string | number | undefined
 
@@ -37,18 +37,21 @@ dayjs.extend(isBetween)
 
 /**
  * 创建 dayjs 对象
- * @param date 日期参数，可以是日期对象、时间戳或日期字符串；省略时使用当前日期时间
- * @returns dayjs 对象
+ * @param date 日期参数，可以是日期对象、Dayjs 对象、时间戳（秒或毫秒，支持数字字符串）或日期字符串；省略时使用当前日期时间
+ * @returns dayjs 对象；0、'0' 或无效日期输入返回无效的 dayjs 对象
  * @group Date
  * @example
  * ```ts
  * createDate() // 当前日期时间
  * createDate('2023-05-15') // 指定日期
  * createDate(1684123456000) // 时间戳
+ * createDate('1684123456') // 秒级字符串时间戳
+ * createDate('0').isValid() // false
+ * createDate(0).isValid() // false
  * ```
  */
 export function createDate(date?: DateLike | Dayjs): Dayjs {
-  return dayjs(date)
+  return dayjs(dayjs.isDayjs(date) ? date : convertToDayjsParam(date))
 }
 
 /**
@@ -74,22 +77,31 @@ export function isMillisecondTimestamp(value: unknown): boolean {
 
 /**
  * 转换为 dayjs 可接收的参数格式
- * @param value 日期参数，可以是日期对象、时间戳（秒或毫秒）或日期字符串
- * @returns 转换后的参数，如果是秒级时间戳则转为毫秒级，其他类型保持不变
+ * @param value 日期参数，可以是日期对象、时间戳（秒或毫秒）或日期字符串；支持去除两端空白后的 10 位和 13 位数字字符串
+ * @returns 秒级时间戳转为毫秒级，毫秒级数字字符串转为数字，0 和 '0' 返回 NaN，其他输入保持不变
  * @group Date
  * @example
  * ```ts
  * convertToDayjsParam(1673740800) // 1673740800000，秒转为毫秒
  * convertToDayjsParam(1673740800000) // 1673740800000，毫秒保持不变
+ * convertToDayjsParam('1673740800') // 1673740800000，秒级字符串转为毫秒
+ * convertToDayjsParam('1673740800000') // 1673740800000，毫秒级字符串转为数字
+ * convertToDayjsParam('0') // NaN，无效时间戳
+ * convertToDayjsParam(0) // NaN，无效时间戳
  * convertToDayjsParam(new Date()) // Date对象，保持不变
  * convertToDayjsParam('2023-01-15') // '2023-01-15'，字符串保持不变
  * ```
  */
 export function convertToDayjsParam(value: DateLike) {
-  // 如果已经是毫秒级时间戳，直接返回
-  if (isMillisecondTimestamp(value)) {
-    return value
+  if (typeof value === 'string' && /^(?:0|\d{10}|\d{13})$/.test(value.trim())) {
+    const timestamp = Number(value)
+    if (timestamp === 0)
+      return Number.NaN
+    return value.trim().length === 10 ? timestamp * 1000 : timestamp
   }
+
+  if (value === 0)
+    return Number.NaN
 
   // 如果是数字且是10位数字，则可能是秒级时间戳，需要转为毫秒
   if (isNumber(value) && String(value).length === 10) {
@@ -103,7 +115,7 @@ export function convertToDayjsParam(value: DateLike) {
  * 格式化日期为指定格式的字符串
  * @param date 日期对象、时间戳或日期字符串
  * @param format 格式字符串，默认为 `'YYYY-MM-DD'`，支持的占位符请参考 [dayjs 文档](https://day.js.org/docs/zh-CN/durations/format#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8D%A0%E4%BD%8D%E7%AC%A6%E5%88%97%E8%A1%A8)
- * @returns 格式化后的日期字符串
+ * @returns 格式化后的日期字符串；空值、0、'0' 或无效日期返回空字符串
  * @group Date
  * @example
  * ```ts
@@ -111,18 +123,22 @@ export function convertToDayjsParam(value: DateLike) {
  * formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss') // "2023-05-16 14:30:45"
  * formatDate('2023-05-15', 'YYYY年MM月DD日') // "2023年05月15日"
  * formatDate(1684123456000, 'MM/DD/YYYY') // "05/15/2023"
+ * formatDate('1673740800000') // "2023-01-15"
+ * formatDate('0') // ""
+ * formatDate(0) // ""
  * ```
  */
 export function formatDate(date: DateLike, format = 'YYYY-MM-DD'): string {
   if (!date)
     return ''
-  return dayjs(convertToDayjsParam(date)).format(format)
+  const d = createDate(date)
+  return d.isValid() ? d.format(format) : ''
 }
 
 /**
  * 将日期格式化为完整的时间字符串（YYYY-MM-DD HH:mm:ss）
  * @param date 日期对象、时间戳或日期字符串
- * @returns 格式为 YYYY-MM-DD HH:mm:ss 的日期时间字符串
+ * @returns 格式为 YYYY-MM-DD HH:mm:ss 的日期时间字符串；空值、0、'0' 或无效日期返回空字符串
  * @group Date
  * @example
  * ```ts
@@ -149,20 +165,23 @@ export function now(): number {
 }
 
 /**
- * 解析日期字符串为日期对象
- * @param dateStr 日期字符串
+ * 解析日期字符串或时间戳为日期对象
+ * @param date 日期字符串或时间戳（秒或毫秒，支持数字字符串）
  * @returns 日期对象
- * @throws 如果日期格式无效，抛出 TypeError
+ * @throws 如果日期格式无效或传入 0、'0'，抛出 TypeError
  * @group Date
  * @example
  * ```ts
  * parseDate('2023-05-15') // Date 对象: Mon May 15 2023 00:00:00
  * parseDate('2023/05/15 14:30:45') // Date 对象: Mon May 15 2023 14:30:45
+ * parseDate('1673740800') // 与 parseDate(1673740800000) 表示同一时刻
+ * parseDate('0') // 抛出 TypeError: 无效的日期格式
+ * parseDate(0) // 抛出 TypeError: 无效的日期格式
  * parseDate('invalid date') // 抛出 TypeError: 无效的日期格式
  * ```
  */
-export function parseDate(dateStr: string): Date {
-  const d = dayjs(dateStr)
+export function parseDate(date: string | number): Date {
+  const d = createDate(date)
   if (!d.isValid())
     throw new TypeError('无效的日期格式')
   return d.toDate()
@@ -217,7 +236,7 @@ export function add(date: DateLike, amount: number, unit: ManipulateType = 'day'
  * ```
  */
 export function addDays(date: DateLike, days: number): Date {
-  return add(convertToDayjsParam(date), days, 'day')
+  return add(date, days, 'day')
 }
 
 /**
@@ -234,7 +253,7 @@ export function addDays(date: DateLike, days: number): Date {
  * ```
  */
 export function addMonths(date: DateLike, months: number): Date {
-  return add(convertToDayjsParam(date), months, 'month')
+  return add(date, months, 'month')
 }
 
 /**
@@ -251,7 +270,7 @@ export function addMonths(date: DateLike, months: number): Date {
  * ```
  */
 export function addYears(date: DateLike, years: number): Date {
-  return add(convertToDayjsParam(date), years, 'year')
+  return add(date, years, 'year')
 }
 
 /**
@@ -317,7 +336,7 @@ export function getDaysInMonth(year: number, month: number): number {
  * 获取相对时间描述
  * @param date 日期
  * @param baseDate 基准日期，默认为当前时间
- * @returns 相对时间描述，如"几分钟前"、"几天后"等
+ * @returns 相对时间描述，如"几分钟前"、"几天后"等；日期或基准日期无效时返回空字符串
  * @group Date
  * @example
  * ```ts
@@ -327,11 +346,9 @@ export function getDaysInMonth(year: number, month: number): number {
  * ```
  */
 export function fromNow(date: DateLike, baseDate?: DateLike): string {
-  date = convertToDayjsParam(date)
-  baseDate = baseDate && convertToDayjsParam(baseDate)
-  if (baseDate)
-    return dayjs(date).from(dayjs(baseDate))
-  return dayjs(date).fromNow()
+  const d = createDate(date)
+  const base = createDate(baseDate)
+  return d.isValid() && base.isValid() ? d.from(base) : ''
 }
 
 /**
@@ -371,7 +388,7 @@ export function endOf(date: DateLike, unit: OpUnitType): Date {
 /**
  * 格式化日期为人类友好的格式
  * @param date 日期
- * @returns 人类友好的日期描述，如"今天 HH:mm"、"昨天 HH:mm"、"明天 HH:mm"或"YYYY-MM-DD HH:mm"
+ * @returns 人类友好的日期描述，如"今天 HH:mm"、"昨天 HH:mm"、"明天 HH:mm"或"YYYY-MM-DD HH:mm"；无效日期返回空字符串
  * @group Date
  * @example
  * ```ts
@@ -383,6 +400,9 @@ export function endOf(date: DateLike, unit: OpUnitType): Date {
  */
 export function formatHumanReadable(date: DateLike): string {
   const d = dayjs(convertToDayjsParam(date))
+  if (!d.isValid())
+    return ''
+
   const now = dayjs()
 
   if (d.isSame(now, 'day'))
@@ -399,7 +419,7 @@ export function formatHumanReadable(date: DateLike): string {
 /**
  * 格式化日期为聊天列表时间格式（类似微信聊天列表）
  * @param date 日期
- * @returns 格式化后的时间字符串
+ * @returns 格式化后的时间字符串；无效日期返回空字符串
  * - 当天：HH:mm
  * - 昨天：昨天 HH:mm
  * - 7天内（不包括今天和昨天）：星期几
@@ -417,6 +437,9 @@ export function formatHumanReadable(date: DateLike): string {
  */
 export function formatChatTime(date: DateLike): string {
   const d = dayjs(convertToDayjsParam(date))
+  if (!d.isValid())
+    return ''
+
   const now = dayjs()
 
   // 当天：显示时间
