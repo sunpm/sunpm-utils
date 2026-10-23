@@ -615,6 +615,27 @@ export function formatDuration(timestamp: number, format?: string): string | num
   return parts.join('')
 }
 
+/**
+ * 格式化倒计时，超过一天时显示总天数
+ * @param endTimestamp 截止时间戳（秒），0 视为无效
+ * @param nowMs 当前时间戳（毫秒）
+ * @returns 格式为 HH:mm:ss 或 N天 HH:mm:ss；已到期或无效输入返回空字符串
+ * @group Date
+ * @example
+ * ```ts
+ * formatCountdown(1700003661, 1700000000000) // "01:01:01"
+ * formatCountdown(1700090061, 1700000000000) // "1天 01:01:01"
+ * formatCountdown(1700000000, 1700000000000) // ""
+ * ```
+ */
+export function formatCountdown(endTimestamp: number, nowMs: number): string {
+  const remain = endTimestamp * 1000 - nowMs
+  if (!endTimestamp || remain <= 0 || !Number.isFinite(remain))
+    return ''
+  const days = Math.floor(remain / (24 * 3600 * 1000))
+  return `${days ? `${days}天 ` : ''}${formatDuration(remain, 'HH:mm:ss')}`
+}
+
 // ==================== 日期范围工具 ====================
 
 /**
