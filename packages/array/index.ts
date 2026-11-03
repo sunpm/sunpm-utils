@@ -375,6 +375,55 @@ export function transformTree(
   })
 }
 
+type TreeNode<T, K extends string = 'children'> = T & { [P in K]?: readonly TreeNode<T, K>[] | null }
+
+/**
+ * 按数组顺序深度优先查找树节点，先检查当前节点，再查找子节点。
+ *
+ * @param tree - 根节点数组
+ * @param predicate - 判断当前节点是否匹配
+ * @param childKey - 子节点的键名，默认为 `children`
+ * @returns 首个匹配的原节点，未找到时返回 undefined
+ * @group Array
+ * @example
+ * ```ts
+ * const menus = [{ id: 1, children: [{ id: 2 }] }]
+ * findTreeNode(menus, node => node.id === 2) // { id: 2 }
+ *
+ * const groups = [{ id: 1, items: [{ id: 2 }] }]
+ * findTreeNode(groups, node => node.id === 2, 'items') // { id: 2 }
+ * ```
+ */
+export function findTreeNode<T extends object>(
+  tree: readonly TreeNode<T>[],
+  predicate: (node: TreeNode<T>) => boolean,
+  childKey?: 'children',
+): TreeNode<T> | undefined
+export function findTreeNode<T extends object, K extends string>(
+  tree: readonly TreeNode<T, K>[],
+  predicate: (node: TreeNode<T, K>) => boolean,
+  childKey: K,
+): TreeNode<T, K> | undefined
+export function findTreeNode<T extends object, K extends string>(
+  tree: readonly TreeNode<T, K>[],
+  predicate: (node: TreeNode<T, K>) => boolean,
+  childKey: K = 'children' as K,
+): TreeNode<T, K> | undefined {
+  for (const node of tree) {
+    if (predicate(node))
+      return node
+
+    const children = node[childKey]
+    if (children) {
+      const match = findTreeNode(children, predicate, childKey)
+      if (match)
+        return match
+    }
+  }
+
+  return undefined
+}
+
 type KeysMatching<T, V> = {
   [K in keyof T]-?: T[K] extends V ? K : never
 }[keyof T]
