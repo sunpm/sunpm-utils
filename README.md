@@ -1,64 +1,43 @@
 # @pmun/utils
 
-[![npm version](https://img.shields.io/npm/v/@pmun/utils.svg)](https://www.npmjs.com/package/@pmun/utils)
-[![license](https://img.shields.io/npm/l/@pmun/utils.svg)](https://github.com/sunpm/@pmun/utils/blob/main/LICENSE)
+`@pmun/utils` 是面向 JavaScript 和 TypeScript 开发者的日常工具函数库。
 
-一个轻量级、模块化的 TypeScript 工具函数库，为日常开发提供便捷实用的工具集合。
+- **数组与树**：去重、分组、排序和查找树节点。
+- **日期**：格式化、时间差、日期范围和倒计时。
+- **字符串**：命名转换、JSON 解析和 UUID 生成。
+- **对象**：深拷贝、合并和读取嵌套属性。
+- **数字**：金额格式化、四舍五入和范围限制。
+- **类型检查**：判断数据类型和空值。
+- **异步**：超时、重试、防抖、节流和并发控制。
+- **URL**：解析和追加查询参数、处理路径开头的 `/`。
 
-[访问全部 API](https://sunpm.github.io/sunpm-utils/globals) 查看全部的 API，包含每个函数的说明、参数、返回值和使用示例。
+[API 文档](https://sunpm.github.io/sunpm-utils/globals) · [版本历史](https://github.com/sunpm/sunpm-utils/blob/main/CHANGELOG.md) · [MIT 许可证](LICENSE)
 
-## 特点
+## 使用示例
 
-- 🚀 **轻量级**：按需引入，不增加项目体积
-- 🧩 **模块化**：合理划分模块，易于使用和维护
-- 📦 **零依赖**：除日期处理外无外部依赖
-- 🔒 **类型安全**：完全使用 TypeScript 编写，提供完整类型定义
-- 💯 **测试全面**：每个函数都有完善的单元测试
+```ts
+import { formatDate, unique } from '@pmun/utils'
 
-## 安装
-
-```bash
-# npm
-npm install @pmun/utils
-
-# yarn
-yarn add @pmun/utils
-
-# pnpm
-pnpm add @pmun/utils
+unique([1, 2, 2, 3]) // [1, 2, 3]
+formatDate('2026-01-15', 'YYYY/MM/DD') // '2026/01/15'
 ```
 
-## 使用
+## 使用要求
 
-从主入口导入需要的函数：
+| 项目 | 要求 |
+| --- | --- |
+| JavaScript | 支持 ES2020；本包仅提供 ESM（`import`）格式。 |
+| 安装工具 | Node.js，以及 npm、pnpm 或 Yarn 之一。 |
+| TypeScript | 可选，已包含类型定义。 |
+| 依赖 | `dayjs`，随本包自动安装。 |
 
-```typescript
-// 导入需要的函数
-import { chunk, formatDate, isString, unique } from '@pmun/utils'
+## 安装步骤
 
-// 使用数组工具函数
-const arr = [1, 2, 2, 3, 3, 4]
-const uniqueArr = unique(arr) // [1, 2, 3, 4]
-const chunks = chunk(arr, 2) // [[1, 2], [2, 3], [3, 4]]
+1. 进入使用本库的项目目录（`package.json` 所在目录）。
+2. 按项目的包管理器选择一条命令：
 
-// 使用日期格式化
-const formattedDate = formatDate(new Date(), 'YYYY-MM-DD') // 例如：'2023-11-10'
-
-// 使用类型检查
-console.log(isString('hello')) // true
-```
-
-## 功能模块
-
-库中包含以下功能模块的工具函数：
-
-- **数组操作 (array)**：数组去重、分块、查找、过滤、转换等处理函数
-- **日期时间 (date)**：日期格式化、计算、比较等函数
-- **字符串处理 (string)**：字符串转换、格式化、验证等
-- **对象操作 (object)**：对象深拷贝、合并、转换等
-- **数字处理 (number)**：数字格式化、四舍五入、范围控制等
-- **类型检查 (is)**：各种数据类型的判断函数
-
-## 许可证
-
-[MIT](LICENSE)
+   ```bash
+   npm install @pmun/utils
+   # 或 pnpm add @pmun/utils
+   # 或 yarn add @pmun/utils
+   ```
