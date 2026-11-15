@@ -4,6 +4,7 @@
  */
 
 import { isFunction, isNaN, isString } from '../is'
+import { hasOwnProp } from '../object'
 
 /**
  * 将字符串首字母转为大写
@@ -431,7 +432,7 @@ export function pascalCase(str: string): string {
 /**
  * 简单的模板字符串替换
  * @param template 模板字符串，使用 {{key}} 或 {key} 标记占位符
- * @param data 数据对象
+ * @param data 数据对象，仅访问各层级的自有属性
  * @returns 替换后的字符串
  * @group String
  * @example
@@ -454,7 +455,7 @@ export function template(template: string, data: Record<string, any>): string {
     let value: any = data
 
     for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
+      if (value && typeof value === 'object' && hasOwnProp(value, k)) {
         value = value[k]
       }
       else {

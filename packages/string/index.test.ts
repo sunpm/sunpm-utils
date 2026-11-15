@@ -274,6 +274,29 @@ describe('template', () => {
     expect(template('Hello {{name}}!', {})).toBe('Hello {{name}}!')
   })
 
+  it.each(['constructor', 'toString', '__proto__', 'hasOwnProperty'])('继承属性 %s 应保持占位符原样', (key) => {
+    const text = `Hello {{${key}}} {user.${key}}!`
+    expect(template(text, { user: {} })).toBe(text)
+  })
+
+  it.each(['constructor', 'toString', '__proto__', 'hasOwnProperty'])('应该替换自有属性 %s', (key) => {
+    const text = `Hello {{${key}}} {user.${key}}!`
+    const data = { [key]: 'Tom', user: { [key]: 'Jerry' } }
+    expect(template(text, data)).toBe('Hello Tom Jerry!')
+  })
+
+  it('不应读取自定义原型上的属性或嵌套对象', () => {
+    const inherited = Object.create({ name: 'Tom', user: { name: 'Jerry' } })
+    expect(template('{{name}} {{user.name}}', inherited)).toBe('{{name}} {{user.name}}')
+    expect(template('{{user.name}}', { user: inherited })).toBe('{{user.name}}')
+  })
+
+  it('应该读取无原型对象的自有属性', () => {
+    const data = Object.assign(Object.create(null), { name: 'Tom' })
+    expect(template('{{name}}', data)).toBe('Tom')
+    expect(template('{{user.name}}', { user: data })).toBe('Tom')
+  })
+
   it('应该处理 null 和 undefined 值', () => {
     expect(template('Hello {{name}}!', { name: null })).toBe('Hello {{name}}!')
     expect(template('Hello {{name}}!', { name: undefined })).toBe('Hello {{name}}!')
