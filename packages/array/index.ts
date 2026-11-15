@@ -184,7 +184,7 @@ export function isEqual<T>(a: T[], b: T[]): boolean {
  * 根据条件对数组中的元素进行分组
  * @param array 原始数组
  * @param keyFn 用于生成分组键的函数，接收数组元素并返回用作分组键的值
- * @returns 分组后的对象，键为分组键，值为对应的元素数组
+ * @returns 分组后的无原型对象，键为分组键，值为对应的元素数组
  * @group Array
  * @example
  * ```ts
@@ -218,7 +218,7 @@ export function groupBy<T, K extends string | number | symbol>(array: T[], keyFn
     const key = keyFn(item);
     (result[key] = result[key] || []).push(item)
     return result
-  }, {} as Record<K, T[]>)
+  }, Object.create(null) as Record<K, T[]>)
 }
 
 /** "全部"选项的配置 */
