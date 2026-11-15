@@ -158,7 +158,24 @@ describe('groupBy', () => {
   })
 
   it('应该处理空数组', () => {
-    expect(groupBy([], item => item)).toEqual({})
+    const result = groupBy([], item => item)
+    expect(result).toEqual({})
+    expect(Object.getPrototypeOf(result)).toBeNull()
+  })
+
+  it.each(['constructor', 'toString', '__proto__', 'hasOwnProperty'])('应该支持分组键 %s 并合并同组元素', (key) => {
+    const first = { key, value: 1 }
+    const other = { key: 'a', value: 2 }
+    const last = { key, value: 3 }
+
+    expect(groupBy([first, other, last], item => item.key)).toEqual({
+      [key]: [first, last],
+      a: [other],
+    })
+  })
+
+  it.each([1, Symbol('group')])('应该支持数字和 Symbol 分组键 %s', (key) => {
+    expect(groupBy([1, 2], () => key)).toEqual({ [key]: [1, 2] })
   })
 })
 
